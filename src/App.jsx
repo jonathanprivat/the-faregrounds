@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// ─── Embedded Brand Assets ─────────────────────────────────────
 const B = import.meta.env.BASE_URL;
-
 const A = {
   logo: B + "images/logo.png",
   seal: B + "images/seal.png",
@@ -26,6 +24,8 @@ const A = {
   bracketL: B + "images/bracketL.png",
   bracketR: B + "images/bracketR.png",
   logoOrange: B + "images/logoOrange.svg",
+  logoArch: B + "images/logoArch.svg",
+  uberEatsBrand: B + "images/uberEatsBrand.svg",
 };
 
 // ─── Brand Tokens ───────────────────────────────────────────────
@@ -193,6 +193,7 @@ const NAV_LINKS = [
   { label: "Menu", id: "menu" },
   { label: "Events", id: "events" },
   { label: "Story", id: "story" },
+  { label: "Order", id: "order" },
   { label: "Visit", id: "visit" },
 ];
 
@@ -248,6 +249,7 @@ export default function TheFaregroundsHomepage() {
   const [menuFade, setMenuFade] = useState(false);
   const [email, setEmail] = useState("");
   const [activeSection, setActiveSection] = useState("");
+  const [gallerySlide, setGallerySlide] = useState(0);
 
   useEffect(() => {
     let ticking = false;
@@ -447,15 +449,9 @@ export default function TheFaregroundsHomepage() {
     .mobile-drawer-link:hover { color: ${C.orange}; }
 
     .gallery-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr);
+      display: grid; grid-template-columns: 1fr 1fr;
       grid-template-rows: auto auto; gap: 16px;
     }
-    .gallery-item {
-      border-radius: 20px; border: 2px solid rgba(122,126,46,0.2);
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s;
-    }
-    .gallery-item:hover { transform: scale(1.02); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
 
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -467,10 +463,12 @@ export default function TheFaregroundsHomepage() {
       .story-grid { grid-template-columns: 1fr !important; }
       .events-grid { grid-template-columns: 1fr !important; }
       .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
-      .gallery-grid { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto !important; }
+      .gallery-grid { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto !important; gap: 12px !important; }
       .gallery-item { grid-column: auto !important; grid-row: auto !important; min-height: 160px !important; }
+      .gallery-item:last-child { grid-column: 1 / 3 !important; }
 
       .pillar-grid { grid-template-columns: 1fr 1fr !important; }
+      .order-grid { grid-template-columns: 1fr 1fr !important; }
       .poster-card { border-radius: 18px !important; }
       .poster-card::after { inset: 7px !important; border-radius: 14px !important; }
       .menu-items-grid { grid-template-columns: 1fr 1fr !important; }
@@ -482,8 +480,9 @@ export default function TheFaregroundsHomepage() {
       .footer-grid { grid-template-columns: 1fr !important; }
       .hero-tags { display: none !important; }
       .pillar-grid { grid-template-columns: 1fr !important; }
+      .order-grid { grid-template-columns: 1fr !important; }
       .gallery-grid { grid-template-columns: 1fr !important; }
-      .gallery-item { min-height: 140px !important; aspect-ratio: 16/9 !important; }
+      .gallery-item { min-height: 140px !important; aspect-ratio: 16/9 !important; grid-column: auto !important; }
       .poster-card { border-radius: 14px !important; border-width: 2px !important; }
       .poster-card::after { inset: 5px !important; border-radius: 10px !important; }
       .poster-card-hover:hover { transform: none !important; }
@@ -578,12 +577,9 @@ export default function TheFaregroundsHomepage() {
                     <div style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", width: "clamp(60px, 12vw, 140px)", opacity: 0.85 }}>
                       <Swash flip />
                     </div>
-                    <h1 className="ff-display ink-shadow" style={{
-                      fontSize: "clamp(42px, 8vw, 96px)", fontWeight: 900, lineHeight: 0.92,
-                      color: C.ink, letterSpacing: "-0.015em",
-                    }}>
-                      The Faregrounds
-                    </h1>
+                    <img src={A.logoArch} alt="The Faregrounds" className="ink-shadow" style={{
+                      width: "clamp(280px, 55vw, 620px)", height: "auto", display: "block", margin: "0 auto",
+                    }} />
                   </div>
 
                   <p className="ff-accent" style={{
@@ -603,7 +599,7 @@ export default function TheFaregroundsHomepage() {
 
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
                     <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>View Menu</button>
-                    <a href="MENU_11x17_LUNCH.pdf" download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download Menu (PDF)</a>
+                    <a href={B + "menu.pdf"} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download Menu (PDF)</a>
                     <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>Upcoming Events</button>
                   </div>
                 </div>
@@ -655,23 +651,37 @@ export default function TheFaregroundsHomepage() {
                   </span>
                 </div>
               </Reveal>
-              <Reveal delay={0.2}>
-                <div className="pillar-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-                  {[
-                    ["Seasonal Menu", "Warm plates that rotate with the season.", <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={C.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg>],
-                    ["Community Space", "Built for neighbors, families & pop-ups.", <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={C.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/><line x1="12" y1="3" x2="12" y2="5"/></svg>],
-                    ["Event-Driven", "Events are central, not an afterthought.", <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={C.olive} opacity="0.15"/><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="7" y1="6" x2="7" y2="19"/><line x1="17" y1="6" x2="17" y2="19"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M2 16h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg>],
-                  ].map(([title, body, icon], i) => (
-                    <PosterCard key={i}>
-                      <div style={{ padding: "clamp(14px, 2vw, 20px)" }}>
-                        {icon}
-                        <h3 className="ff-body" style={{ fontSize: "clamp(16px, 1.5vw, 20px)", fontWeight: 700, lineHeight: 1.15, marginTop: 10 }}>{title}</h3>
-                        <p className="ff-accent" style={{ fontSize: 14, lineHeight: 1.55, color: C.body, marginTop: 6 }}>{body}</p>
-                      </div>
-                    </PosterCard>
-                  ))}
-                </div>
-              </Reveal>
+              {[
+                { title: "Seasonal Menu", body: "Warm plates that rotate with the season — crafted from local ingredients and island traditions.", delay: 0.15, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={C.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg> },
+                { title: "Community Space", body: "Built for neighbors, families, and pop-ups — a gathering place that brings the island together.", delay: 0.25, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={C.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/></svg> },
+                { title: "Event-Driven", body: "Events are central, not an afterthought — from maple fests to live music nights on the field.", delay: 0.35, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={C.olive} opacity="0.12"/><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg> },
+              ].map((p, i) => (
+                <Reveal key={i} delay={p.delay}>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: "clamp(16px, 2vw, 24px)",
+                    padding: "clamp(16px, 2vw, 22px)", marginTop: i === 0 ? 0 : 12,
+                    borderRadius: 18, border: `1.5px solid ${C.olive}18`,
+                    background: `linear-gradient(135deg, ${C.parchment}80, ${C.cream}60)`,
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.olive + "40"; e.currentTarget.style.transform = "translateX(4px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.olive + "18"; e.currentTarget.style.transform = "translateX(0)"; }}
+                  >
+                    <div style={{
+                      width: 56, height: 56, borderRadius: "50%", flexShrink: 0,
+                      border: `2px solid ${C.olive}25`,
+                      background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {p.icon}
+                    </div>
+                    <div>
+                      <h3 className="ff-body" style={{ fontSize: "clamp(17px, 1.5vw, 21px)", fontWeight: 700, lineHeight: 1.15 }}>{p.title}</h3>
+                      <p className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 15px)", lineHeight: 1.55, color: C.body, marginTop: 4 }}>{p.body}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
             </div>
           </div>
         </div>
@@ -692,7 +702,7 @@ export default function TheFaregroundsHomepage() {
                     </h2>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <a href="MENU_11x17_LUNCH.pdf" download style={{ textDecoration: "none" }}>
+                    <a href={B + "menu.pdf"} download style={{ textDecoration: "none" }}>
                       <button className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, padding: "8px 16px" }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Download PDF
@@ -846,20 +856,142 @@ export default function TheFaregroundsHomepage() {
               </div>
             </div>
           </Reveal>
-          <div className="gallery-grid">
-            <div className="gallery-item" style={{ gridColumn: "1 / 3", gridRow: "1", overflow: "hidden" }}>
-              <img src={A.wallpic_full1} alt="Nantucket Agricultural Fair — Horse racing and crowds, circa 1890s" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          {(() => {
+            const slides = [
+              { src: A.wallpic_full1, caption: "Horse racing at the Nantucket Agricultural Fair, circa 1890s", credit: "Nantucket Historical Association" },
+              { src: A.wallpic_full2, caption: "Community gathering at the Fairgrounds with barn and carriages", credit: "Nantucket Historical Association" },
+              { src: A.fairCrowd, caption: "Crowds at the Fair midway — game booths and summer sun, circa 1920s", credit: "Nantucket Historical Association" },
+            ];
+            const si = gallerySlide;
+            const goTo = (n) => setGallerySlide((n + slides.length) % slides.length);
+            return (
+              <div style={{ position: "relative", maxWidth: 900, margin: "0 auto" }}>
+                <div style={{ borderRadius: 20, overflow: "hidden", border: `2px solid rgba(122,126,46,0.2)`, position: "relative", aspectRatio: "16/9", background: C.ink }}>
+                  {slides.map((s, i) => (
+                    <img key={i} src={s.src} alt={s.caption} style={{
+                      position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+                      opacity: i === si ? 1 : 0, transition: "opacity 0.6s ease",
+                    }} />
+                  ))}
+                  {/* Prev / Next arrows */}
+                  <button onClick={() => goTo(si - 1)} aria-label="Previous" style={{
+                    position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+                    width: 40, height: 40, borderRadius: "50%", border: "none",
+                    background: "rgba(22,22,22,0.55)", color: "#fff", fontSize: 20, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)",
+                  }}>&#8249;</button>
+                  <button onClick={() => goTo(si + 1)} aria-label="Next" style={{
+                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                    width: 40, height: 40, borderRadius: "50%", border: "none",
+                    background: "rgba(22,22,22,0.55)", color: "#fff", fontSize: 20, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)",
+                  }}>&#8250;</button>
+                  {/* Dots */}
+                  <div style={{ position: "absolute", bottom: 14, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
+                    {slides.map((_, i) => (
+                      <button key={i} onClick={() => setGallerySlide(i)} aria-label={`Slide ${i+1}`} style={{
+                        width: i === si ? 24 : 8, height: 8, borderRadius: 4, border: "none",
+                        background: i === si ? "#fff" : "rgba(255,255,255,0.5)", cursor: "pointer",
+                        transition: "all 0.3s ease",
+                      }} />
+                    ))}
+                  </div>
+                </div>
+                {/* Caption below the image */}
+                <div style={{ textAlign: "center", marginTop: 14, minHeight: 48 }}>
+                  <p className="ff-accent" style={{ fontSize: "clamp(14px, 1.3vw, 17px)", color: C.ink, lineHeight: 1.5, margin: 0, transition: "opacity 0.4s" }}>
+                    {slides[si].caption}
+                  </p>
+                  <p className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.12em", color: C.oliveMid, marginTop: 4, textTransform: "uppercase" }}>
+                    {slides[si].credit}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      </section>
+
+      {/* ═══════ ORDER & RESERVE ═══════ */}
+      <section id="order" style={{ padding: "48px 0 0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 28 }}>
+              <SectionLabel>Dine With Us</SectionLabel>
+              <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
+                Reserve, Order & Review
+              </h2>
+              <p className="ff-accent" style={{ fontSize: "clamp(15px, 1.4vw, 18px)", color: C.body, maxWidth: 420, margin: "14px auto 0" }}>
+                Whether you're dining in or ordering from home — we've got you covered.
+              </p>
             </div>
-            <div className="gallery-item" style={{ gridColumn: "3 / 5", gridRow: "1", overflow: "hidden" }}>
-              <img src={A.wallpic_full2} alt="Nantucket Fairgrounds — Community gathering with barn and carriages" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            </div>
-            <div className="gallery-item" style={{ gridColumn: "1 / 2", gridRow: "2", overflow: "hidden" }}>
-              <img src={A.fairCrowd} alt="Nantucket Fair midway — crowds and game booths, circa 1920s" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            </div>
-            <div className="gallery-item" style={{ gridColumn: "2 / 5", gridRow: "2", overflow: "hidden" }}>
-              <img src={A.wallpic1} alt="Historic horse race at the Nantucket Fair" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }} />
-            </div>
-          </div>
+          </Reveal>
+
+          {(() => {
+            const o = C.olive;
+            const svc = [
+              {
+                name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: "https://www.opentable.com", btn: "RESERVE NOW", btnClass: "btn-primary",
+                icon: <svg width="28" height="28" viewBox="0 0 131 95" fill={o}><path d="M83.36 0a47.5 47.5 0 1047.46 47.5A47.48 47.48 0 0083.36 0zm0 59.37A11.87 11.87 0 1195.22 47.5a11.87 11.87 0 01-11.87 11.87zM0 47.5a11.87 11.87 0 1111.87 11.87A11.87 11.87 0 010 47.5"/></svg>
+              },
+              {
+                name: "Uber Eats", cat: "DELIVERY", desc: "Get Faregrounds delivered to your door.", href: "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                icon: <img src={A.uberEatsBrand} alt="Uber Eats" width="28" height="28" style={{ objectFit: "contain" }} />
+              },
+              {
+                name: "DoorDash", cat: "DELIVERY", desc: "Comfort food, right to your doorstep.", href: "https://www.doordash.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                icon: <svg width="28" height="28" viewBox="0 0 99.5 56.5" fill={o}><path d="M95.64,13.38A25.24,25.24,0,0,0,73.27,0H2.43A2.44,2.44,0,0,0,.72,4.16L16.15,19.68a7.26,7.26,0,0,0,5.15,2.14H71.24a6.44,6.44,0,1,1,.13,12.88H36.94a2.44,2.44,0,0,0-1.72,4.16L50.66,54.39a7.25,7.25,0,0,0,5.15,2.14H71.38c20.26,0,35.58-21.66,24.26-43.16"/></svg>
+              },
+              {
+                name: "Grubhub", cat: "PICKUP", desc: "Order for pickup or delivery.", href: "https://www.grubhub.com", btn: null, btnClass: null,
+                icon: <svg width="28" height="28" viewBox="0 0 24 20" fill="none"><path d="M23.267 20H.35A.35.35 0 010 19.632V.368A.354.354 0 01.351 0h22.931a.366.366 0 01.351.521l-3.121 9.525a.353.353 0 000 .306l3.075 9.189a.369.369 0 01-.32.459z" fill={o}/><path d="M8.806 3.475a3.748 3.748 0 00-1.05-.139 3.245 3.245 0 00-2.466.99A3.86 3.86 0 004.453 7v4.887a3.892 3.892 0 00.853 2.675 3.245 3.245 0 002.465.99c.355.003.708-.043 1.05-.14a2.898 2.898 0 001.415-.85 3.829 3.829 0 00.868-2.675V9.197a.203.203 0 00-.063-.148.196.196 0 00-.15-.053H7.969a.214.214 0 00-.213.201v1.995a.214.214 0 00.213.2h.76v.45c.02.346-.077.69-.273.974a.832.832 0 01-.7.324.817.817 0 01-.685-.324 1.565 1.565 0 01-.274-.975V7.017c-.016-.342.08-.68.274-.96a.817.817 0 01.685-.324.832.832 0 01.7.325c.193.28.29.617.274.959v.463a.17.17 0 00.076.14h2.085a.18.18 0 00.134-.044.187.187 0 00.064-.126V7c.06-.972-.251-1.93-.868-2.675a3.034 3.034 0 00-1.415-.85zM18.722 3.333h-1.955a.181.181 0 00-.166.112.237.237 0 000 .097v4.564h-2.03V3.542a.203.203 0 00-.197-.209h-1.955a.203.203 0 00-.197.209v11.74c0 .115.088.208.197.208h1.955a.203.203 0 00.196-.208v-4.725h2v4.805a.237.237 0 000 .096.165.165 0 00.167.097h1.954a.176.176 0 00.145-.056.199.199 0 00.052-.153V3.542a.205.205 0 00-.166-.209z" fill="#fff"/></svg>
+              },
+              {
+                name: "Yelp", cat: "REVIEWS", desc: "Read reviews and see photos.", href: "https://www.yelp.com", btn: null, btnClass: null,
+                icon: <svg width="28" height="28" viewBox="0 0 14 19" fill={o}><g clipPath="url(#yc)"><path d="M4.606 11.38l.801-.186a.824.824 0 00.079-.02.883.883 0 00.631-1.052l-.003-.015a.88.88 0 00-.136-.297 1.116 1.116 0 00-.327-.28 3.026 3.026 0 00-.465-.215l-.878-.32a82.459 82.459 0 00-1.484-.536c-.323-.115-.596-.215-.833-.289-.045-.014-.095-.027-.135-.041-.287-.088-.489-.125-.66-.126a.786.786 0 00-.333.06.85.85 0 00-.288.206c-.04.046-.078.093-.114.143a1.685 1.685 0 00-.168.336 4.547 4.547 0 00-.24 1.494c.004.46.016 1.05.27 1.449a.853.853 0 00.24.26c.18.124.361.14.55.154.283.02.557-.05.83-.112l2.661-.614h.002zm8.935-4.25a4.55 4.55 0 00-.87-1.24 1.725 1.725 0 00-.299-.228 1.699 1.699 0 00-.164-.078.787.787 0 00-.675.034c-.153.076-.319.198-.538.402-.03.03-.069.064-.103.096-.181.17-.383.38-.623.625-.37.374-.736.751-1.098 1.132l-.65.673a3.026 3.026 0 00-.323.397c-.082.119-.14.253-.171.395a.881.881 0 00.008.327c0 .005.002.01.003.014a.883.883 0 001.029.669.836.836 0 00.08-.016l3.462-.8c.273-.062.55-.12.795-.262.165-.095.321-.19.428-.38a.853.853 0 00.102-.34c.053-.471-.194-1.006-.393-1.42zM7.344 8.586c.25-.315.25-.785.272-1.168.075-1.282.154-2.565.216-3.847.024-.486.076-.966.047-1.455-.025-.404-.028-.868-.283-1.2C7.145.333 6.184.38 5.529.472a6.307 6.307 0 00-.602.113c-.2.048-.397.1-.59.162-.629.206-1.513.584-1.662 1.308-.085.41.116.828.271 1.202.188.452.446.86.68 1.287.62 1.125 1.251 2.243 1.88 3.363.188.334.393.757.757.93a.78.78 0 00.073.028.88.88 0 00.95-.219.786.786 0 00.058-.06zm-.301 3.431a.801.801 0 00-1.16-.156 2.077 2.077 0 00-.376.385c-.028.035-.054.082-.087.113l-.557.765c-.315.429-.627.859-.935 1.295-.201.282-.375.52-.513.731-.026.04-.053.084-.078.12-.165.254-.258.44-.306.606a.791.791 0 00-.033.342.85.85 0 00.119.338c.033.052.07.102.108.15a1.694 1.694 0 00.28.257c.384.267.805.46 1.248.608.368.122.751.195 1.139.217a1.735 1.735 0 00.38-.03c.06-.014.118-.03.177-.051a.863.863 0 00.302-.192.793.793 0 00.184-.29c.064-.16.107-.363.134-.665l.013-.142c.022-.25.032-.545.048-.891.027-.533.048-1.063.064-1.595l.036-.946a2.27 2.27 0 00-.06-.675 1.01 1.01 0 00-.127-.294zm6.289 1.478c-.116-.127-.28-.254-.54-.411-.038-.02-.082-.049-.123-.073-.216-.13-.477-.267-.781-.432a87.6 87.6 0 00-1.409-.754l-.834-.442c-.044-.013-.088-.044-.128-.064a2.078 2.078 0 00-.507-.18 1.067 1.067 0 00-.304-.013.802.802 0 00-.668.662.992.992 0 00.011.317c.041.222.14.442.243.634l.446.834c.249.47.5.939.757 1.405.167.304.305.565.434.78.025.041.053.085.074.122.157.26.284.423.412.54a.81.81 0 00.292.179.864.864 0 00.357.04c.061-.008.122-.018.182-.032a1.776 1.776 0 00.354-.14c.338-.19.65-.423.928-.694.333-.328.627-.685.856-1.093.032-.058.06-.118.083-.18.021-.057.04-.116.055-.175.014-.06.024-.12.031-.182a.86.86 0 00-.04-.355.792.792 0 00-.18-.293z"/></g><defs><clipPath id="yc"><rect width="14" height="19" fill="#fff"/></clipPath></defs></svg>
+              },
+              {
+                name: "Google Maps", cat: "REVIEWS", desc: "Reviews, directions & hours.", href: "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554", btn: null, btnClass: null,
+                icon: <svg width="28" height="28" viewBox="0 0 24 24" fill={o}><path d="M18.7 3.8C15 .1 9 .1 5.3 3.8c-3.7 3.7-3.7 9.8 0 13.5L12 24l6.7-6.8c3.7-3.6 3.7-9.7 0-13.4ZM12 12.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
+              },
+            ];
+            const big = svc.slice(0, 3);
+            const small = svc.slice(3);
+            return (<>
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 16 }}>
+                {big.map((s, i) => (
+                  <Reveal key={s.name} delay={i * 0.08}>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                      <div className="poster-card poster-card-hover" style={{ padding: "clamp(20px, 2.5vw, 32px)", textAlign: "center", height: "100%", cursor: "pointer" }}>
+                        <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${C.olive}25`, background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                          {s.icon}
+                        </div>
+                        <div className="ff-ui" style={{ fontSize: 9, letterSpacing: "0.18em", color: C.oliveMid, marginBottom: 6 }}>{s.cat}</div>
+                        <h3 className="ff-body" style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
+                        <p className="ff-accent" style={{ fontSize: 13, color: C.body, marginTop: 6, lineHeight: 1.5 }}>{s.desc}</p>
+                        {s.btn && <div style={{ marginTop: 14 }}><span className={s.btnClass} style={{ display: "inline-block", padding: "8px 20px", fontSize: 10, letterSpacing: "0.14em", borderRadius: 999 }}>{s.btn}</span></div>}
+                      </div>
+                    </a>
+                  </Reveal>
+                ))}
+              </div>
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                {small.map((s, i) => (
+                  <Reveal key={s.name} delay={(i + 3) * 0.06}>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                      <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", cursor: "pointer" }}>
+                        <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${C.olive}20`, background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                          {s.icon}
+                        </div>
+                        <h3 className="ff-body" style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
+                        <p className="ff-accent" style={{ fontSize: 12, color: C.body, marginTop: 4 }}>{s.desc}</p>
+                      </div>
+                    </a>
+                  </Reveal>
+                ))}
+              </div>
+            </>);
+          })()}
         </div>
       </section>
 
@@ -930,7 +1062,7 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Explore</SectionLabel>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-                      {["Menu", "Events", "Our Story", "Visit Us", "Catering"].map((link) => <button key={link} className="footer-link">{link}</button>)}
+                      {["Menu", "Events", "Our Story", "Order", "Visit Us", "Catering"].map((link) => <button key={link} className="footer-link">{link}</button>)}
                     </div>
                   </div>
                   <div>
