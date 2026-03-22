@@ -1,30 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// ─── Embedded Brand Assets (base64) ────────────────────────────
+// ─── Embedded Brand Assets ─────────────────────────────────────
+const B = import.meta.env.BASE_URL;
 
 const A = {
-  logo: "/images/logo.png",
-  seal: "/images/seal.png",
-  whale: "/images/whale.png",
-  maplefest: "/images/maplefest.jpeg",
-  wallpic1: "/images/wallpic1.jpeg",
-  wallpic2: "/images/wallpic2.jpeg",
-  wallpic_full1: "/images/wallpic_full1.jpeg",
-  wallpic_full2: "/images/wallpic_full2.jpeg",
-  fairCrowd: "/images/fairCrowd.jpeg",
-  nantucketMap: "/images/nantucketMap.svg",
-  ticket: "/images/ticket.jpeg",
-  logoFrame: "/images/logoFrame.svg",
-  whaleHat: "/images/whaleHat.svg",
-  whaleTailSvg: "/images/whaleTailSvg.svg",
-  swashL: "/images/swashL.png",
-  swashR: "/images/swashR.png",
-  swashL2: "/images/swashL2.png",
-  swashR2: "/images/swashR2.png",
-  truck: "/images/truck.png",
-  bracketL: "/images/bracketL.png",
-  bracketR: "/images/bracketR.png",
-  logoOrange: "/images/logoOrange.svg",
+  logo: B + "images/logo.png",
+  seal: B + "images/seal.png",
+  whale: B + "images/whale.png",
+  maplefest: B + "images/maplefest.jpeg",
+  wallpic1: B + "images/wallpic1.jpeg",
+  wallpic2: B + "images/wallpic2.jpeg",
+  wallpic_full1: B + "images/wallpic_full1.jpeg",
+  wallpic_full2: B + "images/wallpic_full2.jpeg",
+  fairCrowd: B + "images/fairCrowd.jpeg",
+  nantucketMap: B + "images/nantucketMap.svg",
+  ticket: B + "images/ticket.jpeg",
+  logoFrame: B + "images/logoFrame.svg",
+  whaleHat: B + "images/whaleHat.svg",
+  whaleTailSvg: B + "images/whaleTailSvg.svg",
+  swashL: B + "images/swashL.png",
+  swashR: B + "images/swashR.png",
+  swashL2: B + "images/swashL2.png",
+  swashR2: B + "images/swashR2.png",
+  truck: B + "images/truck.png",
+  bracketL: B + "images/bracketL.png",
+  bracketR: B + "images/bracketR.png",
+  logoOrange: B + "images/logoOrange.svg",
 };
 
 // ─── Brand Tokens ───────────────────────────────────────────────
@@ -293,10 +294,10 @@ export default function TheFaregroundsHomepage() {
   }, [activeMenu]);
 
   const css = `
-    @font-face { font-family: 'ZebrawoodFill'; src: url('/fonts/ZebrawoodFill.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('/fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('/fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('/fonts/BogueSlab-4.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'ZebrawoodFill'; src: url('${B}fonts/ZebrawoodFill.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-4.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
 
     @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap');
 
