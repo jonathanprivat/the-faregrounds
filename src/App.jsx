@@ -11,7 +11,7 @@ const A = {
   wallpic_full1: B + "images/wallpic_full1.jpeg",
   wallpic_full2: B + "images/wallpic_full2.jpeg",
   fairCrowd: B + "images/fairCrowd.jpeg",
-  nantucketMap: B + "images/nantucketMap.svg",
+  nantucketMap: B + "images/nantucketMap.png",
   ticket: B + "images/ticket.jpeg",
   logoFrame: B + "images/logoFrame.svg",
   whaleHat: B + "images/whaleHat.svg",
