@@ -283,15 +283,15 @@ export default function TheFaregroundsHomepage() {
   const isDark = colorMode === "dark" || (colorMode === "system" && systemDark);
 
   const menuData = (menuType === "dinner" ? siteData?.dinnerMenu : siteData?.lunchMenu) || siteData?.menu || MENU_DATA;
-  const menuPdfUrl = menuType === "dinner"
-    ? (siteSettings.dinner_pdf_url || "")
-    : (siteSettings.lunch_pdf_url || siteSettings.menu_pdf_url || B + "menu.pdf");
   const eventsData = (siteData?.events || EVENTS).map(e => ({
     ...e,
     date: e.date_display || e.date,
   }));
   const content = siteData?.content || {};
   const siteSettings = siteData?.settings || {};
+  const menuPdfUrl = menuType === "dinner"
+    ? (siteSettings.dinner_pdf_url || "")
+    : (siteSettings.lunch_pdf_url || siteSettings.menu_pdf_url || B + "menu.pdf");
 
   // Resolve theme: check for seasonal auto-switch, then fall back to manually active preset
   const resolveActivePreset = () => {
