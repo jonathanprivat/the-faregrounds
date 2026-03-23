@@ -361,36 +361,60 @@
             "sub": false
           }
         ],
-        "handhelds": [
+        "mains": [
+          {
+            "name": "Roadhouse Steak",
+            "price": "$26.99",
+            "desc": "Chimichurri butter. Fries or sautéed spinach.",
+            "sub": false
+          },
+          {
+            "name": "Chicken Milanese",
+            "price": "$24.99",
+            "desc": "Lemon caper beurre blanc, baby kale, tomato, parmigiano.",
+            "sub": false
+          },
+          {
+            "name": "Seared Salmon",
+            "price": "$24.99",
+            "desc": "Lemon butter, sautéed broccoli with garlic.",
+            "sub": false
+          },
+          {
+            "name": "Shawarma Bowl",
+            "price": "$20.99",
+            "desc": "Chicken thighs or cauliflower, roasted carrots, tomato, cucumber, pickled onion, crispy chickpeas, greens, quinoa, tahini drizzle.",
+            "sub": false
+          },
+          {
+            "name": "Spaghetti with Meat Sauce",
+            "price": "$21.99",
+            "desc": "Beef and pork. Traditional ragù alla bolognese.",
+            "sub": false
+          },
+          {
+            "name": "Baby Back Ribs",
+            "price": "$21.99",
+            "desc": "Mac and cheese. Coleslaw. Fries or salad.",
+            "sub": false
+          },
+          {
+            "name": "Fish and Chips",
+            "price": "$19.99",
+            "desc": "",
+            "sub": false
+          },
           {
             "name": "Cheeseburger",
             "price": "$16.99",
-            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avo +$2.",
+            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce.",
             "sub": false
           },
           {
-            "name": "Chicken Sandwich",
-            "price": "$16.99",
-            "desc": "Grilled or fried. Lettuce, tomato, onion, pickle. Fries. Choice of sauce.",
-            "sub": false
-          },
-          {
-            "name": "Fish Sandwich",
-            "price": "$16.99",
-            "desc": "Fried cod with tartar sauce. Fries.",
-            "sub": false
-          },
-          {
-            "name": "Open Faced Turkey",
-            "price": "$16.99",
-            "desc": "Turkey, stuffing, mashed potatoes, and gravy.",
-            "sub": false
-          },
-          {
-            "name": "Chicken Quesadilla",
-            "price": "$15.99",
+            "name": "Add bacon or avocado",
+            "price": "+$2.00",
             "desc": "",
-            "sub": false
+            "sub": true
           },
           {
             "name": "Sub veggie burger",
