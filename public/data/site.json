@@ -438,7 +438,10 @@
     {
       "id": 5,
       "name": "Americana",
-      "dateRange": { "start": "06-28", "end": "07-08" },
+      "dateRange": {
+        "start": "06-28",
+        "end": "07-08"
+      },
       "colors": {
         "cream": "#f0e8dd",
         "parchment": "#f5efe4",
@@ -472,7 +475,10 @@
     {
       "id": 6,
       "name": "Christmas",
-      "dateRange": { "start": "12-01", "end": "12-26" },
+      "dateRange": {
+        "start": "12-01",
+        "end": "12-26"
+      },
       "colors": {
         "cream": "#f5ede0",
         "parchment": "#faf3ea",
@@ -506,7 +512,10 @@
     {
       "id": 7,
       "name": "Halloween",
-      "dateRange": { "start": "10-15", "end": "11-01" },
+      "dateRange": {
+        "start": "10-15",
+        "end": "11-01"
+      },
       "colors": {
         "cream": "#f5e8d8",
         "parchment": "#faf0e2",
@@ -540,7 +549,10 @@
     {
       "id": 8,
       "name": "Thanksgiving",
-      "dateRange": { "start": "11-02", "end": "11-30" },
+      "dateRange": {
+        "start": "11-02",
+        "end": "11-30"
+      },
       "colors": {
         "cream": "#f2e6d0",
         "parchment": "#f7edda",
@@ -574,7 +586,10 @@
     {
       "id": 9,
       "name": "New Year's Eve",
-      "dateRange": { "start": "12-27", "end": "01-02" },
+      "dateRange": {
+        "start": "12-27",
+        "end": "01-02"
+      },
       "colors": {
         "cream": "#eee8e0",
         "parchment": "#f4ede6",
@@ -608,7 +623,10 @@
     {
       "id": 10,
       "name": "Easter",
-      "dateRange": { "start": "03-28", "end": "04-21" },
+      "dateRange": {
+        "start": "03-28",
+        "end": "04-21"
+      },
       "colors": {
         "cream": "#f0e8f0",
         "parchment": "#f5eef5",
@@ -642,7 +660,10 @@
     {
       "id": 11,
       "name": "Valentine's Day",
-      "dateRange": { "start": "02-07", "end": "02-15" },
+      "dateRange": {
+        "start": "02-07",
+        "end": "02-15"
+      },
       "colors": {
         "cream": "#f5e0e4",
         "parchment": "#fae8ec",
@@ -676,7 +697,10 @@
     {
       "id": 12,
       "name": "St. Patrick's Day",
-      "dateRange": { "start": "03-10", "end": "03-18" },
+      "dateRange": {
+        "start": "03-10",
+        "end": "03-18"
+      },
       "colors": {
         "cream": "#e8f0e0",
         "parchment": "#eff5e8",
@@ -709,7 +733,7 @@
     }
   ],
   "settings": {
-    "site_name": "The Faregrounds",
+    "site_name": "The Fairgrounds",
     "site_subtitle": "Nantucket Island",
     "phone": "(508) 555-FARE",
     "address_line1": "27 Fairgrounds Road",
@@ -734,7 +758,7 @@
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-23T19:04:44.390Z",
-  "_sha": "88ef7904d237b874f75e291f7e0d1cd997033988",
+  "exportedAt": "2026-03-23T19:25:48.051Z",
+  "_sha": "8e9dd8d58b2a28dc5f7b67f8a8d2aeb7aca876d3",
   "users": []
 }
