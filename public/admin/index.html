@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-display: swap; }
   @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-display: swap; }
@@ -421,6 +422,20 @@ function fileToBase64(file) {
   });
 }
 
+// ── PDF to JPG conversion ──
+async function pdfToJpg(pdfArrayBuffer, scale = 2) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({ data: pdfArrayBuffer }).promise;
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const ctx = canvas.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  return canvas.toDataURL('image/jpeg', 0.92).split(',')[1]; // return base64 without prefix
+}
+
 // ── Featured Event Editor ──
 function renderFeaturedEvent() {
   const container = document.getElementById('featured-event-editor');
@@ -437,35 +452,25 @@ function renderFeaturedEvent() {
       </h4>
       <div style="display:grid;grid-template-columns:${posterUrl ? '200px 1fr' : '1fr'};gap:20px;align-items:start">
         ${posterUrl ? `<div style="border-radius:10px;overflow:hidden;border:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.1)">
-          <img src="${escAttr(posterUrl)}" alt="Event poster" style="width:100%;height:auto;display:block">
+          <a href="${escAttr(pdfUrl || '#')}" target="_blank"><img src="${escAttr(posterUrl)}" alt="Event poster" style="width:100%;height:auto;display:block"></a>
         </div>` : ''}
         <div style="display:flex;flex-direction:column;gap:14px">
           <div>
-            <label class="field-label">Poster Image</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <input type="file" id="poster-file-input" accept="image/*" onchange="handlePosterUpload(this)" style="display:none">
-              <button onclick="document.getElementById('poster-file-input').click()" class="btn btn-ghost text-sm" style="white-space:nowrap">
+            <label class="field-label">Event PDF</label>
+            <p class="text-xs text-[color:var(--text-muted)] mb-2">Upload a PDF and a poster image will be generated automatically from the first page.</p>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="file" id="pdf-file-input" accept=".pdf" onchange="handlePdfUpload(this)" style="display:none">
+              <button onclick="document.getElementById('pdf-file-input').click()" class="btn btn-primary text-sm" style="white-space:nowrap">
                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:4px"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
-                ${posterUrl ? 'Replace Image' : 'Upload Image'}
+                ${pdfUrl ? 'Replace Event PDF' : 'Upload Event PDF'}
               </button>
-              <span id="poster-upload-status" class="text-xs text-[color:var(--text-muted)]">${posterUrl ? 'Current poster set' : 'No poster uploaded'}</span>
+              <span id="pdf-upload-status" class="text-xs text-[color:var(--text-muted)]">${pdfUrl ? 'PDF and poster set' : 'No PDF uploaded'}</span>
             </div>
+            ${pdfUrl ? `<div class="mt-2"><a href="${escAttr(pdfUrl)}" target="_blank" class="text-xs" style="color:var(--accent)">View current PDF</a></div>` : ''}
           </div>
           <div>
             <label class="field-label">Button Text</label>
             <input class="field-input" value="${escAttr(buttonText)}" onchange="updateSetting('event_button_text',this.value)" placeholder="e.g. RSVP for Maple Fest">
-          </div>
-          <div>
-            <label class="field-label">Event PDF</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <input type="file" id="pdf-file-input" accept=".pdf" onchange="handlePdfUpload(this)" style="display:none">
-              <button onclick="document.getElementById('pdf-file-input').click()" class="btn btn-ghost text-sm" style="white-space:nowrap">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:4px"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
-                ${pdfUrl ? 'Replace PDF' : 'Upload PDF'}
-              </button>
-              <span id="pdf-upload-status" class="text-xs text-[color:var(--text-muted)]">${pdfUrl ? 'PDF linked' : 'No PDF uploaded'}</span>
-            </div>
-            ${pdfUrl ? `<div class="mt-2"><a href="${escAttr(pdfUrl)}" target="_blank" class="text-xs" style="color:var(--accent)">View current PDF</a></div>` : ''}
           </div>
         </div>
       </div>
@@ -473,45 +478,37 @@ function renderFeaturedEvent() {
   `;
 }
 
-async function handlePosterUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const status = document.getElementById('poster-upload-status');
-  status.textContent = 'Uploading...';
-  try {
-    const ext = file.name.split('.').pop().toLowerCase();
-    const path = 'public/images/event-poster.' + ext;
-    const b64 = await fileToBase64(file);
-    await uploadFileToGitHub(path, b64, 'Update event poster via CMS');
-    const url = '/the-faregrounds/images/event-poster.' + ext + '?v=' + Date.now();
-    DATA.settings.event_poster_url = url;
-    markDirty();
-    status.textContent = 'Uploaded! Publish to go live.';
-    renderFeaturedEvent();
-  } catch (err) {
-    status.textContent = 'Upload failed: ' + err.message;
-    toast('Poster upload failed: ' + err.message, '#dc2626');
-  }
-  input.value = '';
-}
-
 async function handlePdfUpload(input) {
   const file = input.files[0];
   if (!file) return;
   const status = document.getElementById('pdf-upload-status');
-  status.textContent = 'Uploading...';
+  status.textContent = 'Processing PDF...';
   try {
-    const path = 'public/data/event.pdf';
-    const b64 = await fileToBase64(file);
-    await uploadFileToGitHub(path, b64, 'Update event PDF via CMS');
-    const url = '/the-faregrounds/data/event.pdf?v=' + Date.now();
-    DATA.settings.event_pdf_url = url;
+    // Read file as both base64 (for GitHub upload) and ArrayBuffer (for pdf.js)
+    const pdfB64 = await fileToBase64(file);
+    const arrayBuffer = await file.arrayBuffer();
+
+    // Generate JPG from first page
+    status.textContent = 'Generating poster image...';
+    const jpgB64 = await pdfToJpg(arrayBuffer);
+
+    // Upload both to GitHub
+    status.textContent = 'Uploading PDF...';
+    await uploadFileToGitHub('public/data/event.pdf', pdfB64, 'Update event PDF via CMS');
+
+    status.textContent = 'Uploading poster image...';
+    await uploadFileToGitHub('public/images/event-poster.jpg', jpgB64, 'Update event poster (auto-generated from PDF)');
+
+    const v = Date.now();
+    DATA.settings.event_pdf_url = '/the-faregrounds/data/event.pdf?v=' + v;
+    DATA.settings.event_poster_url = '/the-faregrounds/images/event-poster.jpg?v=' + v;
     markDirty();
-    status.textContent = 'Uploaded! Publish to go live.';
+    status.textContent = 'Done! Publish to go live.';
+    toast('PDF uploaded and poster generated!', '#16a34a');
     renderFeaturedEvent();
   } catch (err) {
-    status.textContent = 'Upload failed: ' + err.message;
-    toast('PDF upload failed: ' + err.message, '#dc2626');
+    status.textContent = 'Failed: ' + err.message;
+    toast('Upload failed: ' + err.message, '#dc2626');
   }
   input.value = '';
 }
@@ -953,8 +950,47 @@ function renderTheme() {
           <div style="flex:1;background:${preset.darkColors.ink}"></div>
         </div>
       </div>` : ''}
+      ${preset.dateRange ? `
+      <div class="mt-3 pt-3" style="border-top:1px solid var(--border)" onclick="event.stopPropagation()">
+        <div class="text-xs font-medium text-[color:var(--text-faint)] mb-2">Auto-switch dates</div>
+        <div class="flex gap-2 items-center">
+          <input type="text" class="field-input text-xs" style="padding:4px 8px;width:70px;text-align:center" value="${preset.dateRange.start}" onchange="updateDateRange(${idx},'start',this.value)" placeholder="MM-DD">
+          <span class="text-xs text-[color:var(--text-muted)]">to</span>
+          <input type="text" class="field-input text-xs" style="padding:4px 8px;width:70px;text-align:center" value="${preset.dateRange.end}" onchange="updateDateRange(${idx},'end',this.value)" placeholder="MM-DD">
+        </div>
+      </div>` : ''}
     </div>
   `).join('');
+
+  // Auto-theme toggle
+  const autoEnabled = (DATA.settings?.auto_theme || 'true') !== 'false';
+  container.insertAdjacentHTML('beforebegin', document.getElementById('auto-theme-toggle') ? '' : `
+    <div id="auto-theme-toggle" class="card mb-4" style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="font-bold text-sm text-[color:var(--text)]">Automatic Holiday Themes</div>
+        <div class="text-xs text-[color:var(--text-muted)]">Themes with date ranges will auto-activate on those dates</div>
+      </div>
+      <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
+        <input type="checkbox" ${autoEnabled ? 'checked' : ''} onchange="toggleAutoTheme(this.checked)" style="opacity:0;width:0;height:0">
+        <span style="position:absolute;inset:0;background:${autoEnabled ? 'var(--accent)' : 'var(--border)'};border-radius:12px;transition:0.3s"></span>
+        <span style="position:absolute;top:2px;left:${autoEnabled ? '22px' : '2px'};width:20px;height:20px;background:white;border-radius:50%;transition:0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2)"></span>
+      </label>
+    </div>
+  `);
+}
+
+function updateDateRange(idx, field, value) {
+  if (!DATA.themePresets[idx].dateRange) DATA.themePresets[idx].dateRange = {};
+  DATA.themePresets[idx].dateRange[field] = value;
+  markDirty();
+}
+
+function toggleAutoTheme(enabled) {
+  if (!DATA.settings) DATA.settings = {};
+  DATA.settings.auto_theme = enabled ? 'true' : 'false';
+  markDirty();
+  document.getElementById('auto-theme-toggle')?.remove();
+  renderTheme();
 }
 
 function activateTheme(idx) {
@@ -976,7 +1012,7 @@ function renderSettings() {
     'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
     'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url', 'menu_pdf_url'],
     'Featured Event': ['event_poster_url', 'event_button_text', 'event_pdf_url'],
-    'Social Media': ['instagram_url', 'facebook_url', 'twitter_url'],
+    'Social Media': ['instagram_url', 'facebook_url', 'twitter_url', 'tiktok_url'],
   };
   container.innerHTML = Object.entries(groups).map(([group, keys]) => `
     <div class="card mb-4">

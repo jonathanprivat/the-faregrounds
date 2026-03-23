@@ -438,6 +438,7 @@
     {
       "id": 5,
       "name": "Americana",
+      "dateRange": { "start": "06-28", "end": "07-08" },
       "colors": {
         "cream": "#f0e8dd",
         "parchment": "#f5efe4",
@@ -471,6 +472,7 @@
     {
       "id": 6,
       "name": "Christmas",
+      "dateRange": { "start": "12-01", "end": "12-26" },
       "colors": {
         "cream": "#f5ede0",
         "parchment": "#faf3ea",
@@ -504,6 +506,7 @@
     {
       "id": 7,
       "name": "Halloween",
+      "dateRange": { "start": "10-15", "end": "11-01" },
       "colors": {
         "cream": "#f5e8d8",
         "parchment": "#faf0e2",
@@ -537,6 +540,7 @@
     {
       "id": 8,
       "name": "Thanksgiving",
+      "dateRange": { "start": "11-02", "end": "11-30" },
       "colors": {
         "cream": "#f2e6d0",
         "parchment": "#f7edda",
@@ -570,6 +574,7 @@
     {
       "id": 9,
       "name": "New Year's Eve",
+      "dateRange": { "start": "12-27", "end": "01-02" },
       "colors": {
         "cream": "#eee8e0",
         "parchment": "#f4ede6",
@@ -603,6 +608,7 @@
     {
       "id": 10,
       "name": "Easter",
+      "dateRange": { "start": "03-28", "end": "04-21" },
       "colors": {
         "cream": "#f0e8f0",
         "parchment": "#f5eef5",
@@ -636,6 +642,7 @@
     {
       "id": 11,
       "name": "Valentine's Day",
+      "dateRange": { "start": "02-07", "end": "02-15" },
       "colors": {
         "cream": "#f5e0e4",
         "parchment": "#fae8ec",
@@ -669,6 +676,7 @@
     {
       "id": 12,
       "name": "St. Patrick's Day",
+      "dateRange": { "start": "03-10", "end": "03-18" },
       "colors": {
         "cream": "#e8f0e0",
         "parchment": "#eff5e8",
@@ -718,7 +726,9 @@
     "instagram_url": "#",
     "facebook_url": "#",
     "twitter_url": "#",
+    "tiktok_url": "#",
     "menu_pdf_url": "/the-faregrounds/menu.pdf",
+    "auto_theme": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272"

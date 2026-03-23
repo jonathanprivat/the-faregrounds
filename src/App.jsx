@@ -286,8 +286,29 @@ export default function TheFaregroundsHomepage() {
   const content = siteData?.content || {};
   const siteSettings = siteData?.settings || {};
 
-  // Resolve theme colors: pick light or dark based on mode
-  const activePreset = (siteData?.themePresets || []).find(p => p.active);
+  // Resolve theme: check for seasonal auto-switch, then fall back to manually active preset
+  const resolveActivePreset = () => {
+    const presets = siteData?.themePresets || [];
+    const autoEnabled = siteData?.settings?.auto_theme !== "false";
+    if (autoEnabled) {
+      const now = new Date();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const today = mm + "-" + dd;
+      for (const p of presets) {
+        if (!p.dateRange) continue;
+        const { start, end } = p.dateRange;
+        if (!start || !end) continue;
+        // Handle ranges that cross year boundary (e.g. Dec 27 - Jan 2)
+        const inRange = start <= end
+          ? (today >= start && today <= end)
+          : (today >= start || today <= end);
+        if (inRange) return p;
+      }
+    }
+    return presets.find(p => p.active);
+  };
+  const activePreset = resolveActivePreset();
   const themeColors = activePreset
     ? (isDark && activePreset.darkColors ? activePreset.darkColors : activePreset.colors)
     : (siteData?.theme || null);
@@ -1200,7 +1221,7 @@ export default function TheFaregroundsHomepage() {
                         onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
                       >{siteSettings.address_line1 || "27 Fairgrounds Road"}</a>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
-                      <a href={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[^\d+]/g, "")}`} className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2, textDecoration: "none", display: "block" }}>{siteSettings.phone || "(508) 555-FARE"}</a>
+                      <a href={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[()\s-]/g, "")}`} className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2, textDecoration: "none", display: "block" }}>{siteSettings.phone || "(508) 555-FARE"}</a>
                     </div>
                   </div>
                 </div>
