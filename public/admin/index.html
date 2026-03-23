@@ -833,7 +833,59 @@ function renderMenuPdfUpload() {
       </div>
       ${pdfUrl ? `<div class="mt-2"><a href="${escAttr(pdfUrl)}" target="_blank" class="text-xs" style="color:var(--accent)">View current PDF</a></div>` : ''}
     </div>
+    <div class="card mb-4">
+      <h4 class="font-bold text-[color:var(--text)] mb-1" style="font-size:14px">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:6px;opacity:0.7"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        Auto-Display Time
+      </h4>
+      <p class="text-xs text-[color:var(--text-muted)] mb-3">Set the hours when this menu is shown by default. Leave blank for no auto-display.</p>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <label class="text-xs text-[color:var(--text-secondary)]" style="display:flex;align-items:center;gap:6px">
+          From
+          <select id="auto-time-start" onchange="updateAutoTime()" class="field-input text-sm" style="width:auto;padding:6px 10px">
+            <option value="">None</option>
+            ${Array.from({length:24}, (_,h) => '<option value="'+h+'" '+(menu.autoTime && menu.autoTime.start === h ? 'selected' : '')+'>'+ formatHour(h) +'</option>').join('')}
+          </select>
+        </label>
+        <label class="text-xs text-[color:var(--text-secondary)]" style="display:flex;align-items:center;gap:6px">
+          To
+          <select id="auto-time-end" onchange="updateAutoTime()" class="field-input text-sm" style="width:auto;padding:6px 10px">
+            <option value="">None</option>
+            ${Array.from({length:24}, (_,h) => '<option value="'+h+'" '+(menu.autoTime && menu.autoTime.end === h ? 'selected' : '')+'>'+ formatHour(h) +'</option>').join('')}
+          </select>
+        </label>
+        ${menu.autoTime ? '<button onclick="clearAutoTime()" class="btn btn-ghost text-xs">Clear</button>' : ''}
+      </div>
+    </div>
   `;
+}
+
+function formatHour(h) {
+  if (h === 0) return '12:00 AM';
+  if (h < 12) return h + ':00 AM';
+  if (h === 12) return '12:00 PM';
+  return (h - 12) + ':00 PM';
+}
+
+function updateAutoTime() {
+  const menu = getActiveMenu();
+  const startEl = document.getElementById('auto-time-start');
+  const endEl = document.getElementById('auto-time-end');
+  const start = startEl.value;
+  const end = endEl.value;
+  if (start === '' || end === '') {
+    delete menu.autoTime;
+  } else {
+    menu.autoTime = { start: parseInt(start), end: parseInt(end) };
+  }
+  markDirty();
+}
+
+function clearAutoTime() {
+  const menu = getActiveMenu();
+  delete menu.autoTime;
+  markDirty();
+  renderMenuPdfUpload();
 }
 
 async function handleMenuPdfUpload(input) {

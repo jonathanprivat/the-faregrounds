@@ -407,20 +407,8 @@
           {
             "name": "Cheeseburger",
             "price": "$16.99",
-            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce.",
+            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avocado +$2. Sub veggie burger +$2.",
             "sub": false
-          },
-          {
-            "name": "Add bacon or avocado",
-            "price": "+$2.00",
-            "desc": "",
-            "sub": true
-          },
-          {
-            "name": "Sub veggie burger",
-            "price": "+$2.00",
-            "desc": "",
-            "sub": true
           }
         ],
         "fries": [
