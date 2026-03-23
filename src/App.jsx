@@ -248,10 +248,7 @@ export default function TheFaregroundsHomepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("appetizers");
   const [menuFade, setMenuFade] = useState(false);
-  const [menuType, setMenuType] = useState(() => {
-    const hour = new Date().getHours();
-    return hour >= 15 ? "dinner" : "lunch";
-  });
+  const [menuType, setMenuType] = useState(null); // resolved after data loads
   const [email, setEmail] = useState("");
   const [activeSection, setActiveSection] = useState("");
   const [gallerySlide, setGallerySlide] = useState(0);
@@ -282,16 +279,24 @@ export default function TheFaregroundsHomepage() {
 
   const isDark = colorMode === "dark" || (colorMode === "system" && systemDark);
 
-  const menuData = (menuType === "dinner" ? siteData?.dinnerMenu : siteData?.lunchMenu) || siteData?.menu || MENU_DATA;
+  // Flexible menus system
+  const allMenus = siteData?.menus || [];
+  const resolveMenuType = () => {
+    if (allMenus.length === 0) return "lunch";
+    const hour = new Date().getHours();
+    const auto = allMenus.find(m => m.autoTime && hour >= m.autoTime.start && hour < m.autoTime.end);
+    return auto ? auto.id : allMenus[0].id;
+  };
+  const currentMenuType = menuType || resolveMenuType();
+  const currentMenu = allMenus.find(m => m.id === currentMenuType) || allMenus[0];
+  const menuData = currentMenu?.items || siteData?.lunchMenu || siteData?.menu || MENU_DATA;
+  const menuPdfUrl = currentMenu?.pdfUrl || "";
   const eventsData = (siteData?.events || EVENTS).map(e => ({
     ...e,
     date: e.date_display || e.date,
   }));
   const content = siteData?.content || {};
   const siteSettings = siteData?.settings || {};
-  const menuPdfUrl = menuType === "dinner"
-    ? (siteSettings.dinner_pdf_url || "")
-    : (siteSettings.lunch_pdf_url || siteSettings.menu_pdf_url || B + "menu.pdf");
 
   // Resolve theme: check for seasonal auto-switch, then fall back to manually active preset
   const resolveActivePreset = () => {
@@ -395,16 +400,16 @@ export default function TheFaregroundsHomepage() {
   }, [activeMenu]);
 
   const switchMenuType = useCallback((type) => {
-    if (type === menuType) return;
+    if (type === currentMenuType) return;
     setMenuFade(true);
     setTimeout(() => {
       setMenuType(type);
-      const newData = type === "dinner" ? siteData?.dinnerMenu : siteData?.lunchMenu;
-      const firstCat = newData ? Object.keys(newData)[0] : "appetizers";
-      setActiveMenu(firstCat);
+      const target = allMenus.find(m => m.id === type);
+      const firstCat = target?.items ? Object.keys(target.items)[0] : "appetizers";
+      setActiveMenu(firstCat || "appetizers");
       setMenuFade(false);
     }, 200);
-  }, [menuType, siteData]);
+  }, [currentMenuType, allMenus]);
 
   const css = `
     @font-face { font-family: 'ZebrawoodFill'; src: url('${B}fonts/ZebrawoodFill.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
@@ -730,7 +735,7 @@ export default function TheFaregroundsHomepage() {
 
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
                     <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>View Menu</button>
-                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download {menuType === "dinner" ? "Dinner" : "Lunch"} Menu (PDF)</a>}
+                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download {currentMenu?.label || "Lunch"} Menu (PDF)</a>}
                     <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>Upcoming Events</button>
                   </div>
                 </div>
@@ -829,26 +834,21 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Full Menu</SectionLabel>
                     <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
-                      {menuType === "dinner" ? "Dinner" : (content?.hero?.menu_title || "Lunch")}
+                      {currentMenu?.label || content?.hero?.menu_title || "Lunch"}
                     </h2>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    {/* Lunch / Dinner toggle */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                    {/* Menu type toggle */}
                     <div style={{ display: "flex", background: colors.cream, borderRadius: 999, padding: 3, gap: 2, border: `1.5px solid ${colors.olive}20` }}>
-                      <button onClick={() => switchMenuType("lunch")} style={{
-                        padding: "6px 16px", borderRadius: 999, fontSize: 11, fontWeight: 700,
-                        fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
-                        background: menuType === "lunch" ? colors.olive : "transparent",
-                        color: menuType === "lunch" ? colors.warmWhite : colors.body,
-                        border: "none", cursor: "pointer", transition: "all 0.25s ease",
-                      }}>Lunch</button>
-                      <button onClick={() => switchMenuType("dinner")} style={{
-                        padding: "6px 16px", borderRadius: 999, fontSize: 11, fontWeight: 700,
-                        fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
-                        background: menuType === "dinner" ? colors.olive : "transparent",
-                        color: menuType === "dinner" ? colors.warmWhite : colors.body,
-                        border: "none", cursor: "pointer", transition: "all 0.25s ease",
-                      }}>Dinner</button>
+                      {allMenus.map(m => (
+                        <button key={m.id} onClick={() => switchMenuType(m.id)} style={{
+                          padding: "6px 14px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+                          fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
+                          background: currentMenuType === m.id ? colors.olive : "transparent",
+                          color: currentMenuType === m.id ? colors.warmWhite : colors.body,
+                          border: "none", cursor: "pointer", transition: "all 0.25s ease",
+                        }}>{m.label}</button>
+                      ))}
                     </div>
                     {menuPdfUrl && (
                       <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
@@ -862,6 +862,7 @@ export default function TheFaregroundsHomepage() {
                   </div>
                 </div>
 
+                {Object.keys(menuData).length > 0 ? (<>
                 {/* Category tabs */}
                 <div className="scrollbar-hide" style={{ display: "flex", gap: 6, marginTop: 24, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
                   {Object.keys(menuData).map((key) => (
@@ -926,6 +927,23 @@ export default function TheFaregroundsHomepage() {
                     })}
                   </div>
                 </div>
+                </>) : (
+                  /* PDF-only menu (no items added yet) */
+                  <div style={{ textAlign: "center", padding: "40px 20px", opacity: menuFade ? 0 : 1, transition: "opacity 0.2s" }}>
+                    <Divider compact />
+                    <p className="ff-accent" style={{ fontSize: 17, color: colors.body, marginBottom: 20 }}>
+                      View our {currentMenu?.label} menu by downloading the PDF.
+                    </p>
+                    {menuPdfUrl && (
+                      <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
+                        <button className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          Download {currentMenu?.label} Menu (PDF)
+                        </button>
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </PosterCard>
           </Reveal>

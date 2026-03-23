@@ -266,13 +266,13 @@ tailwind.config = {
           <h3 class="text-lg font-bold text-[color:var(--text)]">Menu Editor</h3>
           <p class="text-sm text-[color:var(--text-muted)]">Add, edit, or remove menu items by category</p>
         </div>
-        <button onclick="addMenuCategory()" class="btn btn-primary text-sm">+ Add Category</button>
+        <div class="flex gap-2">
+          <button onclick="addMenuCategory()" class="btn btn-ghost text-sm">+ Add Category</button>
+          <button onclick="addNewMenuType()" class="btn btn-primary text-sm">+ Add Menu</button>
+        </div>
       </div>
-      <!-- Lunch / Dinner Tabs -->
-      <div style="display:flex;gap:4px;margin-bottom:16px;background:var(--card-bg);border-radius:12px;padding:4px;border:1px solid var(--border)">
-        <button onclick="switchMenuTab('lunch')" id="menu-tab-lunch" class="btn btn-primary text-sm" style="flex:1;border-radius:8px;padding:10px;font-weight:700">Lunch Menu</button>
-        <button onclick="switchMenuTab('dinner')" id="menu-tab-dinner" class="btn btn-ghost text-sm" style="flex:1;border-radius:8px;padding:10px;font-weight:700">Dinner Menu</button>
-      </div>
+      <!-- Dynamic Menu Tabs -->
+      <div id="menu-tabs" style="display:flex;gap:4px;margin-bottom:16px;background:var(--card-bg);border-radius:12px;padding:4px;border:1px solid var(--border)"></div>
       <div id="menu-pdf-upload"></div>
       <div id="menu-editor"></div>
     </div>
@@ -378,14 +378,15 @@ async function loadSiteData() {
   const file = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
   DATA = JSON.parse(b64ToUtf8(file.content));
   DATA._sha = file.sha;
-  // Migrate old single menu to lunch/dinner structure
-  if (DATA.menu && !DATA.lunchMenu) {
-    DATA.lunchMenu = DATA.menu;
-    DATA.dinnerMenu = JSON.parse(JSON.stringify(DATA.menu));
-    delete DATA.menu;
+  // Migrate old structures to menus array
+  if (!DATA.menus) {
+    const items = DATA.lunchMenu || DATA.menu || {};
+    DATA.menus = [
+      { id: 'lunch', label: 'Lunch', items, pdfUrl: '', autoTime: { start: 0, end: 15 } },
+      { id: 'dinner', label: 'Dinner', items: DATA.dinnerMenu || JSON.parse(JSON.stringify(items)), pdfUrl: '', autoTime: { start: 15, end: 24 } },
+    ];
+    delete DATA.menu; delete DATA.lunchMenu; delete DATA.dinnerMenu;
   }
-  if (!DATA.lunchMenu) DATA.lunchMenu = {};
-  if (!DATA.dinnerMenu) DATA.dinnerMenu = {};
   return DATA;
 }
 
@@ -721,6 +722,7 @@ function toast(msg, bg = '#4e5420') {
 // ── Render All ──
 function renderAll() {
   renderDashboard();
+  renderMenuTabs();
   renderMenu();
   renderEvents();
   renderFeaturedEvent();
@@ -732,12 +734,16 @@ function renderAll() {
 
 // ── Dashboard ──
 function renderDashboard() {
-  const lunchCats = Object.keys(DATA.lunchMenu || {});
-  const dinnerCats = Object.keys(DATA.dinnerMenu || {});
-  const lunchItems = lunchCats.reduce((sum, k) => sum + (DATA.lunchMenu[k] || []).length, 0);
-  const dinnerItems = dinnerCats.reduce((sum, k) => sum + (DATA.dinnerMenu[k] || []).length, 0);
-  document.getElementById('stat-items').textContent = lunchItems + dinnerItems;
-  document.getElementById('stat-categories').textContent = lunchCats.length + ' lunch, ' + dinnerCats.length + ' dinner';
+  const menus = DATA.menus || [];
+  let totalItems = 0, catParts = [];
+  menus.forEach(m => {
+    const cats = Object.keys(m.items || {});
+    const items = cats.reduce((sum, k) => sum + (m.items[k] || []).length, 0);
+    totalItems += items;
+    if (items > 0) catParts.push(items + ' ' + m.label.toLowerCase());
+  });
+  document.getElementById('stat-items').textContent = totalItems;
+  document.getElementById('stat-categories').textContent = menus.length + ' menus';
   document.getElementById('stat-events').textContent = DATA.events.length;
   document.getElementById('stat-featured').textContent = DATA.events.filter(e => e.featured).length + ' featured';
   const activePreset = (DATA.themePresets || []).find(t => t.active);
@@ -746,39 +752,77 @@ function renderDashboard() {
 }
 
 // ── Menu Editor ──
-let activeMenuTab = 'lunch';
+let activeMenuIdx = 0;
 
-function getMenuDataKey() {
-  return activeMenuTab === 'lunch' ? 'lunchMenu' : 'dinnerMenu';
+function getActiveMenu() {
+  if (!DATA.menus || !DATA.menus[activeMenuIdx]) return { id: 'lunch', label: 'Lunch', items: {}, pdfUrl: '' };
+  return DATA.menus[activeMenuIdx];
 }
 
-function getActiveMenuData() {
-  const key = getMenuDataKey();
-  if (!DATA[key]) DATA[key] = {};
-  return DATA[key];
+function renderMenuTabs() {
+  const container = document.getElementById('menu-tabs');
+  container.innerHTML = (DATA.menus || []).map((m, i) => `
+    <button onclick="switchMenuTab(${i})" class="btn ${i === activeMenuIdx ? 'btn-primary' : 'btn-ghost'} text-sm" style="flex:1;border-radius:8px;padding:10px;font-weight:700">${escHtml(m.label)} Menu</button>
+  `).join('');
 }
 
-function switchMenuTab(tab) {
-  activeMenuTab = tab;
-  document.getElementById('menu-tab-lunch').className = tab === 'lunch' ? 'btn btn-primary text-sm' : 'btn btn-ghost text-sm';
-  document.getElementById('menu-tab-dinner').className = tab === 'dinner' ? 'btn btn-primary text-sm' : 'btn btn-ghost text-sm';
-  ['menu-tab-lunch','menu-tab-dinner'].forEach(id => { document.getElementById(id).style.flex = '1'; document.getElementById(id).style.borderRadius = '8px'; document.getElementById(id).style.padding = '10px'; document.getElementById(id).style.fontWeight = '700'; });
+function switchMenuTab(idx) {
+  activeMenuIdx = idx;
+  renderMenuTabs();
   renderMenu();
-  renderMenuPdfUpload();
+}
+
+function addNewMenuType() {
+  const name = prompt('Menu name (e.g. Brunch, Kids):');
+  if (!name) return;
+  const id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  DATA.menus.push({ id, label: name, items: {}, pdfUrl: '' });
+  markDirty();
+  activeMenuIdx = DATA.menus.length - 1;
+  renderMenuTabs();
+  renderMenu();
+  renderDashboard();
+}
+
+function deleteMenuType() {
+  const menu = getActiveMenu();
+  if (!confirm('Delete the entire "' + menu.label + '" menu? This cannot be undone.')) return;
+  DATA.menus.splice(activeMenuIdx, 1);
+  activeMenuIdx = Math.max(0, activeMenuIdx - 1);
+  markDirty();
+  renderMenuTabs();
+  renderMenu();
+  renderDashboard();
+}
+
+function renameMenuType() {
+  const menu = getActiveMenu();
+  const newName = prompt('New menu name:', menu.label);
+  if (!newName) return;
+  menu.label = newName;
+  menu.id = newName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  markDirty();
+  renderMenuTabs();
 }
 
 function renderMenuPdfUpload() {
   const container = document.getElementById('menu-pdf-upload');
-  const pdfKey = activeMenuTab === 'lunch' ? 'lunch_pdf_url' : 'dinner_pdf_url';
-  const pdfUrl = (DATA.settings || {})[pdfKey] || '';
-  const label = activeMenuTab === 'lunch' ? 'Lunch' : 'Dinner';
+  const menu = getActiveMenu();
+  const pdfUrl = menu.pdfUrl || '';
+  const label = menu.label;
   container.innerHTML = `
     <div class="card mb-4">
-      <h4 class="font-bold text-[color:var(--text)] mb-3" style="font-size:14px">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:6px;opacity:0.7"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
-        ${label} Menu PDF
-      </h4>
-      <p class="text-xs text-[color:var(--text-muted)] mb-3">Upload a PDF for the ${label.toLowerCase()} menu. A download link will appear automatically on the frontend.</p>
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="font-bold text-[color:var(--text)]" style="font-size:14px">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:6px;opacity:0.7"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
+          ${escHtml(label)} Menu PDF
+        </h4>
+        <div class="flex gap-2">
+          <button onclick="renameMenuType()" class="btn btn-ghost text-xs">Rename</button>
+          ${DATA.menus.length > 1 ? '<button onclick="deleteMenuType()" class="btn btn-danger text-xs">Delete Menu</button>' : ''}
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--text-muted)] mb-3">Upload a PDF for the ${escHtml(label.toLowerCase())} menu. A download link will appear automatically on the frontend.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <input type="file" id="menu-pdf-input" accept=".pdf" onchange="handleMenuPdfUpload(this)" style="display:none">
         <button onclick="document.getElementById('menu-pdf-input').click()" class="btn btn-primary text-sm" style="white-space:nowrap">
@@ -796,18 +840,16 @@ async function handleMenuPdfUpload(input) {
   const file = input.files[0];
   if (!file) return;
   const status = document.getElementById('menu-pdf-status');
-  const pdfKey = activeMenuTab === 'lunch' ? 'lunch_pdf_url' : 'dinner_pdf_url';
-  const fileName = activeMenuTab === 'lunch' ? 'lunch-menu.pdf' : 'dinner-menu.pdf';
-  const label = activeMenuTab === 'lunch' ? 'Lunch' : 'Dinner';
+  const menu = getActiveMenu();
+  const fileName = menu.id + '-menu.pdf';
   status.textContent = 'Uploading PDF...';
   try {
     const pdfB64 = await fileToBase64(file);
-    await uploadFileToGitHub('public/data/' + fileName, pdfB64, 'Update ' + label.toLowerCase() + ' menu PDF via CMS');
-    const v = Date.now();
-    DATA.settings[pdfKey] = '/the-faregrounds/data/' + fileName + '?v=' + v;
+    await uploadFileToGitHub('public/data/' + fileName, pdfB64, 'Update ' + menu.label.toLowerCase() + ' menu PDF via CMS');
+    menu.pdfUrl = '/the-faregrounds/data/' + fileName + '?v=' + Date.now();
     markDirty();
     status.textContent = 'Done! Publish to go live.';
-    toast(label + ' menu PDF uploaded!', '#16a34a');
+    toast(menu.label + ' menu PDF uploaded!', '#16a34a');
     renderMenuPdfUpload();
   } catch (err) {
     status.textContent = 'Failed: ' + err.message;
@@ -817,7 +859,8 @@ async function handleMenuPdfUpload(input) {
 }
 
 function renderMenu() {
-  const menuData = getActiveMenuData();
+  const menu = getActiveMenu();
+  const menuData = menu.items || {};
   const container = document.getElementById('menu-editor');
   const cats = Object.keys(menuData);
   container.innerHTML = cats.map(cat => `
@@ -859,20 +902,20 @@ function renderMenu() {
 
 function updateMenuItem(cat, idx, field, value) {
   if (field === 'sub') value = !!value;
-  getActiveMenuData()[cat][idx][field] = value;
+  getActiveMenu().items[cat][idx][field] = value;
   markDirty();
 }
 
 function addMenuItem(cat) {
-  getActiveMenuData()[cat].push({ name: 'New Item', price: '$0.00', desc: '', sub: false });
+  getActiveMenu().items[cat].push({ name: 'New Item', price: '$0.00', desc: '', sub: false });
   markDirty();
   renderMenu();
 }
 
 function deleteMenuItem(cat, idx) {
-  const menuData = getActiveMenuData();
-  if (!confirm(`Delete "${menuData[cat][idx].name}"?`)) return;
-  menuData[cat].splice(idx, 1);
+  const items = getActiveMenu().items;
+  if (!confirm('Delete "' + items[cat][idx].name + '"?')) return;
+  items[cat].splice(idx, 1);
   markDirty();
   renderMenu();
 }
@@ -880,7 +923,9 @@ function deleteMenuItem(cat, idx) {
 function addMenuCategory() {
   const name = prompt('Category name:');
   if (!name) return;
-  getActiveMenuData()[name.toLowerCase()] = [];
+  const menu = getActiveMenu();
+  if (!menu.items) menu.items = {};
+  menu.items[name.toLowerCase()] = [];
   markDirty();
   renderMenu();
 }
@@ -888,16 +933,16 @@ function addMenuCategory() {
 function renameCategory(oldName) {
   const newName = prompt('New category name:', oldName);
   if (!newName || newName.toLowerCase() === oldName) return;
-  const menuData = getActiveMenuData();
-  menuData[newName.toLowerCase()] = menuData[oldName];
-  delete menuData[oldName];
+  const items = getActiveMenu().items;
+  items[newName.toLowerCase()] = items[oldName];
+  delete items[oldName];
   markDirty();
   renderMenu();
 }
 
 function deleteCategory(cat) {
-  if (!confirm(`Delete entire "${cat}" category and all its items?`)) return;
-  delete getActiveMenuData()[cat];
+  if (!confirm('Delete entire "' + cat + '" category and all its items?')) return;
+  delete getActiveMenu().items[cat];
   markDirty();
   renderMenu();
   renderDashboard();
