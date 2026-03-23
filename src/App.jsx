@@ -1163,13 +1163,11 @@ export default function TheFaregroundsHomepage() {
                         borderRadius: 16, border: `2px solid ${colors.olive}40`,
                         overflow: "hidden", marginBottom: 12,
                       }}>
-                        <iframe
-                          src="https://embed.waze.com/iframe?zoom=11&lat=41.265267&lon=-70.087760&ct=livemap"
-                          width="100%" height="200"
-                          style={{ display: "block", border: "none" }}
-                          allowFullScreen
+                        <img
+                          src={A.nantucketMap}
+                          alt="Map of Nantucket Island"
+                          style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
                           loading="lazy"
-                          title="Waze map of Nantucket Island"
                         />
                       </div>
                       <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: colors.olive }}>{siteSettings.address_line1 || "27 Fairgrounds Road"}</div>

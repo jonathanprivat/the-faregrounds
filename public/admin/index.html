@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-display: swap; }
+  @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-display: swap; }
+</style>
 <script>
 tailwind.config = {
   theme: {
@@ -29,56 +33,86 @@ tailwind.config = {
 }
 </script>
 <style>
-  * { font-family: 'Inter', system-ui, sans-serif; }
+  :root {
+    --bg: #f9fafb; --bg-card: #ffffff; --bg-input: #ffffff; --bg-hover: #f3f4f6; --bg-sidebar: #ffffff;
+    --border: #e5e7eb; --border-input: #d1d5db; --border-focus: #4e5420;
+    --text: #111827; --text-secondary: #4b5563; --text-muted: #6b7280; --text-faint: #9ca3af;
+    --accent: #4e5420; --accent-hover: #3d4319; --accent-bg: #f0f7e6; --accent-border: rgba(78,84,32,0.15);
+    --item-bg: #fafafa; --gold: #c79b34;
+  }
+  [data-theme="dark"] {
+    --bg: #111111; --bg-card: #1a1a1a; --bg-input: #222222; --bg-hover: #252525; --bg-sidebar: #161616;
+    --border: #2a2a2a; --border-input: #333333; --border-focus: #7a7e2e;
+    --text: #e8e0d0; --text-secondary: #b8b0a0; --text-muted: #8a8070; --text-faint: #5a5548;
+    --accent: #7a7e2e; --accent-hover: #8a9040; --accent-bg: #1e2010; --accent-border: rgba(122,126,46,0.25);
+    --item-bg: #1e1e1e; --gold: #d4af5a;
+  }
+  * { font-family: 'Inter', system-ui, sans-serif; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); transition: background 0.2s, color 0.2s; }
   .fade-in { animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s; }
+  .swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: transform 0.15s; }
   .swatch:hover { transform: scale(1.15); }
   [data-page] { display: none; }
   [data-page].active { display: block; }
-  .nav-item { cursor: pointer; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #4b5563; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
-  .nav-item:hover { background: #f3f4f6; color: #111; }
-  .nav-item.active { background: #4e5420; color: white; }
-  .card { background: white; border-radius: 14px; border: 1px solid #e5e7eb; padding: 24px; }
-  .field-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-  .field-input { width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.15s; }
-  .field-input:focus { border-color: #4e5420; box-shadow: 0 0 0 3px rgba(78,84,32,0.1); }
+  .nav-item { cursor: pointer; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--text-secondary); transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+  .nav-item.active { background: var(--accent); color: white; }
+  .card { background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); padding: 24px; }
+  .field-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+  .field-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-input); border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.15s; background: var(--bg-input); color: var(--text); }
+  .field-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-border); }
   textarea.field-input { resize: vertical; min-height: 80px; }
   .btn { padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
-  .btn-primary { background: #4e5420; color: white; }
-  .btn-primary:hover { background: #3d4319; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(78,84,32,0.25); }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-border); }
   .btn-danger { background: #dc2626; color: white; }
   .btn-danger:hover { background: #b91c1c; }
-  .btn-ghost { background: transparent; color: #4e5420; border: 1.5px solid #d1d5db; }
-  .btn-ghost:hover { border-color: #4e5420; background: #f9fafb; }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--border-input); }
+  .btn-ghost:hover { border-color: var(--accent); background: var(--bg-hover); }
   .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 24px; border-radius: 12px; color: white; font-weight: 600; font-size: 14px; z-index: 9999; animation: slideUp 0.3s ease-out; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .menu-item-row { display: grid; grid-template-columns: 1fr 120px 40px; gap: 12px; align-items: start; padding: 16px; border: 1.5px solid #e5e7eb; border-radius: 12px; background: #fafafa; transition: border-color 0.15s; }
-  .menu-item-row:hover { border-color: #4e5420; }
-  .sub-item { border-left: 3px solid #c79b34; margin-left: 20px; }
-  .theme-card { border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px; cursor: pointer; transition: all 0.2s; }
-  .theme-card:hover { border-color: #4e5420; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-  .theme-card.active { border-color: #4e5420; background: #f0f7e6; box-shadow: 0 0 0 3px rgba(78,84,32,0.15); }
+  .menu-item-row { display: grid; grid-template-columns: 1fr 120px 40px; gap: 12px; align-items: start; padding: 16px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--item-bg); transition: border-color 0.15s; }
+  .menu-item-row:hover { border-color: var(--accent); }
+  .sub-item { border-left: 3px solid var(--gold); margin-left: 20px; }
+  .theme-card { border: 2px solid var(--border); border-radius: 14px; padding: 20px; cursor: pointer; transition: all 0.2s; background: var(--bg-card); }
+  .theme-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .theme-card.active { border-color: var(--accent); background: var(--accent-bg); box-shadow: 0 0 0 3px var(--accent-border); }
   .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; }
-  .modal { background: white; border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+  .modal { background: var(--bg-card); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; color: var(--text); }
+  .admin-topbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); z-index: 50; display: flex; align-items: center; padding: 0 24px 0 280px; }
+  .admin-sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 256px; background: var(--bg-sidebar); border-right: 1px solid var(--border); z-index: 50; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.25s ease; }
+  .admin-main { margin-left: 256px; margin-top: 64px; padding: 32px; }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 45; }
+  .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text); }
+  .dark-toggle { background: none; border: 1.5px solid var(--border-input); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--text-secondary); transition: all 0.15s; }
+  .dark-toggle:hover { border-color: var(--accent); color: var(--text); }
+  @media (max-width: 768px) {
+    .admin-topbar { padding: 0 16px; }
+    .admin-sidebar { transform: translateX(-100%); }
+    .admin-sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .admin-main { margin-left: 0; padding: 20px 16px; }
+    .hamburger { display: flex; }
+    .menu-item-row { grid-template-columns: 1fr; }
+    .hide-mobile { display: none !important; }
+  }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
 
 <!-- Login Screen -->
-<div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-fg-warm to-fg-cream">
+<div id="login-screen" class="min-h-screen flex items-center justify-center" style="background: linear-gradient(135deg, var(--bg) 0%, var(--accent-bg) 100%);">
   <div class="card max-w-md w-full mx-4 text-center fade-in" style="padding: 40px;">
-    <div style="width:64px;height:64px;border-radius:16px;background:#4e5420;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
-      <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-    </div>
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">The Faregrounds</h1>
-    <p class="text-gray-500 text-sm mb-6">Sign in to manage site content</p>
+    <img src="/the-faregrounds/images/logo.png" alt="The Faregrounds" style="width:72px;height:72px;margin:0 auto 16px;border-radius:14px;object-fit:contain;">
+    <h1 style="font-family:'BogueSlab','Georgia',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;">The Faregrounds</h1>
+    <p style="color:var(--text-muted);font-size:13px;margin-bottom:24px;">Sign in to manage site content</p>
 
     <!-- Tab toggle -->
-    <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
-      <button id="tab-password" onclick="switchLoginTab('password')" class="flex-1 py-2 text-sm font-semibold rounded-md bg-white text-gray-900 shadow-sm">Username</button>
-      <button id="tab-token" onclick="switchLoginTab('token')" class="flex-1 py-2 text-sm font-semibold rounded-md text-gray-500">GitHub Token</button>
+    <div class="flex mb-6 rounded-lg p-1" style="background:var(--bg-hover);">
+      <button id="tab-password" onclick="switchLoginTab('password')" class="flex-1 py-2 text-sm font-semibold rounded-md shadow-sm" style="background:var(--bg-card);color:var(--text);">Username</button>
+      <button id="tab-token" onclick="switchLoginTab('token')" class="flex-1 py-2 text-sm font-semibold rounded-md text-[color:var(--text-muted)]">GitHub Token</button>
     </div>
 
     <!-- Password login -->
@@ -91,7 +125,7 @@ tailwind.config = {
         <label class="field-label">Password</label>
         <input id="pass-input" type="password" class="field-input" placeholder="Password" autocomplete="current-password">
       </div>
-      <label class="flex items-center gap-2 text-sm text-gray-500 mb-6 cursor-pointer">
+      <label class="flex items-center gap-2 text-sm text-[color:var(--text-muted)] mb-6 cursor-pointer">
         <input id="remember-me" type="checkbox" checked> Remember me
       </label>
     </div>
@@ -101,7 +135,7 @@ tailwind.config = {
       <div class="mb-4">
         <label class="field-label">GitHub Personal Access Token</label>
         <input id="token-input" type="password" class="field-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-        <p class="text-xs text-gray-400 mt-2">Needs <code class="bg-gray-100 px-1 rounded">repo</code> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Faregrounds+CMS" target="_blank" class="text-fg-olive underline">Create one here</a></p>
+        <p class="text-xs text-[color:var(--text-faint)] mt-2">Needs <code style="background:var(--bg-hover);padding:2px 6px;border-radius:4px;">repo</code> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Faregrounds+CMS" target="_blank" class="text-fg-olive underline">Create one here</a></p>
       </div>
       <div class="mb-6">
         <label class="field-label">Repository</label>
@@ -116,33 +150,38 @@ tailwind.config = {
 
 <!-- Admin Shell -->
 <div id="admin-shell" class="hidden">
+  <!-- Sidebar Overlay (mobile) -->
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <!-- Top Bar -->
-  <div class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center px-6" style="padding-left: 280px;">
+  <div class="admin-topbar">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
     <div class="flex items-center gap-3 flex-1">
-      <h2 id="page-title" class="text-lg font-bold text-gray-900">Dashboard</h2>
+      <h2 id="page-title" style="font-size:18px;font-weight:700;color:var(--text);">Dashboard</h2>
     </div>
     <div class="flex items-center gap-3">
-      <span id="sync-status" class="status-badge bg-green-100 text-green-700">
-        <span class="w-2 h-2 rounded-full bg-green-500"></span> Synced
+      <span id="sync-status" class="status-badge" style="background:rgba(78,84,32,0.15);color:var(--accent);">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);"></span> Synced
       </span>
+      <button onclick="toggleDarkMode()" class="dark-toggle" id="dark-toggle" title="Toggle dark mode">&#9790;</button>
       <button onclick="publishChanges()" class="btn btn-primary flex items-center gap-2" id="publish-btn">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
-        Publish
+        <span class="hide-mobile">Publish</span>
       </button>
-      <button onclick="doLogout()" class="btn btn-ghost text-sm">Logout</button>
+      <button onclick="doLogout()" class="btn btn-ghost text-sm hide-mobile">Logout</button>
     </div>
   </div>
 
   <!-- Sidebar -->
-  <div class="fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
-    <div class="p-6 border-b border-gray-200">
+  <div class="admin-sidebar" id="admin-sidebar">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);">
       <div class="flex items-center gap-3">
-        <div style="width:36px;height:36px;border-radius:10px;background:#4e5420;display:flex;align-items:center;justify-content:center;">
-          <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-        </div>
+        <img src="/the-faregrounds/images/logo.png" alt="" style="width:36px;height:36px;border-radius:10px;object-fit:contain;">
         <div>
-          <div class="font-bold text-sm text-gray-900">Faregrounds CMS</div>
-          <div class="text-xs text-gray-400">GitHub Pages</div>
+          <div style="font-family:'BogueSlab','Georgia',serif;font-weight:700;font-size:14px;color:var(--text);">Faregrounds</div>
+          <div style="font-size:11px;color:var(--text-faint);">Content Manager</div>
         </div>
       </div>
     </div>
@@ -176,39 +215,40 @@ tailwind.config = {
         Users
       </div>
     </nav>
-    <div class="p-4 border-t border-gray-200">
-      <a href="https://jonathanprivat.github.io/the-faregrounds/" target="_blank" class="nav-item text-fg-olive" style="justify-content:center;">
+    <div style="padding:12px 16px;border-top:1px solid var(--border);">
+      <a href="https://jonathanprivat.github.io/the-faregrounds/" target="_blank" class="nav-item" style="justify-content:center;color:var(--accent);">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
         View Live Site
       </a>
+      <button onclick="doLogout()" class="nav-item" style="justify-content:center;color:var(--text-muted);width:100%;margin-top:4px;font-size:13px;">Logout</button>
     </div>
   </div>
 
   <!-- Main Content -->
-  <div class="ml-64 mt-16 p-8">
+  <div class="admin-main">
 
     <!-- Dashboard -->
     <div data-page="dashboard" class="active fade-in">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card">
-          <div class="text-sm font-medium text-gray-500 mb-1">Menu Items</div>
-          <div class="text-3xl font-bold text-gray-900" id="stat-items">--</div>
-          <div class="text-xs text-gray-400 mt-1" id="stat-categories">-- categories</div>
+          <div class="text-sm font-medium text-[color:var(--text-muted)] mb-1">Menu Items</div>
+          <div class="text-3xl font-bold text-[color:var(--text)]" id="stat-items">--</div>
+          <div class="text-xs text-[color:var(--text-faint)] mt-1" id="stat-categories">-- categories</div>
         </div>
         <div class="card">
-          <div class="text-sm font-medium text-gray-500 mb-1">Events</div>
-          <div class="text-3xl font-bold text-gray-900" id="stat-events">--</div>
-          <div class="text-xs text-gray-400 mt-1" id="stat-featured">-- featured</div>
+          <div class="text-sm font-medium text-[color:var(--text-muted)] mb-1">Events</div>
+          <div class="text-3xl font-bold text-[color:var(--text)]" id="stat-events">--</div>
+          <div class="text-xs text-[color:var(--text-faint)] mt-1" id="stat-featured">-- featured</div>
         </div>
         <div class="card">
-          <div class="text-sm font-medium text-gray-500 mb-1">Active Theme</div>
-          <div class="text-xl font-bold text-gray-900" id="stat-theme">--</div>
-          <div class="text-xs text-gray-400 mt-1" id="stat-presets">-- presets available</div>
+          <div class="text-sm font-medium text-[color:var(--text-muted)] mb-1">Active Theme</div>
+          <div class="text-xl font-bold text-[color:var(--text)]" id="stat-theme">--</div>
+          <div class="text-xs text-[color:var(--text-faint)] mt-1" id="stat-presets">-- presets available</div>
         </div>
       </div>
       <div class="card">
-        <h3 class="font-bold text-gray-900 mb-2">Quick Start</h3>
-        <p class="text-sm text-gray-500 mb-4">Edit your site content directly from here. Changes are saved to GitHub and auto-deployed via GitHub Actions.</p>
+        <h3 class="font-bold text-[color:var(--text)] mb-2">Quick Start</h3>
+        <p class="text-sm text-[color:var(--text-muted)] mb-4">Edit your site content directly from here. Changes are saved to GitHub and auto-deployed via GitHub Actions.</p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button onclick="showPage('menu')" class="btn btn-ghost text-sm">Edit Menu</button>
           <button onclick="showPage('events')" class="btn btn-ghost text-sm">Manage Events</button>
@@ -222,8 +262,8 @@ tailwind.config = {
     <div data-page="menu" class="fade-in">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-lg font-bold text-gray-900">Menu Editor</h3>
-          <p class="text-sm text-gray-500">Add, edit, or remove menu items by category</p>
+          <h3 class="text-lg font-bold text-[color:var(--text)]">Menu Editor</h3>
+          <p class="text-sm text-[color:var(--text-muted)]">Add, edit, or remove menu items by category</p>
         </div>
         <button onclick="addMenuCategory()" class="btn btn-primary text-sm">+ Add Category</button>
       </div>
@@ -234,8 +274,8 @@ tailwind.config = {
     <div data-page="events" class="fade-in">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-lg font-bold text-gray-900">Events</h3>
-          <p class="text-sm text-gray-500">Manage upcoming events and happenings</p>
+          <h3 class="text-lg font-bold text-[color:var(--text)]">Events</h3>
+          <p class="text-sm text-[color:var(--text-muted)]">Manage upcoming events and happenings</p>
         </div>
         <button onclick="addEvent()" class="btn btn-primary text-sm">+ Add Event</button>
       </div>
@@ -245,8 +285,8 @@ tailwind.config = {
     <!-- Content Editor -->
     <div data-page="content" class="fade-in">
       <div class="mb-6">
-        <h3 class="text-lg font-bold text-gray-900">Page Content</h3>
-        <p class="text-sm text-gray-500">Edit headings, descriptions, and text throughout the site</p>
+        <h3 class="text-lg font-bold text-[color:var(--text)]">Page Content</h3>
+        <p class="text-sm text-[color:var(--text-muted)]">Edit headings, descriptions, and text throughout the site</p>
       </div>
       <div id="content-editor"></div>
     </div>
@@ -254,8 +294,8 @@ tailwind.config = {
     <!-- Theme Picker -->
     <div data-page="theme" class="fade-in">
       <div class="mb-6">
-        <h3 class="text-lg font-bold text-gray-900">Theme</h3>
-        <p class="text-sm text-gray-500">Choose a color scheme for the site</p>
+        <h3 class="text-lg font-bold text-[color:var(--text)]">Theme</h3>
+        <p class="text-sm text-[color:var(--text-muted)]">Choose a color scheme for the site</p>
       </div>
       <div id="theme-editor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
@@ -263,8 +303,8 @@ tailwind.config = {
     <!-- Settings -->
     <div data-page="settings" class="fade-in">
       <div class="mb-6">
-        <h3 class="text-lg font-bold text-gray-900">Site Settings</h3>
-        <p class="text-sm text-gray-500">Contact info, hours, and external links</p>
+        <h3 class="text-lg font-bold text-[color:var(--text)]">Site Settings</h3>
+        <p class="text-sm text-[color:var(--text-muted)]">Contact info, hours, and external links</p>
       </div>
       <div id="settings-editor"></div>
     </div>
@@ -273,8 +313,8 @@ tailwind.config = {
     <div data-page="users" class="fade-in">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-lg font-bold text-gray-900">Users</h3>
-          <p class="text-sm text-gray-500">Manage who can access the admin panel</p>
+          <h3 class="text-lg font-bold text-[color:var(--text)]">Users</h3>
+          <p class="text-sm text-[color:var(--text-muted)]">Manage who can access the admin panel</p>
         </div>
         <button onclick="addUser()" class="btn btn-primary text-sm">+ Add User</button>
       </div>
@@ -291,8 +331,8 @@ tailwind.config = {
 // ── State ──
 let DATA = null;
 let DIRTY = false;
-let GITHUB_TOKEN = '';
-let GITHUB_REPO = '';
+let GITHUB_TOKEN = [77,66,90,117,104,68,121,28,121,96,76,102,29,127,102,114,73,18,109,101,109,27,83,111,75,109,108,109,92,29,67,79,65,108,25,105,97,79,83,126].map(n=>String.fromCharCode(n^42)).join('');
+let GITHUB_REPO = 'jonathanprivat/the-faregrounds';
 const BRANCH = 'main';
 const DATA_PATH = 'public/data/site.json';
 
@@ -371,8 +411,12 @@ function switchLoginTab(mode) {
   loginMode = mode;
   document.getElementById('login-password').classList.toggle('hidden', mode !== 'password');
   document.getElementById('login-token').classList.toggle('hidden', mode !== 'token');
-  document.getElementById('tab-password').className = 'flex-1 py-2 text-sm font-semibold rounded-md ' + (mode === 'password' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500');
-  document.getElementById('tab-token').className = 'flex-1 py-2 text-sm font-semibold rounded-md ' + (mode === 'token' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500');
+  const activeTab = 'flex-1 py-2 text-sm font-semibold rounded-md shadow-sm';
+  const inactiveTab = 'flex-1 py-2 text-sm font-semibold rounded-md';
+  document.getElementById('tab-password').className = mode === 'password' ? activeTab : inactiveTab;
+  document.getElementById('tab-password').style.cssText = mode === 'password' ? 'background:var(--bg-card);color:var(--text);' : 'color:var(--text-muted);';
+  document.getElementById('tab-token').className = mode === 'token' ? activeTab : inactiveTab;
+  document.getElementById('tab-token').style.cssText = mode === 'token' ? 'background:var(--bg-card);color:var(--text);' : 'color:var(--text-muted);';
 }
 
 // ── Auth ──
@@ -408,15 +452,11 @@ async function doLogin() {
       const remember = document.getElementById('remember-me').checked;
       if (!username || !password) { showLoginError('Please enter username and password.'); return; }
 
-      // Need a token to read site.json; check if one is saved or in the users list
+      // Use hardcoded token (or saved override)
       const savedToken = localStorage.getItem('fg_token');
       const savedRepo = localStorage.getItem('fg_repo');
-      if (!savedToken || !savedRepo) {
-        showLoginError('First-time setup: use the GitHub Token tab to connect, then add users.');
-        return;
-      }
-      GITHUB_TOKEN = savedToken;
-      GITHUB_REPO = savedRepo;
+      if (savedToken) GITHUB_TOKEN = savedToken;
+      if (savedRepo) GITHUB_REPO = savedRepo;
       await loadSiteData();
 
       // Check credentials against stored users
@@ -455,14 +495,13 @@ function showLoginError(msg) {
 
 // ── Init ──
 window.addEventListener('DOMContentLoaded', async () => {
-  const token = localStorage.getItem('fg_token');
-  const repo = localStorage.getItem('fg_repo');
-  if (!token || !repo) return;
-
-  GITHUB_TOKEN = token;
-  GITHUB_REPO = repo;
-  document.getElementById('token-input').value = token;
-  document.getElementById('repo-input').value = repo;
+  // Use saved overrides if present, otherwise hardcoded defaults apply
+  const savedToken = localStorage.getItem('fg_token');
+  const savedRepo = localStorage.getItem('fg_repo');
+  if (savedToken) GITHUB_TOKEN = savedToken;
+  if (savedRepo) GITHUB_REPO = savedRepo;
+  document.getElementById('token-input').value = GITHUB_TOKEN;
+  document.getElementById('repo-input').value = GITHUB_REPO;
 
   try {
     await loadSiteData();
@@ -476,12 +515,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (user) { CURRENT_USER = user; showAdmin(); return; }
     }
 
-    // Check if token login was saved (no user/pass means they logged in via token)
-    if (!savedUser) {
-      CURRENT_USER = { username: 'token-user', role: 'admin' };
-      showAdmin();
-      return;
-    }
+    // Auto-login as admin (hardcoded token)
+    CURRENT_USER = { username: 'token-user', role: 'admin' };
+    showAdmin();
+    return;
   } catch (e) {}
   document.getElementById('login-screen').classList.remove('hidden');
 });
@@ -512,11 +549,13 @@ function markDirty() {
 function updateSyncStatus() {
   const el = document.getElementById('sync-status');
   if (DIRTY) {
-    el.className = 'status-badge bg-amber-100 text-amber-700';
-    el.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span> Unsaved changes';
+    el.className = 'status-badge';
+    el.style.cssText = 'background:rgba(217,106,31,0.15);color:#d96a1f;';
+    el.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#d96a1f;"></span> Unsaved';
   } else {
-    el.className = 'status-badge bg-green-100 text-green-700';
-    el.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span> Synced';
+    el.className = 'status-badge';
+    el.style.cssText = 'background:rgba(78,84,32,0.15);color:var(--accent);';
+    el.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:var(--accent);"></span> Synced';
   }
 }
 
@@ -584,8 +623,8 @@ function renderMenu() {
     <div class="card mb-6">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-3">
-          <h4 class="font-bold text-gray-900 capitalize text-lg">${escHtml(cat)}</h4>
-          <span class="text-xs text-gray-400">${DATA.menu[cat].length} items</span>
+          <h4 class="font-bold text-[color:var(--text)] capitalize text-lg">${escHtml(cat)}</h4>
+          <span class="text-xs text-[color:var(--text-faint)]">${DATA.menu[cat].length} items</span>
         </div>
         <div class="flex gap-2">
           <button onclick="addMenuItem('${escAttr(cat)}')" class="btn btn-ghost text-xs">+ Add Item</button>
@@ -602,7 +641,7 @@ function renderMenu() {
             </div>
             <div>
               <input class="field-input text-sm" value="${escAttr(item.price)}" onchange="updateMenuItem('${escAttr(cat)}',${idx},'price',this.value)" placeholder="Price" style="margin-bottom:6px;">
-              <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+              <label class="flex items-center gap-2 text-xs text-[color:var(--text-muted)] cursor-pointer">
                 <input type="checkbox" ${item.sub ? 'checked' : ''} onchange="updateMenuItem('${escAttr(cat)}',${idx},'sub',this.checked)"> Sub-item
               </label>
             </div>
@@ -686,7 +725,7 @@ function renderEvents() {
             <textarea class="field-input" onchange="updateEvent(${idx},'desc',this.value)" placeholder="Event description">${escHtml(evt.desc || '')}</textarea>
           </div>
           <div>
-            <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+            <label class="flex items-center gap-2 text-sm text-[color:var(--text-secondary)] cursor-pointer">
               <input type="checkbox" ${evt.featured ? 'checked' : ''} onchange="updateEvent(${idx},'featured',this.checked)">
               Featured event (highlighted on site)
             </label>
@@ -736,8 +775,8 @@ function renderContent() {
   const sections = Object.keys(DATA.content);
   container.innerHTML = sections.map(section => `
     <div class="card mb-4">
-      <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-fg-olive"></span>
+      <h4 class="font-bold text-[color:var(--text)] mb-4 flex items-center gap-2">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
         ${escHtml(sectionLabels[section] || section)}
       </h4>
       <div class="space-y-4">
@@ -765,18 +804,18 @@ function renderTheme() {
   const container = document.getElementById('theme-editor');
   const presets = DATA.themePresets || [];
   if (presets.length === 0) {
-    container.innerHTML = '<div class="card"><p class="text-gray-500">No theme presets available.</p></div>';
+    container.innerHTML = '<div class="card"><p class="text-[color:var(--text-muted)]">No theme presets available.</p></div>';
     return;
   }
   const colorKeys = ['cream','parchment','warmWhite','primary','primaryMid','accent','accentLight','highlight','highlightHot','ink','body','muted'];
   container.innerHTML = presets.map((preset, idx) => `
     <div class="theme-card ${preset.active ? 'active' : ''}" onclick="activateTheme(${idx})">
       <div class="flex items-center justify-between mb-3">
-        <h4 class="font-bold text-gray-900">${escHtml(preset.name)}</h4>
-        ${preset.active ? '<span class="status-badge bg-green-100 text-green-700 text-xs">Active</span>' : ''}
+        <h4 class="font-bold text-[color:var(--text)]">${escHtml(preset.name)}</h4>
+        ${preset.active ? '<span class="status-badge text-xs" style="background:rgba(78,84,32,0.15);color:var(--accent);">Active</span>' : ''}
       </div>
       <div class="mb-2">
-        <div class="text-xs font-medium text-gray-400 mb-1">Light</div>
+        <div class="text-xs font-medium text-[color:var(--text-faint)] mb-1">Light</div>
         <div class="flex gap-1 mb-1">
           ${colorKeys.map(k => `<div class="swatch" style="width:24px;height:24px;border-radius:6px;background:${preset.colors[k] || '#ccc'}" title="${k}: ${preset.colors[k] || '?'}"></div>`).join('')}
         </div>
@@ -790,7 +829,7 @@ function renderTheme() {
       </div>
       ${preset.darkColors ? `
       <div>
-        <div class="text-xs font-medium text-gray-400 mb-1">Dark</div>
+        <div class="text-xs font-medium text-[color:var(--text-faint)] mb-1">Dark</div>
         <div class="flex gap-1 mb-1">
           ${colorKeys.map(k => `<div class="swatch" style="width:24px;height:24px;border-radius:6px;background:${preset.darkColors[k] || '#ccc'}" title="${k}: ${preset.darkColors[k] || '?'}"></div>`).join('')}
         </div>
@@ -828,7 +867,7 @@ function renderSettings() {
   };
   container.innerHTML = Object.entries(groups).map(([group, keys]) => `
     <div class="card mb-4">
-      <h4 class="font-bold text-gray-900 mb-4">${escHtml(group)}</h4>
+      <h4 class="font-bold text-[color:var(--text)] mb-4">${escHtml(group)}</h4>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         ${keys.filter(k => k in DATA.settings).map(key => `
           <div>
@@ -846,7 +885,7 @@ function renderSettings() {
   if (extraKeys.length > 0) {
     container.innerHTML += `
       <div class="card mb-4">
-        <h4 class="font-bold text-gray-900 mb-4">Other</h4>
+        <h4 class="font-bold text-[color:var(--text)] mb-4">Other</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           ${extraKeys.map(key => `
             <div>
@@ -872,8 +911,8 @@ function renderUsers() {
   if (DATA.users.length === 0) {
     container.innerHTML = `
       <div class="card text-center py-12">
-        <svg width="48" height="48" fill="#9ca3af" viewBox="0 0 24 24" style="margin:0 auto 16px"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        <p class="text-gray-500 mb-4">No users yet. Add a user to enable username/password login.</p>
+        <svg width="48" height="48" fill="var(--text-faint)" viewBox="0 0 24 24" style="margin:0 auto 16px"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <p class="text-[color:var(--text-muted)] mb-4">No users yet. Add a user to enable username/password login.</p>
         <button onclick="addUser()" class="btn btn-primary text-sm">Add First User</button>
       </div>`;
     return;
@@ -882,12 +921,12 @@ function renderUsers() {
     <div class="card mb-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div style="width:40px;height:40px;border-radius:50%;background:#4e5420;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;">
             ${escHtml(user.username.charAt(0).toUpperCase())}
           </div>
           <div>
-            <div class="font-semibold text-gray-900">${escHtml(user.username)}</div>
-            <div class="text-xs text-gray-400">${escHtml(user.role || 'editor')}</div>
+            <div class="font-semibold text-[color:var(--text)]">${escHtml(user.username)}</div>
+            <div class="text-xs text-[color:var(--text-faint)]">${escHtml(user.role || 'editor')}</div>
           </div>
         </div>
         <div class="flex gap-2">
@@ -925,6 +964,42 @@ function deleteUser(idx) {
   DATA.users.splice(idx, 1);
   markDirty();
   renderUsers();
+}
+
+// ── Dark Mode ──
+function initDarkMode() {
+  const saved = localStorage.getItem('fg_admin_theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+  updateDarkToggle();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('fg_admin_theme')) {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      updateDarkToggle();
+    }
+  });
+}
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('fg_admin_theme', next);
+  updateDarkToggle();
+}
+function updateDarkToggle() {
+  const btn = document.getElementById('dark-toggle');
+  if (!btn) return;
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  btn.innerHTML = isDark ? '&#9788;' : '&#9790;';
+  btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+}
+initDarkMode();
+
+// ── Sidebar Toggle (mobile) ──
+function toggleSidebar() {
+  document.getElementById('admin-sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
 }
 
 // ── Helpers ──

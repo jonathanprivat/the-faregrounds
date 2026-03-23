@@ -34,7 +34,7 @@
       {
         "name": "Popcorn Chicken",
         "price": "$12.99",
-        "desc": "Lemon aioli, pimentÃ³n aioli, or FG secret sauce.",
+        "desc": "Lemon aioli, pimentón aioli, or FG secret sauce.",
         "sub": false
       },
       {
@@ -58,7 +58,7 @@
       {
         "name": "Calamari",
         "price": "$15.99",
-        "desc": "Lemon aioli or pimentÃ³n aioli.",
+        "desc": "Lemon aioli or pimentón aioli.",
         "sub": false
       },
       {
@@ -475,8 +475,8 @@
     "phone": "(508) 555-FARE",
     "address_line1": "27 Fairgrounds Road",
     "address_line2": "Nantucket, MA 02554",
-    "hours_weekday": "Mon–Thu: 8am – 3pm",
-    "hours_weekend": "Fri–Sun: 8am – 8pm",
+    "hours_weekday": "Mon–Thu: 8am – 3pm",
+    "hours_weekend": "Fri–Sun: 8am – 8pm",
     "hours_events": "Events: Seasonal evenings",
     "opentable_url": "https://www.opentable.com",
     "ubereats_url": "https://www.ubereats.com",
