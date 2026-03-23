@@ -1173,7 +1173,7 @@ export default function TheFaregroundsHomepage() {
                         onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
                       >{siteSettings.address_line1 || "27 Fairgrounds Road"}</a>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
-                      <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2 }}>{siteSettings.phone || "(508) 555-FARE"}</div>
+                      <a href={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[^\d+]/g, "")}`} className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2, textDecoration: "none", display: "block" }}>{siteSettings.phone || "(508) 555-FARE"}</a>
                     </div>
                   </div>
                 </div>
