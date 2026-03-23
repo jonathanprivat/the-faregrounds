@@ -126,7 +126,7 @@
           {
             "name": "Cheeseburger",
             "price": "$16.99",
-            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avo +$2. Sub veggie burger +$2.",
+            "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avocado +$2. Sub veggie burger +$2.",
             "sub": false
           },
           {
@@ -1091,7 +1091,7 @@
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-23T19:25:48.051Z",
-  "_sha": "8e9dd8d58b2a28dc5f7b67f8a8d2aeb7aca876d3",
+  "exportedAt": "2026-03-23T20:22:36.189Z",
+  "_sha": "53ded5312c75dced87a082779aadf2d40164ecea",
   "users": []
 }
