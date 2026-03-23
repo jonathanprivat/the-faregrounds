@@ -289,18 +289,18 @@
     }
   },
   "theme": {
-    "cream": "#efe1ab",
-    "parchment": "#f6edc8",
-    "warmWhite": "#fff7e4",
-    "primary": "#4e5420",
-    "primaryMid": "#7a7e2e",
-    "accent": "#c79b34",
-    "accentLight": "#d4af5a",
-    "highlight": "#d96a1f",
-    "highlightHot": "#e8782a",
-    "ink": "#161616",
-    "body": "#3d3d3d",
-    "muted": "#6a6a6a"
+    "cream": "#f5e0c0",
+    "parchment": "#faecd4",
+    "warmWhite": "#fff5e6",
+    "primary": "#6e3310",
+    "primaryMid": "#a14b18",
+    "accent": "#d96a1f",
+    "accentLight": "#e8782a",
+    "highlight": "#4e5420",
+    "highlightHot": "#7a7e2e",
+    "ink": "#1a0f05",
+    "body": "#3d2a18",
+    "muted": "#6a5540"
   },
   "themePresets": [
     {
@@ -320,7 +320,7 @@
         "body": "#3d3d3d",
         "muted": "#6a6a6a"
       },
-      "active": true,
+      "active": false,
       "darkColors": {
         "cream": "#1a1c14",
         "parchment": "#22241a",
@@ -386,7 +386,7 @@
         "body": "#3d2a18",
         "muted": "#6a5540"
       },
-      "active": false,
+      "active": true,
       "darkColors": {
         "cream": "#1c1208",
         "parchment": "#241a0e",
@@ -489,7 +489,7 @@
     "twitter_url": "#",
     "menu_pdf_url": "/the-faregrounds/menu.pdf"
   },
-  "exportedAt": "2026-03-23T18:35:10.333Z",
-  "_sha": "ef93c78e433724f7a00bda159a5693f533fcc43d",
+  "exportedAt": "2026-03-23T18:36:19.227Z",
+  "_sha": "4fc6814458056a311d65459c560227bf7298b7fc",
   "users": []
 }
