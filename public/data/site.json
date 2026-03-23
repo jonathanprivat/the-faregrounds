@@ -718,7 +718,10 @@
     "instagram_url": "#",
     "facebook_url": "#",
     "twitter_url": "#",
-    "menu_pdf_url": "/the-faregrounds/menu.pdf"
+    "menu_pdf_url": "/the-faregrounds/menu.pdf",
+    "event_poster_url": "",
+    "event_button_text": "RSVP for Maple Fest",
+    "event_pdf_url": ""
   },
   "exportedAt": "2026-03-23T18:55:29.010Z",
   "_sha": "96cf71c2677d683d2bd71b39983c7ba2a0fb3f34",

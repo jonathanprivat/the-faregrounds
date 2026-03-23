@@ -279,6 +279,7 @@ tailwind.config = {
         </div>
         <button onclick="addEvent()" class="btn btn-primary text-sm">+ Add Event</button>
       </div>
+      <div id="featured-event-editor" class="mb-6"></div>
       <div id="events-editor"></div>
     </div>
 
@@ -396,6 +397,123 @@ async function saveSiteData(message) {
   DATA._sha = updated.sha;
   DIRTY = false;
   updateSyncStatus();
+}
+
+// ── File Upload to GitHub ──
+async function uploadFileToGitHub(filePath, base64Content, message) {
+  // Check if file already exists to get its SHA
+  let sha;
+  try {
+    const existing = await ghFetch(`contents/${filePath}?ref=${BRANCH}`);
+    sha = existing.sha;
+  } catch (e) { /* file doesn't exist yet, no sha needed */ }
+  const body = { message: message || `Upload ${filePath}`, content: base64Content, branch: BRANCH };
+  if (sha) body.sha = sha;
+  await ghFetch(`contents/${filePath}`, { method: 'PUT', body: JSON.stringify(body) });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]); // strip data:...;base64, prefix
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Featured Event Editor ──
+function renderFeaturedEvent() {
+  const container = document.getElementById('featured-event-editor');
+  if (!DATA.settings) DATA.settings = {};
+  const posterUrl = DATA.settings.event_poster_url || '';
+  const buttonText = DATA.settings.event_button_text || 'RSVP for Maple Fest';
+  const pdfUrl = DATA.settings.event_pdf_url || '';
+
+  container.innerHTML = `
+    <div class="card mb-2">
+      <h4 class="font-bold text-[color:var(--text)] mb-4" style="font-size:15px">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-3px;margin-right:6px;opacity:0.7"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        Featured Event Poster
+      </h4>
+      <div style="display:grid;grid-template-columns:${posterUrl ? '200px 1fr' : '1fr'};gap:20px;align-items:start">
+        ${posterUrl ? `<div style="border-radius:10px;overflow:hidden;border:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+          <img src="${escAttr(posterUrl)}" alt="Event poster" style="width:100%;height:auto;display:block">
+        </div>` : ''}
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label class="field-label">Poster Image</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="file" id="poster-file-input" accept="image/*" onchange="handlePosterUpload(this)" style="display:none">
+              <button onclick="document.getElementById('poster-file-input').click()" class="btn btn-ghost text-sm" style="white-space:nowrap">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:4px"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
+                ${posterUrl ? 'Replace Image' : 'Upload Image'}
+              </button>
+              <span id="poster-upload-status" class="text-xs text-[color:var(--text-muted)]">${posterUrl ? 'Current poster set' : 'No poster uploaded'}</span>
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Button Text</label>
+            <input class="field-input" value="${escAttr(buttonText)}" onchange="updateSetting('event_button_text',this.value)" placeholder="e.g. RSVP for Maple Fest">
+          </div>
+          <div>
+            <label class="field-label">Event PDF</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="file" id="pdf-file-input" accept=".pdf" onchange="handlePdfUpload(this)" style="display:none">
+              <button onclick="document.getElementById('pdf-file-input').click()" class="btn btn-ghost text-sm" style="white-space:nowrap">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:-2px;margin-right:4px"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
+                ${pdfUrl ? 'Replace PDF' : 'Upload PDF'}
+              </button>
+              <span id="pdf-upload-status" class="text-xs text-[color:var(--text-muted)]">${pdfUrl ? 'PDF linked' : 'No PDF uploaded'}</span>
+            </div>
+            ${pdfUrl ? `<div class="mt-2"><a href="${escAttr(pdfUrl)}" target="_blank" class="text-xs" style="color:var(--accent)">View current PDF</a></div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function handlePosterUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('poster-upload-status');
+  status.textContent = 'Uploading...';
+  try {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const path = 'public/images/event-poster.' + ext;
+    const b64 = await fileToBase64(file);
+    await uploadFileToGitHub(path, b64, 'Update event poster via CMS');
+    const url = '/the-faregrounds/images/event-poster.' + ext + '?v=' + Date.now();
+    DATA.settings.event_poster_url = url;
+    markDirty();
+    status.textContent = 'Uploaded! Publish to go live.';
+    renderFeaturedEvent();
+  } catch (err) {
+    status.textContent = 'Upload failed: ' + err.message;
+    toast('Poster upload failed: ' + err.message, '#dc2626');
+  }
+  input.value = '';
+}
+
+async function handlePdfUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('pdf-upload-status');
+  status.textContent = 'Uploading...';
+  try {
+    const path = 'public/data/event.pdf';
+    const b64 = await fileToBase64(file);
+    await uploadFileToGitHub(path, b64, 'Update event PDF via CMS');
+    const url = '/the-faregrounds/data/event.pdf?v=' + Date.now();
+    DATA.settings.event_pdf_url = url;
+    markDirty();
+    status.textContent = 'Uploaded! Publish to go live.';
+    renderFeaturedEvent();
+  } catch (err) {
+    status.textContent = 'Upload failed: ' + err.message;
+    toast('PDF upload failed: ' + err.message, '#dc2626');
+  }
+  input.value = '';
 }
 
 // ── Login Tab Toggle ──
@@ -589,6 +707,7 @@ function renderAll() {
   renderDashboard();
   renderMenu();
   renderEvents();
+  renderFeaturedEvent();
   renderContent();
   renderTheme();
   renderSettings();
@@ -856,6 +975,7 @@ function renderSettings() {
     'Contact': ['phone', 'address_line1', 'address_line2'],
     'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
     'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url', 'menu_pdf_url'],
+    'Featured Event': ['event_poster_url', 'event_button_text', 'event_pdf_url'],
     'Social Media': ['instagram_url', 'facebook_url', 'twitter_url'],
   };
   container.innerHTML = Object.entries(groups).map(([group, keys]) => `

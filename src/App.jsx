@@ -879,10 +879,22 @@ export default function TheFaregroundsHomepage() {
           <div className="events-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
             <Reveal>
               <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
-                <img src={A.maplefest} alt="Maple Fest 2026 — Saturday, March 28th at 27 Fairgrounds Road" style={{ width: "100%", height: "auto", display: "block" }} />
+                {siteSettings.event_pdf_url ? (
+                  <a href={siteSettings.event_pdf_url} target="_blank" rel="noopener noreferrer">
+                    <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block", cursor: "pointer" }} />
+                  </a>
+                ) : (
+                  <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block" }} />
+                )}
               </div>
               <div style={{ marginTop: 20, textAlign: "center" }}>
-                <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>RSVP for Maple Fest</button>
+                {siteSettings.event_pdf_url ? (
+                  <a href={siteSettings.event_pdf_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                    <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                  </a>
+                ) : (
+                  <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                )}
               </div>
             </Reveal>
 
