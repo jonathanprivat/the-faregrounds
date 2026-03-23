@@ -899,24 +899,24 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <div className="events-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
             <Reveal>
-              <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
-                {siteSettings.event_pdf_url ? (
-                  <a href={siteSettings.event_pdf_url} target="_blank" rel="noopener noreferrer">
-                    <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block", cursor: "pointer" }} />
-                  </a>
-                ) : (
-                  <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block" }} />
-                )}
-              </div>
-              <div style={{ marginTop: 20, textAlign: "center" }}>
-                {siteSettings.event_pdf_url ? (
-                  <a href={siteSettings.event_pdf_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                    <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
-                  </a>
-                ) : (
-                  <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
-                )}
-              </div>
+              {(() => {
+                const eventLink = siteSettings.event_link_url || siteSettings.event_pdf_url;
+                const posterImg = <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block", cursor: eventLink ? "pointer" : "default" }} />;
+                return <>
+                  <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
+                    {eventLink ? <a href={eventLink} target="_blank" rel="noopener noreferrer">{posterImg}</a> : posterImg}
+                  </div>
+                  <div style={{ marginTop: 20, textAlign: "center" }}>
+                    {eventLink ? (
+                      <a href={eventLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+                        <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                      </a>
+                    ) : (
+                      <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                    )}
+                  </div>
+                </>;
+              })()}
             </Reveal>
 
             <Reveal delay={0.12}>

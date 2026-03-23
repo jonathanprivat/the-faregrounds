@@ -731,7 +731,8 @@
     "auto_theme": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
-    "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272"
+    "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
+    "event_link_url": ""
   },
   "exportedAt": "2026-03-23T19:04:44.390Z",
   "_sha": "88ef7904d237b874f75e291f7e0d1cd997033988",

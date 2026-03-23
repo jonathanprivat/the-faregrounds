@@ -472,6 +472,11 @@ function renderFeaturedEvent() {
             <label class="field-label">Button Text</label>
             <input class="field-input" value="${escAttr(buttonText)}" onchange="updateSetting('event_button_text',this.value)" placeholder="e.g. RSVP for Maple Fest">
           </div>
+          <div>
+            <label class="field-label">Event Link URL</label>
+            <p class="text-xs text-[color:var(--text-muted)] mb-1">Where the poster and button link to. Defaults to the PDF if left empty.</p>
+            <input class="field-input" value="${escAttr(DATA.settings.event_link_url || '')}" onchange="updateSetting('event_link_url',this.value)" placeholder="e.g. https://eventbrite.com/your-event or leave empty for PDF">
+          </div>
         </div>
       </div>
     </div>
@@ -1011,7 +1016,6 @@ function renderSettings() {
     'Contact': ['phone', 'address_line1', 'address_line2'],
     'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
     'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url', 'menu_pdf_url'],
-    'Featured Event': ['event_poster_url', 'event_button_text', 'event_pdf_url'],
     'Social Media': ['instagram_url', 'facebook_url', 'twitter_url', 'tiktok_url'],
   };
   container.innerHTML = Object.entries(groups).map(([group, keys]) => `
