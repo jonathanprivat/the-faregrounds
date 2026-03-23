@@ -1,5 +1,235 @@
 {
-  "menu": {
+  "lunchMenu": {
+    "appetizers": [
+      {
+        "name": "Pupu Platter",
+        "price": "$26.99",
+        "desc": "Skewers: beef, chicken & prawn. Chicken wings. Pork ribs. Pierogi. Lumpia.",
+        "sub": false
+      },
+      {
+        "name": "Raclette Fries",
+        "price": "$19.99",
+        "desc": "Hand-cut fries smothered tableside in molten cheese.",
+        "sub": false
+      },
+      {
+        "name": "Mezze Platter",
+        "price": "$14.99",
+        "desc": "Hummus, Green Goddess, whipped feta, veggies, pita.",
+        "sub": false
+      },
+      {
+        "name": "Wings",
+        "price": "$11.99 / 14.99",
+        "desc": "Buffalo, Jamaican, Garlic Parm, BBQ, or Honey Sriracha. 6pc or 10pc.",
+        "sub": false
+      },
+      {
+        "name": "Wing Dings",
+        "price": "$11.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Popcorn Chicken",
+        "price": "$12.99",
+        "desc": "Lemon aioli, pimentón aioli, or FG secret sauce.",
+        "sub": false
+      },
+      {
+        "name": "Nachos Deluxe",
+        "price": "$14.99",
+        "desc": "Cheese, lettuce, tomato, olives, salsa, sour cream. Add guac +$4.99.",
+        "sub": false
+      },
+      {
+        "name": "Potato Skins",
+        "price": "$12.99 / 14.99",
+        "desc": "Cheese & scallions, or bacon & cheese with scallions.",
+        "sub": false
+      },
+      {
+        "name": "Soft Pretzel",
+        "price": "$10.99",
+        "desc": "Pimento cheese dip.",
+        "sub": false
+      },
+      {
+        "name": "Calamari",
+        "price": "$15.99",
+        "desc": "Lemon aioli or pimentón aioli.",
+        "sub": false
+      },
+      {
+        "name": "Mozzarella Sticks",
+        "price": "$10.99",
+        "desc": "",
+        "sub": false
+      }
+    ],
+    "salads & soups": [
+      {
+        "name": "Caesar",
+        "price": "$14.99",
+        "desc": "House dressing, sourdough croutons, parmigiano.",
+        "sub": false
+      },
+      {
+        "name": "Wedge",
+        "price": "$15.99",
+        "desc": "Buttermilk dressing, blue cheese, bacon, tomato.",
+        "sub": false
+      },
+      {
+        "name": "House Salad",
+        "price": "$12.99",
+        "desc": "Mixed greens, cherry tomato, cucumber, shredded carrot, champagne vinaigrette.",
+        "sub": false
+      },
+      {
+        "name": "Add Protein",
+        "price": "+$8.00",
+        "desc": "Chicken, steak, or salmon on any salad.",
+        "sub": true
+      },
+      {
+        "name": "Quahog Chowder",
+        "price": "$7.99 / 10.99",
+        "desc": "Cup or bowl. A Nantucket classic.",
+        "sub": false
+      },
+      {
+        "name": "French Onion Soup",
+        "price": "$11.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "The Best Chili",
+        "price": "$12.99",
+        "desc": "Beef long-simmered with Rancho Gordo heirloom beans. Cheese & sour cream.",
+        "sub": false
+      },
+      {
+        "name": "Oxtail Pho",
+        "price": "$18.99",
+        "desc": "Bone broth, rice noodles, aromatic herbs & lime.",
+        "sub": false
+      }
+    ],
+    "handhelds": [
+      {
+        "name": "Cheeseburger",
+        "price": "$16.99",
+        "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avo +$2.",
+        "sub": false
+      },
+      {
+        "name": "Chicken Sandwich",
+        "price": "$16.99",
+        "desc": "Grilled or fried. Lettuce, tomato, onion, pickle. Fries. Choice of sauce.",
+        "sub": false
+      },
+      {
+        "name": "Fish Sandwich",
+        "price": "$16.99",
+        "desc": "Fried cod with tartar sauce. Fries.",
+        "sub": false
+      },
+      {
+        "name": "Open Faced Turkey",
+        "price": "$16.99",
+        "desc": "Turkey, stuffing, mashed potatoes, and gravy.",
+        "sub": false
+      },
+      {
+        "name": "Chicken Quesadilla",
+        "price": "$15.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Sub veggie burger",
+        "price": "+$2.00",
+        "desc": "",
+        "sub": true
+      }
+    ],
+    "fries": [
+      {
+        "name": "Plain Fries",
+        "price": "$7.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Truffle Fries",
+        "price": "$12.99",
+        "desc": "Parmigiano, fried parsley, truffle oil.",
+        "sub": false
+      },
+      {
+        "name": "Waffle Fries",
+        "price": "$7.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Pickle Fries",
+        "price": "$7.99",
+        "desc": "If a pickle were a french fry.",
+        "sub": false
+      }
+    ],
+    "bowls": [
+      {
+        "name": "Build Your Bowl",
+        "price": "$21.99",
+        "desc": "Pick your protein, base, sauce & toppings.",
+        "sub": false
+      },
+      {
+        "name": "Proteins",
+        "price": "",
+        "desc": "Salmon • Chicken • Steak • Tofu",
+        "sub": true
+      },
+      {
+        "name": "Bases",
+        "price": "",
+        "desc": "Rice • Quinoa • Charred Kale • Salad Greens",
+        "sub": true
+      },
+      {
+        "name": "Sauces",
+        "price": "",
+        "desc": "Tahini Lemon • Spicy Mayo • Green Goddess • Umami Soy Butter",
+        "sub": true
+      },
+      {
+        "name": "Toppings",
+        "price": "",
+        "desc": "First free, then $2 each: Crispy Onion, Pickled Veg, Roasted Veg, Crispy Capers, Ranch Pepitas.",
+        "sub": true
+      }
+    ],
+    "pizza": [
+      {
+        "name": "Cheese Pizza",
+        "price": "$14.99 / 18.99",
+        "desc": "14\" or 18\".",
+        "sub": false
+      },
+      {
+        "name": "Toppings",
+        "price": "+$2.00 / +2.50",
+        "desc": "Pepperoni, Peppers, Onions, Mushrooms, Sausage, Ham, Pineapple.",
+        "sub": true
+      }
+    ]
+  },
+  "dinnerMenu": {
     "appetizers": [
       {
         "name": "Pupu Platter",
@@ -751,12 +981,13 @@
     "facebook_url": "#",
     "twitter_url": "#",
     "tiktok_url": "#",
-    "menu_pdf_url": "/the-faregrounds/menu.pdf",
     "auto_theme": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
-    "event_link_url": ""
+    "event_link_url": "",
+    "lunch_pdf_url": "/the-faregrounds/menu.pdf",
+    "dinner_pdf_url": ""
   },
   "exportedAt": "2026-03-23T19:25:48.051Z",
   "_sha": "8e9dd8d58b2a28dc5f7b67f8a8d2aeb7aca876d3",

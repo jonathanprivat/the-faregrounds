@@ -248,6 +248,10 @@ export default function TheFaregroundsHomepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("appetizers");
   const [menuFade, setMenuFade] = useState(false);
+  const [menuType, setMenuType] = useState(() => {
+    const hour = new Date().getHours();
+    return hour >= 15 ? "dinner" : "lunch";
+  });
   const [email, setEmail] = useState("");
   const [activeSection, setActiveSection] = useState("");
   const [gallerySlide, setGallerySlide] = useState(0);
@@ -278,7 +282,10 @@ export default function TheFaregroundsHomepage() {
 
   const isDark = colorMode === "dark" || (colorMode === "system" && systemDark);
 
-  const menuData = siteData?.menu || MENU_DATA;
+  const menuData = (menuType === "dinner" ? siteData?.dinnerMenu : siteData?.lunchMenu) || siteData?.menu || MENU_DATA;
+  const menuPdfUrl = menuType === "dinner"
+    ? (siteSettings.dinner_pdf_url || "")
+    : (siteSettings.lunch_pdf_url || siteSettings.menu_pdf_url || B + "menu.pdf");
   const eventsData = (siteData?.events || EVENTS).map(e => ({
     ...e,
     date: e.date_display || e.date,
@@ -386,6 +393,18 @@ export default function TheFaregroundsHomepage() {
     setMenuFade(true);
     setTimeout(() => { setActiveMenu(key); setMenuFade(false); }, 200);
   }, [activeMenu]);
+
+  const switchMenuType = useCallback((type) => {
+    if (type === menuType) return;
+    setMenuFade(true);
+    setTimeout(() => {
+      setMenuType(type);
+      const newData = type === "dinner" ? siteData?.dinnerMenu : siteData?.lunchMenu;
+      const firstCat = newData ? Object.keys(newData)[0] : "appetizers";
+      setActiveMenu(firstCat);
+      setMenuFade(false);
+    }, 200);
+  }, [menuType, siteData]);
 
   const css = `
     @font-face { font-family: 'ZebrawoodFill'; src: url('${B}fonts/ZebrawoodFill.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
@@ -711,7 +730,7 @@ export default function TheFaregroundsHomepage() {
 
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
                     <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>View Menu</button>
-                    <a href={B + "menu.pdf"} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download Menu (PDF)</a>
+                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download {menuType === "dinner" ? "Dinner" : "Lunch"} Menu (PDF)</a>}
                     <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>Upcoming Events</button>
                   </div>
                 </div>
@@ -810,16 +829,35 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Full Menu</SectionLabel>
                     <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
-                      {content?.hero?.menu_title || "Lunch"}
+                      {menuType === "dinner" ? "Dinner" : (content?.hero?.menu_title || "Lunch")}
                     </h2>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <a href={B + "menu.pdf"} download style={{ textDecoration: "none" }}>
-                      <button className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, padding: "8px 16px" }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Download PDF
-                      </button>
-                    </a>
+                    {/* Lunch / Dinner toggle */}
+                    <div style={{ display: "flex", background: colors.cream, borderRadius: 999, padding: 3, gap: 2, border: `1.5px solid ${colors.olive}20` }}>
+                      <button onClick={() => switchMenuType("lunch")} style={{
+                        padding: "6px 16px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+                        fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
+                        background: menuType === "lunch" ? colors.olive : "transparent",
+                        color: menuType === "lunch" ? colors.warmWhite : colors.body,
+                        border: "none", cursor: "pointer", transition: "all 0.25s ease",
+                      }}>Lunch</button>
+                      <button onClick={() => switchMenuType("dinner")} style={{
+                        padding: "6px 16px", borderRadius: 999, fontSize: 11, fontWeight: 700,
+                        fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
+                        background: menuType === "dinner" ? colors.olive : "transparent",
+                        color: menuType === "dinner" ? colors.warmWhite : colors.body,
+                        border: "none", cursor: "pointer", transition: "all 0.25s ease",
+                      }}>Dinner</button>
+                    </div>
+                    {menuPdfUrl && (
+                      <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
+                        <button className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, padding: "8px 16px" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          Download PDF
+                        </button>
+                      </a>
+                    )}
                     <WhaleTail size={28} />
                   </div>
                 </div>
