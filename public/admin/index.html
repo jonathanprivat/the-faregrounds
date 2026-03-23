@@ -254,6 +254,20 @@ let GITHUB_REPO = '';
 const BRANCH = 'main';
 const DATA_PATH = 'public/data/site.json';
 
+// ── Base64 UTF-8 helpers ──
+function b64ToUtf8(b64) {
+  const bin = atob(b64.replace(/\n/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function utf8ToB64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
 // ── GitHub API ──
 async function ghFetch(endpoint, opts = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `https://api.github.com/repos/${GITHUB_REPO}/${endpoint}`;
@@ -272,24 +286,36 @@ async function ghFetch(endpoint, opts = {}) {
 
 async function loadSiteData() {
   const file = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
-  const content = atob(file.content.replace(/\n/g, ''));
-  DATA = JSON.parse(content);
+  DATA = JSON.parse(b64ToUtf8(file.content));
   DATA._sha = file.sha;
   return DATA;
 }
 
 async function saveSiteData(message) {
   DATA.exportedAt = new Date().toISOString();
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2))));
-  await ghFetch(`contents/${DATA_PATH}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      message: message || 'Update site content via CMS',
-      content,
-      sha: DATA._sha,
-      branch: BRANCH,
-    }),
-  });
+  const jsonStr = JSON.stringify(DATA, null, 2);
+  const content = utf8ToB64(jsonStr);
+  const body = {
+    message: message || 'Update site content via CMS',
+    content,
+    sha: DATA._sha,
+    branch: BRANCH,
+  };
+
+  try {
+    await ghFetch(`contents/${DATA_PATH}`, { method: 'PUT', body: JSON.stringify(body) });
+  } catch (err) {
+    if (err.message.includes('409')) {
+      // SHA conflict: re-fetch latest SHA and retry
+      const latest = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
+      DATA._sha = latest.sha;
+      body.sha = latest.sha;
+      await ghFetch(`contents/${DATA_PATH}`, { method: 'PUT', body: JSON.stringify(body) });
+    } else {
+      throw err;
+    }
+  }
+
   // Refresh SHA after save
   const updated = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
   DATA._sha = updated.sha;
@@ -310,8 +336,7 @@ function doLogin() {
 
   ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`)
     .then(file => {
-      const content = atob(file.content.replace(/\n/g, ''));
-      DATA = JSON.parse(content);
+      DATA = JSON.parse(b64ToUtf8(file.content));
       DATA._sha = file.sha;
       localStorage.setItem('fg_token', GITHUB_TOKEN);
       localStorage.setItem('fg_repo', GITHUB_REPO);
