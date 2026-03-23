@@ -34,7 +34,7 @@
       {
         "name": "Popcorn Chicken",
         "price": "$12.99",
-        "desc": "Lemon aioli, pimentón aioli, or FG secret sauce.",
+        "desc": "Lemon aioli, pimentÃ³n aioli, or FG secret sauce.",
         "sub": false
       },
       {
@@ -58,7 +58,7 @@
       {
         "name": "Calamari",
         "price": "$15.99",
-        "desc": "Lemon aioli or pimentón aioli.",
+        "desc": "Lemon aioli or pimentÃ³n aioli.",
         "sub": false
       },
       {
@@ -192,19 +192,19 @@
       {
         "name": "Proteins",
         "price": "",
-        "desc": "Salmon • Chicken • Steak • Tofu",
+        "desc": "Salmon â¢ Chicken â¢ Steak â¢ Tofu",
         "sub": true
       },
       {
         "name": "Bases",
         "price": "",
-        "desc": "Rice • Quinoa • Charred Kale • Salad Greens",
+        "desc": "Rice â¢ Quinoa â¢ Charred Kale â¢ Salad Greens",
         "sub": true
       },
       {
         "name": "Sauces",
         "price": "",
-        "desc": "Tahini Lemon • Spicy Mayo • Green Goddess • Umami Soy Butter",
+        "desc": "Tahini Lemon â¢ Spicy Mayo â¢ Green Goddess â¢ Umami Soy Butter",
         "sub": true
       },
       {
@@ -267,40 +267,40 @@
       "heading": "More Than a Restaurant"
     },
     "footer": {
-      "tagline": "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."
+      "tagline": "Seasonal food, local gatherings, and old-school community energy â built for Nantucket Island."
     },
     "hero": {
       "menu_title": "Lunch",
-      "subtitle": "Nantucket Island • Restaurant • Events • Community",
-      "tagline": "Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road."
+      "subtitle": "Nantucket Island â¢ Restaurant â¢ Events â¢ Community",
+      "tagline": "Seasonal food, local gatherings, and fairground energy â all wrapped in a nostalgic island experience at 27 Fairgrounds Road."
     },
     "newsletter": {
-      "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.",
+      "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam â just island-good stuff.",
       "heading": "Stay in the Loop"
     },
     "order": {
-      "description": "Whether you’re dining in or ordering from home — we’ve got you covered.",
+      "description": "Whether youâre dining in or ordering from home â weâve got you covered.",
       "heading": "Reserve, Order & Review"
     },
     "story": {
       "heading": "A Farmstand Poster Turned Into a Restaurant.",
-      "paragraph1": "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.",
-      "paragraph2": "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."
+      "paragraph1": "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience â from the menu to the events to the brand itself â is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.",
+      "paragraph2": "Weâre bringing the sugar shack experience 30 miles out to sea â with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."
     }
   },
   "theme": {
-    "cream": "#dce8f0",
-    "parchment": "#e8f0f6",
-    "warmWhite": "#f0f6fa",
-    "primary": "#003366",
-    "primaryMid": "#1a5c8a",
-    "accent": "#c79b34",
-    "accentLight": "#d4af5a",
-    "highlight": "#d96a1f",
-    "highlightHot": "#e8782a",
-    "ink": "#0a1520",
-    "body": "#2a3a4a",
-    "muted": "#5a6a7a"
+    "cream": "#1a1a1a",
+    "parchment": "#222222",
+    "warmWhite": "#2a2a2a",
+    "primary": "#c79b34",
+    "primaryMid": "#d4af5a",
+    "accent": "#d96a1f",
+    "accentLight": "#e8782a",
+    "highlight": "#7a7e2e",
+    "highlightHot": "#4e5420",
+    "ink": "#f0e8d8",
+    "body": "#d8d0c0",
+    "muted": "#8a8070"
   },
   "themePresets": [
     {
@@ -377,7 +377,7 @@
         "body": "#2a3a4a",
         "muted": "#5a6a7a"
       },
-      "active": true
+      "active": false
     },
     {
       "id": 5,
@@ -396,7 +396,7 @@
         "body": "#d8d0c0",
         "muted": "#8a8070"
       },
-      "active": false
+      "active": true
     }
   ],
   "settings": {
@@ -405,8 +405,8 @@
     "phone": "(508) 555-FARE",
     "address_line1": "27 Fairgrounds Road",
     "address_line2": "Nantucket, MA 02554",
-    "hours_weekday": "Mon–Thu: 8am – 3pm",
-    "hours_weekend": "Fri–Sun: 8am – 8pm",
+    "hours_weekday": "MonâThu: 8am â 3pm",
+    "hours_weekend": "FriâSun: 8am â 8pm",
     "hours_events": "Events: Seasonal evenings",
     "opentable_url": "https://www.opentable.com",
     "ubereats_url": "https://www.ubereats.com",
@@ -419,5 +419,6 @@
     "twitter_url": "#",
     "menu_pdf_url": "/the-faregrounds/menu.pdf"
   },
-  "exportedAt": "2026-03-23T17:35:14.975Z"
+  "exportedAt": "2026-03-23T17:47:12.921Z",
+  "_sha": "1f3d124992ed084e78d7f317c40e029a012a3fbe"
 }
