@@ -377,6 +377,11 @@ async function saveSiteData(message) {
   DATA.exportedAt = new Date().toISOString();
   const jsonStr = JSON.stringify(DATA, null, 2);
   const content = utf8ToB64(jsonStr);
+
+  // Always fetch latest SHA before publishing to avoid 409 conflicts
+  const latest = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
+  DATA._sha = latest.sha;
+
   const body = {
     message: message || 'Update site content via CMS',
     content,
@@ -384,19 +389,7 @@ async function saveSiteData(message) {
     branch: BRANCH,
   };
 
-  try {
-    await ghFetch(`contents/${DATA_PATH}`, { method: 'PUT', body: JSON.stringify(body) });
-  } catch (err) {
-    if (err.message.includes('409')) {
-      // SHA conflict: re-fetch latest SHA and retry
-      const latest = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
-      DATA._sha = latest.sha;
-      body.sha = latest.sha;
-      await ghFetch(`contents/${DATA_PATH}`, { method: 'PUT', body: JSON.stringify(body) });
-    } else {
-      throw err;
-    }
-  }
+  await ghFetch(`contents/${DATA_PATH}`, { method: 'PUT', body: JSON.stringify(body) });
 
   // Refresh SHA after save
   const updated = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
