@@ -317,9 +317,10 @@ export default function TheFaregroundsHomepage() {
     h = Math.round(h*60); return h < 0 ? h+360 : h;
   };
   const BASE_ART_HUE = 25; // baked-in orange hue of illustrations
+  const SEPIA_BASE_HUE = 39; // hue produced by sepia(1) filter
   const accentHue = hexToHue(themeColors?.accent || "#d96a1f");
-  const artHueShift = ((accentHue - BASE_ART_HUE + 540) % 360) - 180; // normalized -180..180
-  const artHueDarkShift = ((accentHue - ((BASE_ART_HUE + 180) % 360) + 540) % 360) - 180;
+  const artHueShift = ((accentHue - BASE_ART_HUE + 540) % 360) - 180; // light mode
+  const artHueDarkShift = ((accentHue - SEPIA_BASE_HUE + 540) % 360) - 180; // dark mode (from sepia base)
 
   useEffect(() => {
     let ticking = false;
@@ -386,7 +387,7 @@ export default function TheFaregroundsHomepage() {
 
     .ink-shadow { text-shadow: 0 2px 0 rgba(78,84,32,0.08); }
     .ink-art { filter: hue-rotate(${artHueShift}deg); transition: filter 0.3s ease; }
-    [data-dark="true"] .ink-art { filter: invert(1) brightness(0.85) hue-rotate(${artHueDarkShift}deg); }
+    [data-dark="true"] .ink-art { filter: invert(1) sepia(1) saturate(3) hue-rotate(${artHueDarkShift}deg) brightness(0.85); }
 
     .paper-texture {
       background:
