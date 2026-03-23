@@ -894,6 +894,7 @@ export default function TheFaregroundsHomepage() {
                         <div key={item.name} className={isSub ? "" : "menu-item-card"} style={{
                           padding: isSub ? "8px 16px 8px 28px" : "16px 18px",
                           background: isSub ? "transparent" : colors.cream,
+                          gridColumn: isSub ? "1 / -1" : undefined,
                           borderRadius: isSub ? 12 : 18,
                           border: isSub ? `1.5px dashed ${colors.oliveMid}20` : undefined,
                         }}>
