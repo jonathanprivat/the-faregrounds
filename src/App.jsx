@@ -307,6 +307,20 @@ export default function TheFaregroundsHomepage() {
     muted: themeColors.muted,
   } : C;
 
+  // Compute hue-rotate for ink illustrations to match theme accent color
+  const hexToHue = (hex) => {
+    const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    if (max === min) return 0;
+    let h; const d = max - min;
+    if (max === r) h = ((g-b)/d)%6; else if (max === g) h = (b-r)/d+2; else h = (r-g)/d+4;
+    h = Math.round(h*60); return h < 0 ? h+360 : h;
+  };
+  const BASE_ART_HUE = 25; // baked-in orange hue of illustrations
+  const accentHue = hexToHue(themeColors?.accent || "#d96a1f");
+  const artHueShift = ((accentHue - BASE_ART_HUE + 540) % 360) - 180; // normalized -180..180
+  const artHueDarkShift = ((accentHue - ((BASE_ART_HUE + 180) % 360) + 540) % 360) - 180;
+
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
@@ -371,8 +385,8 @@ export default function TheFaregroundsHomepage() {
     .ff-accent { font-family: 'p22-franklin-caslon', 'P22 Franklin Caslon', Georgia, serif; font-style: italic; }
 
     .ink-shadow { text-shadow: 0 2px 0 rgba(78,84,32,0.08); }
-    .ink-art { transition: filter 0.3s ease; }
-    [data-dark="true"] .ink-art { filter: invert(1) brightness(0.85); }
+    .ink-art { filter: hue-rotate(${artHueShift}deg); transition: filter 0.3s ease; }
+    [data-dark="true"] .ink-art { filter: invert(1) brightness(0.85) hue-rotate(${artHueDarkShift}deg); }
 
     .paper-texture {
       background:
