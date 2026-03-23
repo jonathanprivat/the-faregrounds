@@ -251,6 +251,8 @@ export default function TheFaregroundsHomepage() {
   const [email, setEmail] = useState("");
   const [activeSection, setActiveSection] = useState("");
   const [gallerySlide, setGallerySlide] = useState(0);
+  const [colorMode, setColorMode] = useState(() => localStorage.getItem("fg_color_mode") || "system");
+  const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
     fetch(B + 'data/site.json')
@@ -259,28 +261,50 @@ export default function TheFaregroundsHomepage() {
       .catch(() => setSiteData(null));
   }, []);
 
+  // Listen for system dark mode changes
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => setSystemDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Persist color mode preference
+  const cycleColorMode = useCallback(() => {
+    const next = colorMode === "system" ? "light" : colorMode === "light" ? "dark" : "system";
+    setColorMode(next);
+    localStorage.setItem("fg_color_mode", next);
+  }, [colorMode]);
+
+  const isDark = colorMode === "dark" || (colorMode === "system" && systemDark);
+
   const menuData = siteData?.menu || MENU_DATA;
   const eventsData = (siteData?.events || EVENTS).map(e => ({
     ...e,
     date: e.date_display || e.date,
   }));
   const content = siteData?.content || {};
-  const theme = siteData?.theme || null;
   const siteSettings = siteData?.settings || {};
 
-  const colors = theme ? {
-    cream: theme.cream,
-    parchment: theme.parchment,
-    warmWhite: theme.warmWhite,
-    olive: theme.primary,
-    oliveMid: theme.primaryMid,
-    gold: theme.accent,
-    goldLight: theme.accentLight,
-    orange: theme.highlight,
-    orangeHot: theme.highlightHot,
-    ink: theme.ink,
-    body: theme.body,
-    muted: theme.muted,
+  // Resolve theme colors: pick light or dark based on mode
+  const activePreset = (siteData?.themePresets || []).find(p => p.active);
+  const themeColors = activePreset
+    ? (isDark && activePreset.darkColors ? activePreset.darkColors : activePreset.colors)
+    : (siteData?.theme || null);
+
+  const colors = themeColors ? {
+    cream: themeColors.cream,
+    parchment: themeColors.parchment,
+    warmWhite: themeColors.warmWhite,
+    olive: themeColors.primary,
+    oliveMid: themeColors.primaryMid,
+    gold: themeColors.accent,
+    goldLight: themeColors.accentLight,
+    orange: themeColors.highlight,
+    orangeHot: themeColors.highlightHot,
+    ink: themeColors.ink,
+    body: themeColors.body,
+    muted: themeColors.muted,
   } : C;
 
   useEffect(() => {
@@ -546,7 +570,7 @@ export default function TheFaregroundsHomepage() {
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         padding: navSolid ? "10px 0" : "18px 0",
-        background: navSolid ? "rgba(239,225,171,0.92)" : "transparent",
+        background: navSolid ? (colors.cream + "ea") : "transparent",
         backdropFilter: navSolid ? "blur(16px)" : "none",
         WebkitBackdropFilter: navSolid ? "blur(16px)" : "none",
         borderBottom: navSolid ? "1px solid rgba(122,126,46,0.12)" : "1px solid transparent",
@@ -562,10 +586,26 @@ export default function TheFaregroundsHomepage() {
               <button key={id} className={`nav-link ${activeSection === id ? "nav-link-active" : ""}`} onClick={() => smoothScrollTo(id)}>{label}</button>
             ))}
             <button className="btn-primary" style={{ padding: "10px 24px", fontSize: 11 }} onClick={() => smoothScrollTo("visit")}>Reserve</button>
+            <button onClick={cycleColorMode} title={colorMode === "system" ? "Theme: System" : colorMode === "light" ? "Theme: Light" : "Theme: Dark"} style={{
+              background: "none", border: `1.5px solid ${colors.olive}30`, borderRadius: "50%",
+              width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", transition: "all 0.2s", color: colors.olive, fontSize: 16,
+            }}>
+              {colorMode === "system" ? "◐" : colorMode === "light" ? "☀" : "☾"}
+            </button>
           </div>
-          <button className="hamburger-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ display: "none", background: "none", border: "none", padding: 4 }}>
-            <HamburgerIcon open={mobileMenuOpen} />
-          </button>
+          <div className="hamburger-btn" style={{ display: "none", alignItems: "center", gap: 8 }}>
+            <button onClick={cycleColorMode} title={colorMode === "system" ? "Theme: System" : colorMode === "light" ? "Theme: Light" : "Theme: Dark"} style={{
+              background: "none", border: `1.5px solid ${colors.olive}30`, borderRadius: "50%",
+              width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", color: colors.olive, fontSize: 15,
+            }}>
+              {colorMode === "system" ? "◐" : colorMode === "light" ? "☀" : "☾"}
+            </button>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: "none", border: "none", padding: 4 }}>
+              <HamburgerIcon open={mobileMenuOpen} />
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -1119,18 +1159,19 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Find Us</SectionLabel>
                     <div style={{ marginTop: 14 }}>
-                      <a href={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none" }}>
-                        <div style={{
-                          borderRadius: 16, border: "2px solid rgba(122,126,46,0.25)",
-                          overflow: "hidden", marginBottom: 12,
-                          cursor: "pointer", transition: "all 0.3s ease",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = colors.olive; e.currentTarget.style.transform = "scale(1.02)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(122,126,46,0.25)"; e.currentTarget.style.transform = "scale(1)"; }}
-                        >
-                          <img src={A.nantucketMap} alt="Hand-drawn map of Nantucket Island showing The Faregrounds at 27 Fairgrounds Rd" style={{ width: "100%", height: "auto", display: "block" }} />
-                        </div>
-                      </a>
+                      <div style={{
+                        borderRadius: 16, border: `2px solid ${colors.olive}40`,
+                        overflow: "hidden", marginBottom: 12,
+                      }}>
+                        <iframe
+                          src="https://embed.waze.com/iframe?zoom=11&lat=41.265267&lon=-70.087760&ct=livemap"
+                          width="100%" height="200"
+                          style={{ display: "block", border: "none" }}
+                          allowFullScreen
+                          loading="lazy"
+                          title="Waze map of Nantucket Island"
+                        />
+                      </div>
                       <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: colors.olive }}>{siteSettings.address_line1 || "27 Fairgrounds Road"}</div>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2 }}>{siteSettings.phone || "(508) 555-FARE"}</div>

@@ -146,78 +146,28 @@ function seed() {
 
     // ── Theme Presets ──
     insertTheme.run('Olive & Cream', JSON.stringify({
-      cream: '#efe1ab',
-      parchment: '#f6edc8',
-      warmWhite: '#fff7e4',
-      primary: '#4e5420',
-      primaryMid: '#7a7e2e',
-      accent: '#c79b34',
-      accentLight: '#d4af5a',
-      highlight: '#d96a1f',
-      highlightHot: '#e8782a',
-      ink: '#161616',
-      body: '#3d3d3d',
-      muted: '#6a6a6a',
+      colors: { cream: '#efe1ab', parchment: '#f6edc8', warmWhite: '#fff7e4', primary: '#4e5420', primaryMid: '#7a7e2e', accent: '#c79b34', accentLight: '#d4af5a', highlight: '#d96a1f', highlightHot: '#e8782a', ink: '#161616', body: '#3d3d3d', muted: '#6a6a6a' },
+      darkColors: { cream: '#1a1c14', parchment: '#22241a', warmWhite: '#2a2c20', primary: '#8a9040', primaryMid: '#a0a650', accent: '#d4af5a', accentLight: '#e0bf70', highlight: '#e8782a', highlightHot: '#f08535', ink: '#f0e8d0', body: '#d0c8b0', muted: '#8a8270' },
     }), 1);
 
     insertTheme.run('Red Orange', JSON.stringify({
-      cream: '#fde8d4',
-      parchment: '#fef0e2',
-      warmWhite: '#fff8f0',
-      primary: '#8b2500',
-      primaryMid: '#c0440f',
-      accent: '#d96a1f',
-      accentLight: '#e8782a',
-      highlight: '#c79b34',
-      highlightHot: '#d4af5a',
-      ink: '#1a1008',
-      body: '#3d2b1a',
-      muted: '#6a5a4a',
+      colors: { cream: '#fde8d4', parchment: '#fef0e2', warmWhite: '#fff8f0', primary: '#8b2500', primaryMid: '#c0440f', accent: '#d96a1f', accentLight: '#e8782a', highlight: '#c79b34', highlightHot: '#d4af5a', ink: '#1a1008', body: '#3d2b1a', muted: '#6a5a4a' },
+      darkColors: { cream: '#1c1008', parchment: '#24160e', warmWhite: '#2c1c14', primary: '#e04828', primaryMid: '#f06040', accent: '#e8782a', accentLight: '#f08535', highlight: '#d4af5a', highlightHot: '#e0bf70', ink: '#f0e0d0', body: '#d0c0b0', muted: '#8a7a6a' },
     }), 0);
 
     insertTheme.run('Dark Orange', JSON.stringify({
-      cream: '#f5e0c0',
-      parchment: '#faecd4',
-      warmWhite: '#fff5e6',
-      primary: '#6e3310',
-      primaryMid: '#a14b18',
-      accent: '#d96a1f',
-      accentLight: '#e8782a',
-      highlight: '#4e5420',
-      highlightHot: '#7a7e2e',
-      ink: '#1a0f05',
-      body: '#3d2a18',
-      muted: '#6a5540',
+      colors: { cream: '#f5e0c0', parchment: '#faecd4', warmWhite: '#fff5e6', primary: '#6e3310', primaryMid: '#a14b18', accent: '#d96a1f', accentLight: '#e8782a', highlight: '#4e5420', highlightHot: '#7a7e2e', ink: '#1a0f05', body: '#3d2a18', muted: '#6a5540' },
+      darkColors: { cream: '#1c1208', parchment: '#241a0e', warmWhite: '#2c2014', primary: '#d06828', primaryMid: '#e07838', accent: '#e8782a', accentLight: '#f08535', highlight: '#8a9040', highlightHot: '#a0a650', ink: '#f0e0d0', body: '#d0c0b0', muted: '#8a7a6a' },
     }), 0);
 
     insertTheme.run('Ocean Blue', JSON.stringify({
-      cream: '#dce8f0',
-      parchment: '#e8f0f6',
-      warmWhite: '#f0f6fa',
-      primary: '#003366',
-      primaryMid: '#1a5c8a',
-      accent: '#c79b34',
-      accentLight: '#d4af5a',
-      highlight: '#d96a1f',
-      highlightHot: '#e8782a',
-      ink: '#0a1520',
-      body: '#2a3a4a',
-      muted: '#5a6a7a',
+      colors: { cream: '#dce8f0', parchment: '#e8f0f6', warmWhite: '#f0f6fa', primary: '#003366', primaryMid: '#1a5c8a', accent: '#c79b34', accentLight: '#d4af5a', highlight: '#d96a1f', highlightHot: '#e8782a', ink: '#0a1520', body: '#2a3a4a', muted: '#5a6a7a' },
+      darkColors: { cream: '#0c1520', parchment: '#121d2a', warmWhite: '#182535', primary: '#3090dd', primaryMid: '#50a8f0', accent: '#d4af5a', accentLight: '#e0bf70', highlight: '#e8782a', highlightHot: '#f08535', ink: '#e0e8f0', body: '#b8c8d8', muted: '#6a7a8a' },
     }), 0);
 
     insertTheme.run('Night Mode', JSON.stringify({
-      cream: '#1a1a1a',
-      parchment: '#222222',
-      warmWhite: '#2a2a2a',
-      primary: '#c79b34',
-      primaryMid: '#d4af5a',
-      accent: '#d96a1f',
-      accentLight: '#e8782a',
-      highlight: '#7a7e2e',
-      highlightHot: '#4e5420',
-      ink: '#f0e8d8',
-      body: '#d8d0c0',
-      muted: '#8a8070',
+      colors: { cream: '#1a1a1a', parchment: '#222222', warmWhite: '#2a2a2a', primary: '#c79b34', primaryMid: '#d4af5a', accent: '#d96a1f', accentLight: '#e8782a', highlight: '#7a7e2e', highlightHot: '#4e5420', ink: '#f0e8d8', body: '#d8d0c0', muted: '#8a8070' },
+      darkColors: { cream: '#1a1a1a', parchment: '#222222', warmWhite: '#2a2a2a', primary: '#c79b34', primaryMid: '#d4af5a', accent: '#d96a1f', accentLight: '#e8782a', highlight: '#7a7e2e', highlightHot: '#4e5420', ink: '#f0e8d8', body: '#d8d0c0', muted: '#8a8070' },
     }), 0);
 
     // ── Settings ──

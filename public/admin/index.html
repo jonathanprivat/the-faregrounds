@@ -73,17 +73,43 @@ tailwind.config = {
       <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
     </div>
     <h1 class="text-2xl font-bold text-gray-900 mb-2">The Faregrounds</h1>
-    <p class="text-gray-500 text-sm mb-6">Connect your GitHub account to manage site content</p>
-    <div class="text-left mb-4">
-      <label class="field-label">GitHub Personal Access Token</label>
-      <input id="token-input" type="password" class="field-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <p class="text-xs text-gray-400 mt-2">Needs <code class="bg-gray-100 px-1 rounded">repo</code> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Faregrounds+CMS" target="_blank" class="text-fg-olive underline">Create one here</a></p>
+    <p class="text-gray-500 text-sm mb-6">Sign in to manage site content</p>
+
+    <!-- Tab toggle -->
+    <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+      <button id="tab-password" onclick="switchLoginTab('password')" class="flex-1 py-2 text-sm font-semibold rounded-md bg-white text-gray-900 shadow-sm">Username</button>
+      <button id="tab-token" onclick="switchLoginTab('token')" class="flex-1 py-2 text-sm font-semibold rounded-md text-gray-500">GitHub Token</button>
     </div>
-    <div class="text-left mb-6">
-      <label class="field-label">Repository</label>
-      <input id="repo-input" class="field-input" value="jonathanprivat/the-faregrounds" placeholder="owner/repo">
+
+    <!-- Password login -->
+    <div id="login-password" class="text-left">
+      <div class="mb-4">
+        <label class="field-label">Username</label>
+        <input id="user-input" class="field-input" placeholder="admin" autocomplete="username">
+      </div>
+      <div class="mb-4">
+        <label class="field-label">Password</label>
+        <input id="pass-input" type="password" class="field-input" placeholder="Password" autocomplete="current-password">
+      </div>
+      <label class="flex items-center gap-2 text-sm text-gray-500 mb-6 cursor-pointer">
+        <input id="remember-me" type="checkbox" checked> Remember me
+      </label>
     </div>
-    <button onclick="doLogin()" class="btn btn-primary w-full" style="padding:14px;">Connect & Start Editing</button>
+
+    <!-- Token login -->
+    <div id="login-token" class="text-left hidden">
+      <div class="mb-4">
+        <label class="field-label">GitHub Personal Access Token</label>
+        <input id="token-input" type="password" class="field-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <p class="text-xs text-gray-400 mt-2">Needs <code class="bg-gray-100 px-1 rounded">repo</code> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Faregrounds+CMS" target="_blank" class="text-fg-olive underline">Create one here</a></p>
+      </div>
+      <div class="mb-6">
+        <label class="field-label">Repository</label>
+        <input id="repo-input" class="field-input" value="jonathanprivat/the-faregrounds" placeholder="owner/repo">
+      </div>
+    </div>
+
+    <button onclick="doLogin()" class="btn btn-primary w-full" style="padding:14px;">Sign In</button>
     <p id="login-error" class="text-red-500 text-sm mt-3 hidden"></p>
   </div>
 </div>
@@ -144,6 +170,10 @@ tailwind.config = {
       <div class="nav-item" onclick="showPage('settings')">
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         Settings
+      </div>
+      <div class="nav-item" onclick="showPage('users')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Users
       </div>
     </nav>
     <div class="p-4 border-t border-gray-200">
@@ -239,6 +269,18 @@ tailwind.config = {
       <div id="settings-editor"></div>
     </div>
 
+    <!-- Users -->
+    <div data-page="users" class="fade-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Users</h3>
+          <p class="text-sm text-gray-500">Manage who can access the admin panel</p>
+        </div>
+        <button onclick="addUser()" class="btn btn-primary text-sm">+ Add User</button>
+      </div>
+      <div id="users-editor"></div>
+    </div>
+
   </div>
 </div>
 
@@ -323,35 +365,85 @@ async function saveSiteData(message) {
   updateSyncStatus();
 }
 
-// ── Auth ──
-function doLogin() {
-  GITHUB_TOKEN = document.getElementById('token-input').value.trim();
-  GITHUB_REPO = document.getElementById('repo-input').value.trim();
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    showLoginError('Please enter both token and repository.');
-    return;
-  }
-  document.querySelector('#login-screen button').textContent = 'Connecting...';
-  document.querySelector('#login-screen button').disabled = true;
+// ── Login Tab Toggle ──
+let loginMode = 'password';
+function switchLoginTab(mode) {
+  loginMode = mode;
+  document.getElementById('login-password').classList.toggle('hidden', mode !== 'password');
+  document.getElementById('login-token').classList.toggle('hidden', mode !== 'token');
+  document.getElementById('tab-password').className = 'flex-1 py-2 text-sm font-semibold rounded-md ' + (mode === 'password' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500');
+  document.getElementById('tab-token').className = 'flex-1 py-2 text-sm font-semibold rounded-md ' + (mode === 'token' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500');
+}
 
-  ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`)
-    .then(file => {
-      DATA = JSON.parse(b64ToUtf8(file.content));
-      DATA._sha = file.sha;
+// ── Auth ──
+let CURRENT_USER = null;
+
+function hashPassword(pw) {
+  // Simple hash for client-side credential storage (not cryptographic security, but fine for a static CMS)
+  let h = 0;
+  for (let i = 0; i < pw.length; i++) { h = ((h << 5) - h + pw.charCodeAt(i)) | 0; }
+  return 'h_' + (h >>> 0).toString(36);
+}
+
+async function doLogin() {
+  const btn = document.querySelector('#login-screen .btn-primary');
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    if (loginMode === 'token') {
+      // Token-based login
+      GITHUB_TOKEN = document.getElementById('token-input').value.trim();
+      GITHUB_REPO = document.getElementById('repo-input').value.trim();
+      if (!GITHUB_TOKEN || !GITHUB_REPO) { showLoginError('Please enter both token and repository.'); return; }
+      await loadSiteData();
+      CURRENT_USER = { username: 'token-user', role: 'admin' };
       localStorage.setItem('fg_token', GITHUB_TOKEN);
       localStorage.setItem('fg_repo', GITHUB_REPO);
       showAdmin();
-    })
-    .catch(err => {
-      showLoginError('Could not connect. Check your token and repo name.');
-      document.querySelector('#login-screen button').textContent = 'Connect & Start Editing';
-      document.querySelector('#login-screen button').disabled = false;
-    });
+    } else {
+      // Password-based login
+      const username = document.getElementById('user-input').value.trim();
+      const password = document.getElementById('pass-input').value;
+      const remember = document.getElementById('remember-me').checked;
+      if (!username || !password) { showLoginError('Please enter username and password.'); return; }
+
+      // Need a token to read site.json; check if one is saved or in the users list
+      const savedToken = localStorage.getItem('fg_token');
+      const savedRepo = localStorage.getItem('fg_repo');
+      if (!savedToken || !savedRepo) {
+        showLoginError('First-time setup: use the GitHub Token tab to connect, then add users.');
+        return;
+      }
+      GITHUB_TOKEN = savedToken;
+      GITHUB_REPO = savedRepo;
+      await loadSiteData();
+
+      // Check credentials against stored users
+      const users = DATA.users || [];
+      const pwHash = hashPassword(password);
+      const user = users.find(u => u.username === username && u.passwordHash === pwHash);
+      if (!user) { showLoginError('Invalid username or password.'); return; }
+
+      CURRENT_USER = user;
+      if (remember) {
+        localStorage.setItem('fg_user', username);
+        localStorage.setItem('fg_pw_hash', pwHash);
+      }
+      showAdmin();
+    }
+  } catch (err) {
+    showLoginError('Could not connect. Check your credentials.');
+  } finally {
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
 }
 
 function doLogout() {
-  localStorage.removeItem('fg_token');
-  localStorage.removeItem('fg_repo');
+  localStorage.removeItem('fg_user');
+  localStorage.removeItem('fg_pw_hash');
+  CURRENT_USER = null;
   location.reload();
 }
 
@@ -362,20 +454,36 @@ function showLoginError(msg) {
 }
 
 // ── Init ──
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('fg_token');
   const repo = localStorage.getItem('fg_repo');
-  if (token && repo) {
-    GITHUB_TOKEN = token;
-    GITHUB_REPO = repo;
-    document.getElementById('token-input').value = token;
-    document.getElementById('repo-input').value = repo;
-    loadSiteData()
-      .then(() => showAdmin())
-      .catch(() => {
-        document.getElementById('login-screen').classList.remove('hidden');
-      });
-  }
+  if (!token || !repo) return;
+
+  GITHUB_TOKEN = token;
+  GITHUB_REPO = repo;
+  document.getElementById('token-input').value = token;
+  document.getElementById('repo-input').value = repo;
+
+  try {
+    await loadSiteData();
+
+    // Check for remembered password login
+    const savedUser = localStorage.getItem('fg_user');
+    const savedHash = localStorage.getItem('fg_pw_hash');
+    if (savedUser && savedHash) {
+      const users = DATA.users || [];
+      const user = users.find(u => u.username === savedUser && u.passwordHash === savedHash);
+      if (user) { CURRENT_USER = user; showAdmin(); return; }
+    }
+
+    // Check if token login was saved (no user/pass means they logged in via token)
+    if (!savedUser) {
+      CURRENT_USER = { username: 'token-user', role: 'admin' };
+      showAdmin();
+      return;
+    }
+  } catch (e) {}
+  document.getElementById('login-screen').classList.remove('hidden');
 });
 
 function showAdmin() {
@@ -389,7 +497,7 @@ function showPage(page) {
   document.querySelectorAll('[data-page]').forEach(el => el.classList.remove('active'));
   document.querySelector(`[data-page="${page}"]`).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const labels = { dashboard: 'Dashboard', menu: 'Menu', events: 'Events', content: 'Content', theme: 'Theme', settings: 'Settings' };
+  const labels = { dashboard: 'Dashboard', menu: 'Menu', events: 'Events', content: 'Content', theme: 'Theme', settings: 'Settings', users: 'Users' };
   const idx = Object.keys(labels).indexOf(page);
   document.querySelectorAll('.nav-item')[idx].classList.add('active');
   document.getElementById('page-title').textContent = labels[page] || page;
@@ -452,6 +560,7 @@ function renderAll() {
   renderContent();
   renderTheme();
   renderSettings();
+  renderUsers();
 }
 
 // ── Dashboard ──
@@ -656,27 +765,43 @@ function renderTheme() {
   const container = document.getElementById('theme-editor');
   const presets = DATA.themePresets || [];
   if (presets.length === 0) {
-    container.innerHTML = '<div class="card"><p class="text-gray-500">No theme presets available. Theme data will appear after the next export.</p></div>';
+    container.innerHTML = '<div class="card"><p class="text-gray-500">No theme presets available.</p></div>';
     return;
   }
+  const colorKeys = ['cream','parchment','warmWhite','primary','primaryMid','accent','accentLight','highlight','highlightHot','ink','body','muted'];
   container.innerHTML = presets.map((preset, idx) => `
     <div class="theme-card ${preset.active ? 'active' : ''}" onclick="activateTheme(${idx})">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-3">
         <h4 class="font-bold text-gray-900">${escHtml(preset.name)}</h4>
         ${preset.active ? '<span class="status-badge bg-green-100 text-green-700 text-xs">Active</span>' : ''}
       </div>
-      <div class="flex gap-2 mb-4">
-        ${['cream','parchment','warmWhite','primary','primaryMid','accent','accentLight','highlight','highlightHot','ink','body','muted'].map(k =>
-          `<div class="swatch" style="background:${preset.colors[k] || '#ccc'}" title="${k}: ${preset.colors[k] || '?'}"></div>`
-        ).join('')}
+      <div class="mb-2">
+        <div class="text-xs font-medium text-gray-400 mb-1">Light</div>
+        <div class="flex gap-1 mb-1">
+          ${colorKeys.map(k => `<div class="swatch" style="width:24px;height:24px;border-radius:6px;background:${preset.colors[k] || '#ccc'}" title="${k}: ${preset.colors[k] || '?'}"></div>`).join('')}
+        </div>
+        <div class="rounded-lg overflow-hidden" style="height: 32px; display: flex;">
+          <div style="flex:2;background:${preset.colors.cream}"></div>
+          <div style="flex:2;background:${preset.colors.primary}"></div>
+          <div style="flex:1;background:${preset.colors.accent}"></div>
+          <div style="flex:1;background:${preset.colors.highlight}"></div>
+          <div style="flex:1;background:${preset.colors.ink}"></div>
+        </div>
       </div>
-      <div class="rounded-lg overflow-hidden" style="height: 48px; display: flex;">
-        <div style="flex:2;background:${preset.colors.cream}"></div>
-        <div style="flex:2;background:${preset.colors.primary}"></div>
-        <div style="flex:1;background:${preset.colors.accent}"></div>
-        <div style="flex:1;background:${preset.colors.highlight}"></div>
-        <div style="flex:1;background:${preset.colors.ink}"></div>
-      </div>
+      ${preset.darkColors ? `
+      <div>
+        <div class="text-xs font-medium text-gray-400 mb-1">Dark</div>
+        <div class="flex gap-1 mb-1">
+          ${colorKeys.map(k => `<div class="swatch" style="width:24px;height:24px;border-radius:6px;background:${preset.darkColors[k] || '#ccc'}" title="${k}: ${preset.darkColors[k] || '?'}"></div>`).join('')}
+        </div>
+        <div class="rounded-lg overflow-hidden" style="height: 32px; display: flex;">
+          <div style="flex:2;background:${preset.darkColors.cream}"></div>
+          <div style="flex:2;background:${preset.darkColors.primary}"></div>
+          <div style="flex:1;background:${preset.darkColors.accent}"></div>
+          <div style="flex:1;background:${preset.darkColors.highlight}"></div>
+          <div style="flex:1;background:${preset.darkColors.ink}"></div>
+        </div>
+      </div>` : ''}
     </div>
   `).join('');
 }
@@ -738,6 +863,68 @@ function renderSettings() {
 function updateSetting(key, value) {
   DATA.settings[key] = value;
   markDirty();
+}
+
+// ── Users ──
+function renderUsers() {
+  const container = document.getElementById('users-editor');
+  if (!DATA.users) DATA.users = [];
+  if (DATA.users.length === 0) {
+    container.innerHTML = `
+      <div class="card text-center py-12">
+        <svg width="48" height="48" fill="#9ca3af" viewBox="0 0 24 24" style="margin:0 auto 16px"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <p class="text-gray-500 mb-4">No users yet. Add a user to enable username/password login.</p>
+        <button onclick="addUser()" class="btn btn-primary text-sm">Add First User</button>
+      </div>`;
+    return;
+  }
+  container.innerHTML = DATA.users.map((user, idx) => `
+    <div class="card mb-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div style="width:40px;height:40px;border-radius:50%;background:#4e5420;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;">
+            ${escHtml(user.username.charAt(0).toUpperCase())}
+          </div>
+          <div>
+            <div class="font-semibold text-gray-900">${escHtml(user.username)}</div>
+            <div class="text-xs text-gray-400">${escHtml(user.role || 'editor')}</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="resetUserPassword(${idx})" class="btn btn-ghost text-xs">Reset Password</button>
+          <button onclick="deleteUser(${idx})" class="btn btn-danger text-xs" style="padding:6px 12px;">Remove</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addUser() {
+  const username = prompt('Username:');
+  if (!username) return;
+  const password = prompt('Password:');
+  if (!password) return;
+  if (!DATA.users) DATA.users = [];
+  if (DATA.users.find(u => u.username === username)) { toast('Username already exists', '#dc2626'); return; }
+  DATA.users.push({ username, passwordHash: hashPassword(password), role: 'editor' });
+  markDirty();
+  renderUsers();
+  toast(`User "${username}" added`);
+}
+
+function resetUserPassword(idx) {
+  const password = prompt(`New password for ${DATA.users[idx].username}:`);
+  if (!password) return;
+  DATA.users[idx].passwordHash = hashPassword(password);
+  markDirty();
+  toast('Password updated');
+}
+
+function deleteUser(idx) {
+  if (!confirm(`Remove user "${DATA.users[idx].username}"?`)) return;
+  DATA.users.splice(idx, 1);
+  markDirty();
+  renderUsers();
 }
 
 // ── Helpers ──

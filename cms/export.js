@@ -51,21 +51,20 @@ export function exportSiteData() {
     content[row.section][row.key] = row.value;
   }
 
-  // ── Theme (active preset) ──
-  const activeTheme = db.prepare(
-    'SELECT * FROM theme_presets WHERE is_active = 1'
-  ).get();
-  const theme = activeTheme ? JSON.parse(activeTheme.colors) : {};
-
   // ── All Theme Presets ──
   const themePresets = db.prepare(
     'SELECT * FROM theme_presets ORDER BY id ASC'
-  ).all().map(tp => ({
-    id: tp.id,
-    name: tp.name,
-    colors: JSON.parse(tp.colors),
-    active: tp.is_active === 1,
-  }));
+  ).all().map(tp => {
+    const data = JSON.parse(tp.colors);
+    // Support both old format (flat colors) and new format (colors + darkColors)
+    const colors = data.colors || data;
+    const darkColors = data.darkColors || null;
+    return { id: tp.id, name: tp.name, colors, ...(darkColors ? { darkColors } : {}), active: tp.is_active === 1 };
+  });
+
+  // ── Theme (active preset) ──
+  const activePreset = themePresets.find(p => p.active);
+  const theme = activePreset ? activePreset.colors : {};
 
   // ── Settings ──
   const settingsRows = db.prepare('SELECT * FROM settings').all();
