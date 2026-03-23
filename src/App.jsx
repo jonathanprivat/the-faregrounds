@@ -1163,25 +1163,15 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Find Us</SectionLabel>
                     <div style={{ marginTop: 14 }}>
-                      <div style={{
-                        borderRadius: 16, border: `2px solid ${colors.olive}40`,
-                        overflow: "hidden", marginBottom: 12,
-                      }}>
-                        <a
-                          href={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ display: "block" }}
-                        >
-                          <img
-                            src={A.nantucketMap}
-                            alt="Map of Nantucket Island"
-                            style={{ width: "100%", height: 200, objectFit: "cover", display: "block", cursor: "pointer" }}
-                            loading="lazy"
-                          />
-                        </a>
-                      </div>
-                      <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: colors.olive }}>{siteSettings.address_line1 || "27 Fairgrounds Road"}</div>
+                      <a
+                        href={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ff-display"
+                        style={{ fontSize: 17, fontWeight: 900, color: colors.olive, textDecoration: "none" }}
+                        onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                        onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                      >{siteSettings.address_line1 || "27 Fairgrounds Road"}</a>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2 }}>{siteSettings.phone || "(508) 555-FARE"}</div>
                     </div>
