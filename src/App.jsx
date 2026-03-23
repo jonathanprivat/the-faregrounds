@@ -85,27 +85,27 @@ function SealColor({ size = 220, style = {} }) {
 }
 
 function WhaleTail({ size = 48, style = {} }) {
-  return <img src={A.whaleTailSvg} alt="" draggable={false} style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
+  return <img src={A.whaleTailSvg} alt="" draggable={false} className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
 }
 
 function WhaleHat({ size = 120, style = {} }) {
-  return <img src={A.whaleHat} alt="" draggable={false} style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
+  return <img src={A.whaleHat} alt="" draggable={false} className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
 }
 
 function Swash({ flip = false, style = {} }) {
-  return <img src={flip ? A.swashR : A.swashL} alt="" draggable={false} style={{ width: "100%", height: "auto", display: "block", ...style }} />;
+  return <img src={flip ? A.swashR : A.swashL} alt="" draggable={false} className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
 }
 
 function Swash2({ flip = false, style = {} }) {
-  return <img src={flip ? A.swashR2 : A.swashL2} alt="" draggable={false} style={{ width: "100%", height: "auto", display: "block", ...style }} />;
+  return <img src={flip ? A.swashR2 : A.swashL2} alt="" draggable={false} className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
 }
 
 function Bracket({ side = "left", style = {} }) {
-  return <img src={side === "left" ? A.bracketL : A.bracketR} alt="" draggable={false} style={{ height: "100%", width: "auto", display: "block", ...style }} />;
+  return <img src={side === "left" ? A.bracketL : A.bracketR} alt="" draggable={false} className="ink-art" style={{ height: "100%", width: "auto", display: "block", ...style }} />;
 }
 
 function Truck({ style = {} }) {
-  return <img src={A.truck} alt="Nantucket Truck" draggable={false} style={{ width: "100%", maxWidth: 300, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.truck} alt="Nantucket Truck" draggable={false} className="ink-art" style={{ width: "100%", maxWidth: 300, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function MapleLeaf({ size = 20, color = "#c0440f", style = {} }) {
@@ -371,6 +371,8 @@ export default function TheFaregroundsHomepage() {
     .ff-accent { font-family: 'p22-franklin-caslon', 'P22 Franklin Caslon', Georgia, serif; font-style: italic; }
 
     .ink-shadow { text-shadow: 0 2px 0 rgba(78,84,32,0.08); }
+    .ink-art { transition: filter 0.3s ease; }
+    [data-dark="true"] .ink-art { filter: invert(1) brightness(0.85); }
 
     .paper-texture {
       background:
@@ -563,7 +565,7 @@ export default function TheFaregroundsHomepage() {
   `;
 
   return (
-    <div className="paper-texture" style={{ minHeight: "100vh", color: colors.ink, overflowX: "hidden" }}>
+    <div className="paper-texture" data-dark={isDark} style={{ minHeight: "100vh", color: colors.ink, overflowX: "hidden" }}>
       <style>{css}</style>
 
       {/* ═══════ NAV ═══════ */}
@@ -649,9 +651,11 @@ export default function TheFaregroundsHomepage() {
                     <div style={{ position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", width: "clamp(60px, 12vw, 140px)", opacity: 0.85 }}>
                       <Swash flip />
                     </div>
-                    <img src={A.logoArch} alt="The Faregrounds" className="ink-shadow" style={{
-                      width: "clamp(280px, 55vw, 620px)", height: "auto", display: "block", margin: "0 auto",
-                    }} />
+                    <h1 style={{ margin: 0, padding: 0, lineHeight: 1 }}>
+                      <img src={A.logoArch} alt="The Faregrounds - Nantucket Island Restaurant" className="ink-shadow ink-art" style={{
+                        width: "clamp(280px, 55vw, 620px)", height: "auto", display: "block", margin: "0 auto",
+                      }} />
+                    </h1>
                   </div>
 
                   <p className="ff-accent" style={{
@@ -1080,7 +1084,7 @@ export default function TheFaregroundsHomepage() {
                   <Bracket side="right" />
                 </div>
                 <div style={{ position: "relative", zIndex: 2 }}>
-                  <img src={A.logoOrange} alt="The Faregrounds" draggable={false} style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
+                  <img src={A.logoOrange} alt="The Faregrounds" draggable={false} className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 16 }}>
                     Stay in the Loop
                   </h2>
@@ -1163,12 +1167,19 @@ export default function TheFaregroundsHomepage() {
                         borderRadius: 16, border: `2px solid ${colors.olive}40`,
                         overflow: "hidden", marginBottom: 12,
                       }}>
-                        <img
-                          src={A.nantucketMap}
-                          alt="Map of Nantucket Island"
-                          style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
-                          loading="lazy"
-                        />
+                        <a
+                          href={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ display: "block" }}
+                        >
+                          <img
+                            src={A.nantucketMap}
+                            alt="Map of Nantucket Island"
+                            style={{ width: "100%", height: 200, objectFit: "cover", display: "block", cursor: "pointer" }}
+                            loading="lazy"
+                          />
+                        </a>
                       </div>
                       <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: colors.olive }}>{siteSettings.address_line1 || "27 Fairgrounds Road"}</div>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
