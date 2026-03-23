@@ -467,6 +467,237 @@
         "body": "#c8c0b8",
         "muted": "#7a7888"
       }
+    },
+    {
+      "id": 6,
+      "name": "Christmas",
+      "colors": {
+        "cream": "#f5ede0",
+        "parchment": "#faf3ea",
+        "warmWhite": "#fef9f2",
+        "primary": "#1a472a",
+        "primaryMid": "#2d6b3f",
+        "accent": "#b91c1c",
+        "accentLight": "#d42f2f",
+        "highlight": "#c79b34",
+        "highlightHot": "#d4af5a",
+        "ink": "#0f1a12",
+        "body": "#2a3a2e",
+        "muted": "#5a6a5e"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#0f1a12",
+        "parchment": "#152218",
+        "warmWhite": "#1c2a20",
+        "primary": "#4aad6a",
+        "primaryMid": "#5cc480",
+        "accent": "#e84040",
+        "accentLight": "#f05555",
+        "highlight": "#d4af5a",
+        "highlightHot": "#e0c070",
+        "ink": "#f0ece5",
+        "body": "#c8c4bc",
+        "muted": "#7a7870"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Halloween",
+      "colors": {
+        "cream": "#f5e8d8",
+        "parchment": "#faf0e2",
+        "warmWhite": "#fef6ec",
+        "primary": "#4a1a6b",
+        "primaryMid": "#6b2d95",
+        "accent": "#e86a10",
+        "accentLight": "#f07820",
+        "highlight": "#1a8a3a",
+        "highlightHot": "#20a848",
+        "ink": "#1a0e08",
+        "body": "#3a2820",
+        "muted": "#6a5848"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#1a0e08",
+        "parchment": "#221410",
+        "warmWhite": "#2a1a14",
+        "primary": "#9050cc",
+        "primaryMid": "#a868e0",
+        "accent": "#f08020",
+        "accentLight": "#f89030",
+        "highlight": "#30c050",
+        "highlightHot": "#40d868",
+        "ink": "#f0e8dd",
+        "body": "#c8c0b4",
+        "muted": "#7a7268"
+      }
+    },
+    {
+      "id": 8,
+      "name": "Thanksgiving",
+      "colors": {
+        "cream": "#f2e6d0",
+        "parchment": "#f7edda",
+        "warmWhite": "#fcf4e6",
+        "primary": "#6b3a1a",
+        "primaryMid": "#8a5028",
+        "accent": "#c45520",
+        "accentLight": "#d86830",
+        "highlight": "#8b6914",
+        "highlightHot": "#a07e20",
+        "ink": "#1a1008",
+        "body": "#3a2a18",
+        "muted": "#6a5a48"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#1a1208",
+        "parchment": "#22180e",
+        "warmWhite": "#2a2014",
+        "primary": "#c07040",
+        "primaryMid": "#d88050",
+        "accent": "#e07030",
+        "accentLight": "#f08040",
+        "highlight": "#c09830",
+        "highlightHot": "#d0a840",
+        "ink": "#f0e8d8",
+        "body": "#c8c0b0",
+        "muted": "#8a8070"
+      }
+    },
+    {
+      "id": 9,
+      "name": "New Year's Eve",
+      "colors": {
+        "cream": "#eee8e0",
+        "parchment": "#f4ede6",
+        "warmWhite": "#faf6f0",
+        "primary": "#1a1a2e",
+        "primaryMid": "#2a2a48",
+        "accent": "#c79b34",
+        "accentLight": "#d4af5a",
+        "highlight": "#8a8a9a",
+        "highlightHot": "#a0a0b0",
+        "ink": "#0e0e14",
+        "body": "#2a2a34",
+        "muted": "#5a5a68"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#0e0e14",
+        "parchment": "#14141e",
+        "warmWhite": "#1a1a28",
+        "primary": "#6060aa",
+        "primaryMid": "#7878c0",
+        "accent": "#e0bf50",
+        "accentLight": "#ecd060",
+        "highlight": "#a0a0b8",
+        "highlightHot": "#b8b8d0",
+        "ink": "#f0eee8",
+        "body": "#c8c6c0",
+        "muted": "#7a7880"
+      }
+    },
+    {
+      "id": 10,
+      "name": "Easter",
+      "colors": {
+        "cream": "#f0e8f0",
+        "parchment": "#f5eef5",
+        "warmWhite": "#faf4fa",
+        "primary": "#6a3d8a",
+        "primaryMid": "#8855aa",
+        "accent": "#d4608a",
+        "accentLight": "#e070a0",
+        "highlight": "#5a9a40",
+        "highlightHot": "#70b050",
+        "ink": "#1a1020",
+        "body": "#3a2a42",
+        "muted": "#6a5a78"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#1a1020",
+        "parchment": "#201628",
+        "warmWhite": "#281e30",
+        "primary": "#a070cc",
+        "primaryMid": "#b888e0",
+        "accent": "#e880aa",
+        "accentLight": "#f090b8",
+        "highlight": "#80c060",
+        "highlightHot": "#90d070",
+        "ink": "#f0e8f0",
+        "body": "#c8c0cc",
+        "muted": "#7a7284"
+      }
+    },
+    {
+      "id": 11,
+      "name": "Valentine's Day",
+      "colors": {
+        "cream": "#f5e0e4",
+        "parchment": "#fae8ec",
+        "warmWhite": "#fef0f2",
+        "primary": "#8b1a3a",
+        "primaryMid": "#b52050",
+        "accent": "#d44070",
+        "accentLight": "#e05588",
+        "highlight": "#c49060",
+        "highlightHot": "#d4a070",
+        "ink": "#1a0810",
+        "body": "#3a2028",
+        "muted": "#6a4858"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#1a0810",
+        "parchment": "#221018",
+        "warmWhite": "#2a1820",
+        "primary": "#e04878",
+        "primaryMid": "#f06090",
+        "accent": "#e86898",
+        "accentLight": "#f078a8",
+        "highlight": "#d4a870",
+        "highlightHot": "#e0b880",
+        "ink": "#f0e8ea",
+        "body": "#c8c0c2",
+        "muted": "#7a7078"
+      }
+    },
+    {
+      "id": 12,
+      "name": "St. Patrick's Day",
+      "colors": {
+        "cream": "#e8f0e0",
+        "parchment": "#eff5e8",
+        "warmWhite": "#f5faf0",
+        "primary": "#1a5c28",
+        "primaryMid": "#2a7a3a",
+        "accent": "#c79b34",
+        "accentLight": "#d4af5a",
+        "highlight": "#d96a1f",
+        "highlightHot": "#e8782a",
+        "ink": "#0a1a0e",
+        "body": "#2a3a2e",
+        "muted": "#5a6a5e"
+      },
+      "active": false,
+      "darkColors": {
+        "cream": "#0a1a0e",
+        "parchment": "#102218",
+        "warmWhite": "#182a1e",
+        "primary": "#40b060",
+        "primaryMid": "#50c870",
+        "accent": "#d4af5a",
+        "accentLight": "#e0bf70",
+        "highlight": "#e8782a",
+        "highlightHot": "#f08535",
+        "ink": "#e8f0e0",
+        "body": "#c0c8b8",
+        "muted": "#708068"
+      }
     }
   ],
   "settings": {
