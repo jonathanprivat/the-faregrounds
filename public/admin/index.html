@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Faregrounds - Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        fg: {
+          olive: '#4e5420',
+          cream: '#efe1ab',
+          parchment: '#f6edc8',
+          warm: '#fff7e4',
+          orange: '#d96a1f',
+          gold: '#c79b34',
+          ink: '#161616',
+          body: '#3d3d3d',
+          muted: '#6a6a6a',
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { font-family: 'Inter', system-ui, sans-serif; }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .swatch { width: 32px; height: 32px; border-radius: 8px; border: 2px solid rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.15s; }
+  .swatch:hover { transform: scale(1.15); }
+  [data-page] { display: none; }
+  [data-page].active { display: block; }
+  .nav-item { cursor: pointer; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #4b5563; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: #f3f4f6; color: #111; }
+  .nav-item.active { background: #4e5420; color: white; }
+  .card { background: white; border-radius: 14px; border: 1px solid #e5e7eb; padding: 24px; }
+  .field-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+  .field-input { width: 100%; padding: 10px 14px; border: 1.5px solid #d1d5db; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.15s; }
+  .field-input:focus { border-color: #4e5420; box-shadow: 0 0 0 3px rgba(78,84,32,0.1); }
+  textarea.field-input { resize: vertical; min-height: 80px; }
+  .btn { padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+  .btn-primary { background: #4e5420; color: white; }
+  .btn-primary:hover { background: #3d4319; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(78,84,32,0.25); }
+  .btn-danger { background: #dc2626; color: white; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost { background: transparent; color: #4e5420; border: 1.5px solid #d1d5db; }
+  .btn-ghost:hover { border-color: #4e5420; background: #f9fafb; }
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 24px; border-radius: 12px; color: white; font-weight: 600; font-size: 14px; z-index: 9999; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .menu-item-row { display: grid; grid-template-columns: 1fr 120px 40px; gap: 12px; align-items: start; padding: 16px; border: 1.5px solid #e5e7eb; border-radius: 12px; background: #fafafa; transition: border-color 0.15s; }
+  .menu-item-row:hover { border-color: #4e5420; }
+  .sub-item { border-left: 3px solid #c79b34; margin-left: 20px; }
+  .theme-card { border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+  .theme-card:hover { border-color: #4e5420; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .theme-card.active { border-color: #4e5420; background: #f0f7e6; box-shadow: 0 0 0 3px rgba(78,84,32,0.15); }
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; }
+  .modal { background: white; border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Login Screen -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-fg-warm to-fg-cream">
+  <div class="card max-w-md w-full mx-4 text-center fade-in" style="padding: 40px;">
+    <div style="width:64px;height:64px;border-radius:16px;background:#4e5420;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
+      <svg width="28" height="28" fill="white" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">The Faregrounds</h1>
+    <p class="text-gray-500 text-sm mb-6">Connect your GitHub account to manage site content</p>
+    <div class="text-left mb-4">
+      <label class="field-label">GitHub Personal Access Token</label>
+      <input id="token-input" type="password" class="field-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <p class="text-xs text-gray-400 mt-2">Needs <code class="bg-gray-100 px-1 rounded">repo</code> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Faregrounds+CMS" target="_blank" class="text-fg-olive underline">Create one here</a></p>
+    </div>
+    <div class="text-left mb-6">
+      <label class="field-label">Repository</label>
+      <input id="repo-input" class="field-input" value="jonathanprivat/the-faregrounds" placeholder="owner/repo">
+    </div>
+    <button onclick="doLogin()" class="btn btn-primary w-full" style="padding:14px;">Connect & Start Editing</button>
+    <p id="login-error" class="text-red-500 text-sm mt-3 hidden"></p>
+  </div>
+</div>
+
+<!-- Admin Shell -->
+<div id="admin-shell" class="hidden">
+  <!-- Top Bar -->
+  <div class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center px-6" style="padding-left: 280px;">
+    <div class="flex items-center gap-3 flex-1">
+      <h2 id="page-title" class="text-lg font-bold text-gray-900">Dashboard</h2>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="sync-status" class="status-badge bg-green-100 text-green-700">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span> Synced
+      </span>
+      <button onclick="publishChanges()" class="btn btn-primary flex items-center gap-2" id="publish-btn">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg>
+        Publish
+      </button>
+      <button onclick="doLogout()" class="btn btn-ghost text-sm">Logout</button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <div style="width:36px;height:36px;border-radius:10px;background:#4e5420;display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        </div>
+        <div>
+          <div class="font-bold text-sm text-gray-900">Faregrounds CMS</div>
+          <div class="text-xs text-gray-400">GitHub Pages</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('menu')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/></svg>
+        Menu
+      </div>
+      <div class="nav-item" onclick="showPage('events')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+        Events
+      </div>
+      <div class="nav-item" onclick="showPage('content')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Content
+      </div>
+      <div class="nav-item" onclick="showPage('theme')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-1 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        Theme
+      </div>
+      <div class="nav-item" onclick="showPage('settings')">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Settings
+      </div>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <a href="https://jonathanprivat.github.io/the-faregrounds/" target="_blank" class="nav-item text-fg-olive" style="justify-content:center;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        View Live Site
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="ml-64 mt-16 p-8">
+
+    <!-- Dashboard -->
+    <div data-page="dashboard" class="active fade-in">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+          <div class="text-sm font-medium text-gray-500 mb-1">Menu Items</div>
+          <div class="text-3xl font-bold text-gray-900" id="stat-items">--</div>
+          <div class="text-xs text-gray-400 mt-1" id="stat-categories">-- categories</div>
+        </div>
+        <div class="card">
+          <div class="text-sm font-medium text-gray-500 mb-1">Events</div>
+          <div class="text-3xl font-bold text-gray-900" id="stat-events">--</div>
+          <div class="text-xs text-gray-400 mt-1" id="stat-featured">-- featured</div>
+        </div>
+        <div class="card">
+          <div class="text-sm font-medium text-gray-500 mb-1">Active Theme</div>
+          <div class="text-xl font-bold text-gray-900" id="stat-theme">--</div>
+          <div class="text-xs text-gray-400 mt-1" id="stat-presets">-- presets available</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="font-bold text-gray-900 mb-2">Quick Start</h3>
+        <p class="text-sm text-gray-500 mb-4">Edit your site content directly from here. Changes are saved to GitHub and auto-deployed via GitHub Actions.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button onclick="showPage('menu')" class="btn btn-ghost text-sm">Edit Menu</button>
+          <button onclick="showPage('events')" class="btn btn-ghost text-sm">Manage Events</button>
+          <button onclick="showPage('theme')" class="btn btn-ghost text-sm">Change Theme</button>
+          <button onclick="showPage('settings')" class="btn btn-ghost text-sm">Site Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu Editor -->
+    <div data-page="menu" class="fade-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Menu Editor</h3>
+          <p class="text-sm text-gray-500">Add, edit, or remove menu items by category</p>
+        </div>
+        <button onclick="addMenuCategory()" class="btn btn-primary text-sm">+ Add Category</button>
+      </div>
+      <div id="menu-editor"></div>
+    </div>
+
+    <!-- Events Editor -->
+    <div data-page="events" class="fade-in">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Events</h3>
+          <p class="text-sm text-gray-500">Manage upcoming events and happenings</p>
+        </div>
+        <button onclick="addEvent()" class="btn btn-primary text-sm">+ Add Event</button>
+      </div>
+      <div id="events-editor"></div>
+    </div>
+
+    <!-- Content Editor -->
+    <div data-page="content" class="fade-in">
+      <div class="mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Page Content</h3>
+        <p class="text-sm text-gray-500">Edit headings, descriptions, and text throughout the site</p>
+      </div>
+      <div id="content-editor"></div>
+    </div>
+
+    <!-- Theme Picker -->
+    <div data-page="theme" class="fade-in">
+      <div class="mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Theme</h3>
+        <p class="text-sm text-gray-500">Choose a color scheme for the site</p>
+      </div>
+      <div id="theme-editor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- Settings -->
+    <div data-page="settings" class="fade-in">
+      <div class="mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Site Settings</h3>
+        <p class="text-sm text-gray-500">Contact info, hours, and external links</p>
+      </div>
+      <div id="settings-editor"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal container -->
+<div id="modal-container"></div>
+
+<script>
+// ── State ──
+let DATA = null;
+let DIRTY = false;
+let GITHUB_TOKEN = '';
+let GITHUB_REPO = '';
+const BRANCH = 'main';
+const DATA_PATH = 'public/data/site.json';
+
+// ── GitHub API ──
+async function ghFetch(endpoint, opts = {}) {
+  const url = endpoint.startsWith('http') ? endpoint : `https://api.github.com/repos/${GITHUB_REPO}/${endpoint}`;
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      'Authorization': `Bearer ${GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...(opts.headers || {}),
+    },
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+async function loadSiteData() {
+  const file = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
+  const content = atob(file.content.replace(/\n/g, ''));
+  DATA = JSON.parse(content);
+  DATA._sha = file.sha;
+  return DATA;
+}
+
+async function saveSiteData(message) {
+  DATA.exportedAt = new Date().toISOString();
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2))));
+  await ghFetch(`contents/${DATA_PATH}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      message: message || 'Update site content via CMS',
+      content,
+      sha: DATA._sha,
+      branch: BRANCH,
+    }),
+  });
+  // Refresh SHA after save
+  const updated = await ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`);
+  DATA._sha = updated.sha;
+  DIRTY = false;
+  updateSyncStatus();
+}
+
+// ── Auth ──
+function doLogin() {
+  GITHUB_TOKEN = document.getElementById('token-input').value.trim();
+  GITHUB_REPO = document.getElementById('repo-input').value.trim();
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    showLoginError('Please enter both token and repository.');
+    return;
+  }
+  document.querySelector('#login-screen button').textContent = 'Connecting...';
+  document.querySelector('#login-screen button').disabled = true;
+
+  ghFetch(`contents/${DATA_PATH}?ref=${BRANCH}`)
+    .then(file => {
+      const content = atob(file.content.replace(/\n/g, ''));
+      DATA = JSON.parse(content);
+      DATA._sha = file.sha;
+      localStorage.setItem('fg_token', GITHUB_TOKEN);
+      localStorage.setItem('fg_repo', GITHUB_REPO);
+      showAdmin();
+    })
+    .catch(err => {
+      showLoginError('Could not connect. Check your token and repo name.');
+      document.querySelector('#login-screen button').textContent = 'Connect & Start Editing';
+      document.querySelector('#login-screen button').disabled = false;
+    });
+}
+
+function doLogout() {
+  localStorage.removeItem('fg_token');
+  localStorage.removeItem('fg_repo');
+  location.reload();
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// ── Init ──
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('fg_token');
+  const repo = localStorage.getItem('fg_repo');
+  if (token && repo) {
+    GITHUB_TOKEN = token;
+    GITHUB_REPO = repo;
+    document.getElementById('token-input').value = token;
+    document.getElementById('repo-input').value = repo;
+    loadSiteData()
+      .then(() => showAdmin())
+      .catch(() => {
+        document.getElementById('login-screen').classList.remove('hidden');
+      });
+  }
+});
+
+function showAdmin() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-shell').classList.remove('hidden');
+  renderAll();
+}
+
+// ── Navigation ──
+function showPage(page) {
+  document.querySelectorAll('[data-page]').forEach(el => el.classList.remove('active'));
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const labels = { dashboard: 'Dashboard', menu: 'Menu', events: 'Events', content: 'Content', theme: 'Theme', settings: 'Settings' };
+  const idx = Object.keys(labels).indexOf(page);
+  document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  document.getElementById('page-title').textContent = labels[page] || page;
+}
+
+// ── Dirty tracking ──
+function markDirty() {
+  DIRTY = true;
+  updateSyncStatus();
+}
+
+function updateSyncStatus() {
+  const el = document.getElementById('sync-status');
+  if (DIRTY) {
+    el.className = 'status-badge bg-amber-100 text-amber-700';
+    el.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span> Unsaved changes';
+  } else {
+    el.className = 'status-badge bg-green-100 text-green-700';
+    el.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span> Synced';
+  }
+}
+
+// ── Publish ──
+async function publishChanges() {
+  if (!DIRTY) {
+    toast('No changes to publish', '#6b7280');
+    return;
+  }
+  const btn = document.getElementById('publish-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 019.95 9" stroke-opacity="1"/></svg> Publishing...';
+
+  try {
+    await saveSiteData('Update site content via CMS admin');
+    toast('Published! GitHub Actions will deploy in ~60s.', '#16a34a');
+  } catch (err) {
+    toast('Publish failed: ' + err.message, '#dc2626');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm0 10h4v6h6v-6h4l-7-7-7 7z"/></svg> Publish';
+  }
+}
+
+// ── Toast ──
+function toast(msg, bg = '#4e5420') {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.background = bg;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; }, 2500);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ── Render All ──
+function renderAll() {
+  renderDashboard();
+  renderMenu();
+  renderEvents();
+  renderContent();
+  renderTheme();
+  renderSettings();
+}
+
+// ── Dashboard ──
+function renderDashboard() {
+  const cats = Object.keys(DATA.menu);
+  const totalItems = cats.reduce((sum, k) => sum + DATA.menu[k].length, 0);
+  document.getElementById('stat-items').textContent = totalItems;
+  document.getElementById('stat-categories').textContent = cats.length + ' categories';
+  document.getElementById('stat-events').textContent = DATA.events.length;
+  document.getElementById('stat-featured').textContent = DATA.events.filter(e => e.featured).length + ' featured';
+  const activePreset = (DATA.themePresets || []).find(t => t.active);
+  document.getElementById('stat-theme').textContent = activePreset ? activePreset.name : 'Default';
+  document.getElementById('stat-presets').textContent = (DATA.themePresets || []).length + ' presets available';
+}
+
+// ── Menu Editor ──
+function renderMenu() {
+  const container = document.getElementById('menu-editor');
+  const cats = Object.keys(DATA.menu);
+  container.innerHTML = cats.map(cat => `
+    <div class="card mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <h4 class="font-bold text-gray-900 capitalize text-lg">${escHtml(cat)}</h4>
+          <span class="text-xs text-gray-400">${DATA.menu[cat].length} items</span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="addMenuItem('${escAttr(cat)}')" class="btn btn-ghost text-xs">+ Add Item</button>
+          <button onclick="renameCategory('${escAttr(cat)}')" class="btn btn-ghost text-xs">Rename</button>
+          <button onclick="deleteCategory('${escAttr(cat)}')" class="btn btn-danger text-xs" style="padding:6px 12px;">Delete</button>
+        </div>
+      </div>
+      <div class="space-y-3">
+        ${DATA.menu[cat].map((item, idx) => `
+          <div class="menu-item-row ${item.sub ? 'sub-item' : ''}">
+            <div>
+              <input class="field-input text-sm font-semibold" value="${escAttr(item.name)}" onchange="updateMenuItem('${escAttr(cat)}',${idx},'name',this.value)" placeholder="Item name" style="margin-bottom:6px;">
+              <textarea class="field-input text-xs" onchange="updateMenuItem('${escAttr(cat)}',${idx},'desc',this.value)" placeholder="Description" style="min-height:50px;">${escHtml(item.desc || '')}</textarea>
+            </div>
+            <div>
+              <input class="field-input text-sm" value="${escAttr(item.price)}" onchange="updateMenuItem('${escAttr(cat)}',${idx},'price',this.value)" placeholder="Price" style="margin-bottom:6px;">
+              <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                <input type="checkbox" ${item.sub ? 'checked' : ''} onchange="updateMenuItem('${escAttr(cat)}',${idx},'sub',this.checked)"> Sub-item
+              </label>
+            </div>
+            <button onclick="deleteMenuItem('${escAttr(cat)}',${idx})" class="text-red-400 hover:text-red-600 mt-2" title="Delete">
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateMenuItem(cat, idx, field, value) {
+  if (field === 'sub') value = !!value;
+  DATA.menu[cat][idx][field] = value;
+  markDirty();
+}
+
+function addMenuItem(cat) {
+  DATA.menu[cat].push({ name: 'New Item', price: '$0.00', desc: '', sub: false });
+  markDirty();
+  renderMenu();
+}
+
+function deleteMenuItem(cat, idx) {
+  if (!confirm(`Delete "${DATA.menu[cat][idx].name}"?`)) return;
+  DATA.menu[cat].splice(idx, 1);
+  markDirty();
+  renderMenu();
+}
+
+function addMenuCategory() {
+  const name = prompt('Category name:');
+  if (!name) return;
+  DATA.menu[name.toLowerCase()] = [];
+  markDirty();
+  renderMenu();
+}
+
+function renameCategory(oldName) {
+  const newName = prompt('New category name:', oldName);
+  if (!newName || newName.toLowerCase() === oldName) return;
+  DATA.menu[newName.toLowerCase()] = DATA.menu[oldName];
+  delete DATA.menu[oldName];
+  markDirty();
+  renderMenu();
+}
+
+function deleteCategory(cat) {
+  if (!confirm(`Delete entire "${cat}" category and all its items?`)) return;
+  delete DATA.menu[cat];
+  markDirty();
+  renderMenu();
+  renderDashboard();
+}
+
+// ── Events Editor ──
+function renderEvents() {
+  const container = document.getElementById('events-editor');
+  container.innerHTML = DATA.events.map((evt, idx) => `
+    <div class="card mb-4">
+      <div class="flex items-start gap-4">
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="field-label">Title</label>
+            <input class="field-input" value="${escAttr(evt.title)}" onchange="updateEvent(${idx},'title',this.value)">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="field-label">Date Display</label>
+              <input class="field-input" value="${escAttr(evt.date)}" onchange="updateEvent(${idx},'date',this.value)" placeholder="e.g. Mar 28">
+            </div>
+            <div>
+              <label class="field-label">Badge</label>
+              <input class="field-input" value="${escAttr(evt.badge || '')}" onchange="updateEvent(${idx},'badge',this.value)" placeholder="e.g. Seasonal">
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="field-label">Description</label>
+            <textarea class="field-input" onchange="updateEvent(${idx},'desc',this.value)" placeholder="Event description">${escHtml(evt.desc || '')}</textarea>
+          </div>
+          <div>
+            <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+              <input type="checkbox" ${evt.featured ? 'checked' : ''} onchange="updateEvent(${idx},'featured',this.checked)">
+              Featured event (highlighted on site)
+            </label>
+          </div>
+        </div>
+        <button onclick="deleteEvent(${idx})" class="text-red-400 hover:text-red-600 mt-6" title="Delete">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateEvent(idx, field, value) {
+  if (field === 'featured') value = !!value;
+  DATA.events[idx][field] = value;
+  markDirty();
+}
+
+function addEvent() {
+  DATA.events.push({ title: 'New Event', date: 'TBD', badge: '', desc: '', featured: false });
+  markDirty();
+  renderEvents();
+  renderDashboard();
+}
+
+function deleteEvent(idx) {
+  if (!confirm(`Delete "${DATA.events[idx].title}"?`)) return;
+  DATA.events.splice(idx, 1);
+  markDirty();
+  renderEvents();
+  renderDashboard();
+}
+
+// ── Content Editor ──
+function renderContent() {
+  const container = document.getElementById('content-editor');
+  const sectionLabels = {
+    hero: 'Hero Section',
+    story: 'Our Story',
+    events: 'Events Section',
+    atmosphere: 'Atmosphere Section',
+    order: 'Order & Reserve Section',
+    newsletter: 'Newsletter Section',
+    footer: 'Footer',
+  };
+  const sections = Object.keys(DATA.content);
+  container.innerHTML = sections.map(section => `
+    <div class="card mb-4">
+      <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-fg-olive"></span>
+        ${escHtml(sectionLabels[section] || section)}
+      </h4>
+      <div class="space-y-4">
+        ${Object.keys(DATA.content[section]).map(key => `
+          <div>
+            <label class="field-label">${escHtml(formatLabel(key))}</label>
+            ${DATA.content[section][key].length > 80
+              ? `<textarea class="field-input" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">${escHtml(DATA.content[section][key])}</textarea>`
+              : `<input class="field-input" value="${escAttr(DATA.content[section][key])}" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">`
+            }
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateContent(section, key, value) {
+  DATA.content[section][key] = value;
+  markDirty();
+}
+
+// ── Theme Picker ──
+function renderTheme() {
+  const container = document.getElementById('theme-editor');
+  const presets = DATA.themePresets || [];
+  if (presets.length === 0) {
+    container.innerHTML = '<div class="card"><p class="text-gray-500">No theme presets available. Theme data will appear after the next export.</p></div>';
+    return;
+  }
+  container.innerHTML = presets.map((preset, idx) => `
+    <div class="theme-card ${preset.active ? 'active' : ''}" onclick="activateTheme(${idx})">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="font-bold text-gray-900">${escHtml(preset.name)}</h4>
+        ${preset.active ? '<span class="status-badge bg-green-100 text-green-700 text-xs">Active</span>' : ''}
+      </div>
+      <div class="flex gap-2 mb-4">
+        ${['cream','parchment','warmWhite','primary','primaryMid','accent','accentLight','highlight','highlightHot','ink','body','muted'].map(k =>
+          `<div class="swatch" style="background:${preset.colors[k] || '#ccc'}" title="${k}: ${preset.colors[k] || '?'}"></div>`
+        ).join('')}
+      </div>
+      <div class="rounded-lg overflow-hidden" style="height: 48px; display: flex;">
+        <div style="flex:2;background:${preset.colors.cream}"></div>
+        <div style="flex:2;background:${preset.colors.primary}"></div>
+        <div style="flex:1;background:${preset.colors.accent}"></div>
+        <div style="flex:1;background:${preset.colors.highlight}"></div>
+        <div style="flex:1;background:${preset.colors.ink}"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function activateTheme(idx) {
+  const presets = DATA.themePresets;
+  presets.forEach((p, i) => p.active = (i === idx));
+  DATA.theme = { ...presets[idx].colors };
+  markDirty();
+  renderTheme();
+  renderDashboard();
+  toast(`Theme switched to "${presets[idx].name}"`);
+}
+
+// ── Settings Editor ──
+function renderSettings() {
+  const container = document.getElementById('settings-editor');
+  const groups = {
+    'General': ['site_name', 'site_subtitle'],
+    'Contact': ['phone', 'address_line1', 'address_line2'],
+    'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
+    'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url', 'menu_pdf_url'],
+    'Social Media': ['instagram_url', 'facebook_url', 'twitter_url'],
+  };
+  container.innerHTML = Object.entries(groups).map(([group, keys]) => `
+    <div class="card mb-4">
+      <h4 class="font-bold text-gray-900 mb-4">${escHtml(group)}</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${keys.filter(k => k in DATA.settings).map(key => `
+          <div>
+            <label class="field-label">${escHtml(formatLabel(key))}</label>
+            <input class="field-input" value="${escAttr(DATA.settings[key])}" onchange="updateSetting('${escAttr(key)}',this.value)">
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Show any extra keys not in the defined groups
+  const groupedKeys = Object.values(groups).flat();
+  const extraKeys = Object.keys(DATA.settings).filter(k => !groupedKeys.includes(k));
+  if (extraKeys.length > 0) {
+    container.innerHTML += `
+      <div class="card mb-4">
+        <h4 class="font-bold text-gray-900 mb-4">Other</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${extraKeys.map(key => `
+            <div>
+              <label class="field-label">${escHtml(formatLabel(key))}</label>
+              <input class="field-input" value="${escAttr(DATA.settings[key])}" onchange="updateSetting('${escAttr(key)}',this.value)">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+}
+
+function updateSetting(key, value) {
+  DATA.settings[key] = value;
+  markDirty();
+}
+
+// ── Helpers ──
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escAttr(s) { return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+function formatLabel(key) {
+  return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/Url\b/g, 'URL');
+}
+</script>
+</body>
+</html>

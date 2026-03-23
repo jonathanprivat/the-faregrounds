@@ -243,6 +243,7 @@ function PhotoBlock({ gradient, aspect = "4/3", label = "", style = {} }) {
 
 // ─── Main Component ─────────────────────────────────────────────
 export default function TheFaregroundsHomepage() {
+  const [siteData, setSiteData] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("appetizers");
@@ -250,6 +251,37 @@ export default function TheFaregroundsHomepage() {
   const [email, setEmail] = useState("");
   const [activeSection, setActiveSection] = useState("");
   const [gallerySlide, setGallerySlide] = useState(0);
+
+  useEffect(() => {
+    fetch(B + 'data/site.json')
+      .then(r => r.json())
+      .then(data => setSiteData(data))
+      .catch(() => setSiteData(null));
+  }, []);
+
+  const menuData = siteData?.menu || MENU_DATA;
+  const eventsData = (siteData?.events || EVENTS).map(e => ({
+    ...e,
+    date: e.date_display || e.date,
+  }));
+  const content = siteData?.content || {};
+  const theme = siteData?.theme || null;
+  const siteSettings = siteData?.settings || {};
+
+  const colors = theme ? {
+    cream: theme.cream,
+    parchment: theme.parchment,
+    warmWhite: theme.warmWhite,
+    olive: theme.primary,
+    oliveMid: theme.primaryMid,
+    gold: theme.accent,
+    goldLight: theme.accentLight,
+    orange: theme.highlight,
+    orangeHot: theme.highlightHot,
+    ink: theme.ink,
+    body: theme.body,
+    muted: theme.muted,
+  } : C;
 
   useEffect(() => {
     let ticking = false;
@@ -321,12 +353,12 @@ export default function TheFaregroundsHomepage() {
         radial-gradient(ellipse at 15% 15%, rgba(255,255,255,0.18), transparent 50%),
         radial-gradient(ellipse at 85% 20%, rgba(255,255,255,0.1), transparent 40%),
         radial-gradient(ellipse at 50% 80%, rgba(0,0,0,0.02), transparent 50%),
-        ${C.cream};
+        ${colors.cream};
     }
 
     .poster-card {
       position: relative; overflow: hidden; border-radius: 24px;
-      background: ${C.parchment}; border: 3px solid ${C.olive};
+      background: ${colors.parchment}; border: 3px solid ${colors.olive};
       box-shadow: inset 0 0 0 2px rgba(122,126,46,0.3), 0 4px 24px rgba(0,0,0,0.05);
       transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s;
     }
@@ -346,27 +378,27 @@ export default function TheFaregroundsHomepage() {
       font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase;
       cursor: pointer; transition: all 0.3s ease; text-decoration: none;
     }
-    .btn-primary { border: 2px solid ${C.olive}; background: ${C.oliveMid}; color: ${C.warmWhite}; }
-    .btn-primary:hover { background: ${C.olive}; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(78,84,32,0.2); }
-    .btn-secondary { border: 2px solid ${C.olive}; background: transparent; color: ${C.olive}; }
-    .btn-secondary:hover { background: ${C.olive}; color: ${C.warmWhite}; transform: translateY(-2px); }
-    .btn-accent { border: 2px solid ${C.olive}; background: ${C.orange}; color: ${C.warmWhite}; }
-    .btn-accent:hover { background: ${C.orangeHot}; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(217,106,31,0.25); }
+    .btn-primary { border: 2px solid ${colors.olive}; background: ${colors.oliveMid}; color: ${colors.warmWhite}; }
+    .btn-primary:hover { background: ${colors.olive}; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(78,84,32,0.2); }
+    .btn-secondary { border: 2px solid ${colors.olive}; background: transparent; color: ${colors.olive}; }
+    .btn-secondary:hover { background: ${colors.olive}; color: ${colors.warmWhite}; transform: translateY(-2px); }
+    .btn-accent { border: 2px solid ${colors.olive}; background: ${colors.orange}; color: ${colors.warmWhite}; }
+    .btn-accent:hover { background: ${colors.orangeHot}; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(217,106,31,0.25); }
 
     .tag {
       display: inline-block; padding: 4px 12px; border-radius: 999px;
-      border: 1.5px solid ${C.olive}; background: ${C.cream};
-      color: ${C.olive}; font-family: 'Source Sans 3', sans-serif;
+      border: 1.5px solid ${colors.olive}; background: ${colors.cream};
+      color: ${colors.olive}; font-family: 'Source Sans 3', sans-serif;
       font-weight: 700; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
     }
 
     .menu-tab {
-      padding: 10px 28px; border-radius: 999px; border: 2px solid ${C.olive};
+      padding: 10px 28px; border-radius: 999px; border: 2px solid ${colors.olive};
       font-family: 'Source Sans 3', sans-serif; font-weight: 700;
       font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.25s ease; background: transparent; color: ${C.olive};
+      cursor: pointer; transition: all 0.25s ease; background: transparent; color: ${colors.olive};
     }
-    .menu-tab-active { background: ${C.olive}; color: ${C.warmWhite}; }
+    .menu-tab-active { background: ${colors.olive}; color: ${colors.warmWhite}; }
     .menu-tab:not(.menu-tab-active):hover { background: rgba(78,84,32,0.08); }
 
     .photo-placeholder {
@@ -374,7 +406,7 @@ export default function TheFaregroundsHomepage() {
     }
 
     .nav-link {
-      position: relative; color: ${C.olive};
+      position: relative; color: ${colors.olive};
       font-family: 'Source Sans 3', sans-serif; font-weight: 600;
       font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
       cursor: pointer; padding: 4px 0; text-decoration: none; transition: color 0.2s;
@@ -382,11 +414,11 @@ export default function TheFaregroundsHomepage() {
     }
     .nav-link::after {
       content: ''; position: absolute; bottom: 0; left: 0;
-      width: 0; height: 2px; background: ${C.orange}; transition: width 0.3s ease;
+      width: 0; height: 2px; background: ${colors.orange}; transition: width 0.3s ease;
     }
-    .nav-link:hover { color: ${C.orange}; }
+    .nav-link:hover { color: ${colors.orange}; }
     .nav-link:hover::after { width: 100%; }
-    .nav-link-active { color: ${C.orange}; }
+    .nav-link-active { color: ${colors.orange}; }
     .nav-link-active::after { width: 100%; }
 
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
@@ -399,11 +431,11 @@ export default function TheFaregroundsHomepage() {
 
     .menu-item-card {
       border-radius: 18px; border: 2px solid rgba(122,126,46,0.25);
-      background: ${C.cream}; padding: 24px;
+      background: ${colors.cream}; padding: 24px;
       display: flex; flex-direction: column; gap: 8px;
       transition: border-color 0.25s, background 0.25s, transform 0.25s; cursor: default;
     }
-    .menu-item-card:hover { border-color: ${C.oliveMid}; background: ${C.parchment}; transform: translateY(-2px); }
+    .menu-item-card:hover { border-color: ${colors.oliveMid}; background: ${colors.parchment}; transform: translateY(-2px); }
 
     .event-card {
       border-radius: 20px; padding: 20px;
@@ -415,18 +447,18 @@ export default function TheFaregroundsHomepage() {
       width: 38px; height: 38px; border-radius: 999px;
       border: 2px solid rgba(122,126,46,0.35);
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: ${C.olive};
+      font-size: 11px; font-weight: 700; color: ${colors.olive};
       font-family: 'Source Sans 3', sans-serif; letter-spacing: 0.08em;
       cursor: pointer; transition: all 0.25s;
     }
-    .social-icon:hover { background: ${C.olive}; color: ${C.warmWhite}; border-color: ${C.olive}; }
+    .social-icon:hover { background: ${colors.olive}; color: ${colors.warmWhite}; border-color: ${colors.olive}; }
 
     .footer-link {
-      font-size: 16px; color: ${C.body}; cursor: pointer; transition: color 0.2s;
+      font-size: 16px; color: ${colors.body}; cursor: pointer; transition: color 0.2s;
       text-decoration: none; background: none; border: none; padding: 0;
       font-family: 'BogueSlab', Georgia, serif; text-align: left;
     }
-    .footer-link:hover { color: ${C.orange}; }
+    .footer-link:hover { color: ${colors.orange}; }
 
     .mobile-overlay {
       position: fixed; inset: 0; z-index: 99;
@@ -434,19 +466,19 @@ export default function TheFaregroundsHomepage() {
     }
     .mobile-drawer {
       position: fixed; top: 0; right: 0; bottom: 0; z-index: 101;
-      width: min(320px, 85vw); background: ${C.parchment};
-      border-left: 3px solid ${C.olive};
+      width: min(320px, 85vw); background: ${colors.parchment};
+      border-left: 3px solid ${colors.olive};
       padding: 80px 32px 40px; display: flex; flex-direction: column; gap: 8px;
       transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
     }
     .mobile-drawer-link {
       padding: 14px 0; font-family: 'BogueSlab', Georgia, serif;
-      font-size: 24px; font-weight: 700; color: ${C.ink};
+      font-size: 24px; font-weight: 700; color: ${colors.ink};
       border-bottom: 1px solid rgba(122,126,46,0.15);
       cursor: pointer; transition: color 0.2s; background: none;
       border-top: none; border-left: none; border-right: none; text-align: left; width: 100%;
     }
-    .mobile-drawer-link:hover { color: ${C.orange}; }
+    .mobile-drawer-link:hover { color: ${colors.orange}; }
 
     .gallery-grid {
       display: grid; grid-template-columns: 1fr 1fr;
@@ -507,7 +539,7 @@ export default function TheFaregroundsHomepage() {
   `;
 
   return (
-    <div className="paper-texture" style={{ minHeight: "100vh", color: C.ink, overflowX: "hidden" }}>
+    <div className="paper-texture" style={{ minHeight: "100vh", color: colors.ink, overflowX: "hidden" }}>
       <style>{css}</style>
 
       {/* ═══════ NAV ═══════ */}
@@ -523,7 +555,7 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
             <WhaleTail size={26} />
-            <span className="ff-display" style={{ fontSize: 22, fontWeight: 900, color: C.olive, letterSpacing: "-0.02em" }}>The Faregrounds</span>
+            <span className="ff-display" style={{ fontSize: 22, fontWeight: 900, color: colors.olive, letterSpacing: "-0.02em" }}>{siteSettings.site_name || "The Faregrounds"}</span>
           </button>
           <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: 28 }}>
             {NAV_LINKS.map(({ label, id }) => (
@@ -551,7 +583,7 @@ export default function TheFaregroundsHomepage() {
         </div>
         <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8, opacity: 0.5 }}>
           <WhaleTail size={20} />
-          <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: C.muted }}>Nantucket Island</span>
+          <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>Nantucket Island</span>
         </div>
       </div>
 
@@ -567,7 +599,7 @@ export default function TheFaregroundsHomepage() {
                 </div>
 
                 <div style={{ textAlign: "center", position: "relative", zIndex: 2 }}>
-                  <SectionLabel>Nantucket Island • Restaurant • Events • Community</SectionLabel>
+                  <SectionLabel>{content?.hero?.subtitle || "Nantucket Island • Restaurant • Events • Community"}</SectionLabel>
 
                   {/* Title with real swashes */}
                   <div style={{ margin: "24px auto 0", maxWidth: 820, position: "relative" }}>
@@ -583,10 +615,10 @@ export default function TheFaregroundsHomepage() {
                   </div>
 
                   <p className="ff-accent" style={{
-                    fontSize: "clamp(19px, 2.2vw, 24px)", lineHeight: 1.65, color: C.body,
+                    fontSize: "clamp(19px, 2.2vw, 24px)", lineHeight: 1.65, color: colors.body,
                     maxWidth: 560, margin: "20px auto 0",
                   }}>
-                    Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road.
+                    {content?.hero?.tagline || "Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road."}
                   </p>
 
                   <Divider />
@@ -607,7 +639,7 @@ export default function TheFaregroundsHomepage() {
                 {/* Truck illustration */}
                 <div className="float" style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "40px auto 0" }}>
                   <Truck style={{ maxWidth: 400 }} />
-                  <span className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 16px)", color: C.oliveMid, textAlign: "center", marginTop: 14 }}>
+                  <span className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 16px)", color: colors.oliveMid, textAlign: "center", marginTop: 14 }}>
                     Old-School Island Gathering Place
                   </span>
                 </div>
@@ -626,14 +658,14 @@ export default function TheFaregroundsHomepage() {
                 <div style={{ padding: "clamp(24px, 4vw, 40px)" }}>
                   <SectionLabel>Our Story</SectionLabel>
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 12 }}>
-                    A Farmstand Poster Turned Into a Restaurant.
+                    {content?.story?.heading || "A Farmstand Poster Turned Into a Restaurant."}
                   </h2>
                   <Divider />
-                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: C.body }}>
-                    The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.
+                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: colors.body }}>
+                    {content?.story?.paragraph1 || "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket."}
                   </p>
-                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: C.body, marginTop: 16 }}>
-                    We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee.
+                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: colors.body, marginTop: 16 }}>
+                    {content?.story?.paragraph2 || "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."}
                   </p>
                   <div style={{ marginTop: 28 }}>
                     <button className="btn-secondary" onClick={() => smoothScrollTo("visit")}>Come Visit Us</button>
@@ -644,40 +676,40 @@ export default function TheFaregroundsHomepage() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <Reveal delay={0.12}>
-                <div style={{ borderRadius: 24, border: "2px solid rgba(122,126,46,0.25)", background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                  <img src={A.ticket} alt="1888 Nantucket Agricultural Society Exhibition Ticket" draggable={false} style={{ width: "100%", maxWidth: 500, height: "auto", borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", border: `1.5px solid ${C.olive}30` }} />
-                  <span className="ff-accent" style={{ fontSize: 13, color: C.oliveMid, textAlign: "center" }}>
+                <div style={{ borderRadius: 24, border: "2px solid rgba(122,126,46,0.25)", background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                  <img src={A.ticket} alt="1888 Nantucket Agricultural Society Exhibition Ticket" draggable={false} style={{ width: "100%", maxWidth: 500, height: "auto", borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", border: `1.5px solid ${colors.olive}30` }} />
+                  <span className="ff-accent" style={{ fontSize: 13, color: colors.oliveMid, textAlign: "center" }}>
                     33rd Annual Exhibition, 1888 — Where it all began.
                   </span>
                 </div>
               </Reveal>
               {[
-                { title: "Seasonal Menu", body: "Warm plates that rotate with the season — crafted from local ingredients and island traditions.", delay: 0.15, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={C.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg> },
-                { title: "Community Space", body: "Built for neighbors, families, and pop-ups — a gathering place that brings the island together.", delay: 0.25, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={C.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/></svg> },
-                { title: "Event-Driven", body: "Events are central, not an afterthought — from maple fests to live music nights on the field.", delay: 0.35, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={C.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={C.olive} opacity="0.12"/><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg> },
+                { title: "Seasonal Menu", body: "Warm plates that rotate with the season — crafted from local ingredients and island traditions.", delay: 0.15, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={colors.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg> },
+                { title: "Community Space", body: "Built for neighbors, families, and pop-ups — a gathering place that brings the island together.", delay: 0.25, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={colors.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/></svg> },
+                { title: "Event-Driven", body: "Events are central, not an afterthought — from maple fests to live music nights on the field.", delay: 0.35, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={colors.olive} opacity="0.12"/><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg> },
               ].map((p, i) => (
                 <Reveal key={i} delay={p.delay}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: "clamp(16px, 2vw, 24px)",
                     padding: "clamp(16px, 2vw, 22px)", marginTop: i === 0 ? 0 : 12,
-                    borderRadius: 18, border: `1.5px solid ${C.olive}18`,
-                    background: `linear-gradient(135deg, ${C.parchment}80, ${C.cream}60)`,
+                    borderRadius: 18, border: `1.5px solid ${colors.olive}18`,
+                    background: `linear-gradient(135deg, ${colors.parchment}80, ${colors.cream}60)`,
                     transition: "all 0.3s ease",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.olive + "40"; e.currentTarget.style.transform = "translateX(4px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.olive + "18"; e.currentTarget.style.transform = "translateX(0)"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = colors.olive + "40"; e.currentTarget.style.transform = "translateX(4px)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = colors.olive + "18"; e.currentTarget.style.transform = "translateX(0)"; }}
                   >
                     <div style={{
                       width: 56, height: 56, borderRadius: "50%", flexShrink: 0,
-                      border: `2px solid ${C.olive}25`,
-                      background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`,
+                      border: `2px solid ${colors.olive}25`,
+                      background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
                       {p.icon}
                     </div>
                     <div>
                       <h3 className="ff-body" style={{ fontSize: "clamp(17px, 1.5vw, 21px)", fontWeight: 700, lineHeight: 1.15 }}>{p.title}</h3>
-                      <p className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 15px)", lineHeight: 1.55, color: C.body, marginTop: 4 }}>{p.body}</p>
+                      <p className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 15px)", lineHeight: 1.55, color: colors.body, marginTop: 4 }}>{p.body}</p>
                     </div>
                   </div>
                 </Reveal>
@@ -698,7 +730,7 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Full Menu</SectionLabel>
                     <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
-                      Lunch
+                      {content?.hero?.menu_title || "Lunch"}
                     </h2>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -714,7 +746,7 @@ export default function TheFaregroundsHomepage() {
 
                 {/* Category tabs */}
                 <div className="scrollbar-hide" style={{ display: "flex", gap: 6, marginTop: 24, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
-                  {Object.keys(MENU_DATA).map((key) => (
+                  {Object.keys(menuData).map((key) => (
                     <button key={key} className={`menu-tab ${activeMenu === key ? "menu-tab-active" : ""}`}
                       onClick={() => switchMenu(key)}
                       style={{ whiteSpace: "nowrap", padding: "8px 18px", fontSize: 11 }}
@@ -737,14 +769,14 @@ export default function TheFaregroundsHomepage() {
                 {/* Menu items */}
                 <div style={{ opacity: menuFade ? 0 : 1, transform: menuFade ? "translateY(8px)" : "none", transition: "opacity 0.2s, transform 0.2s" }}>
                   <div className="menu-items-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {MENU_DATA[activeMenu].map((item) => {
+                    {(menuData[activeMenu] || []).map((item) => {
                       const isSub = item.sub;
                       return (
                         <div key={item.name} className={isSub ? "" : "menu-item-card"} style={{
                           padding: isSub ? "8px 16px 8px 28px" : "16px 18px",
-                          background: isSub ? "transparent" : C.cream,
+                          background: isSub ? "transparent" : colors.cream,
                           borderRadius: isSub ? 12 : 18,
-                          border: isSub ? `1.5px dashed ${C.oliveMid}20` : undefined,
+                          border: isSub ? `1.5px dashed ${colors.oliveMid}20` : undefined,
                         }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                             <div style={{ flex: 1 }}>
@@ -752,23 +784,23 @@ export default function TheFaregroundsHomepage() {
                                 fontSize: isSub ? 14 : "clamp(16px, 1.5vw, 19px)",
                                 fontWeight: isSub ? 600 : 700,
                                 lineHeight: 1.15,
-                                color: isSub ? C.oliveMid : C.ink,
+                                color: isSub ? colors.oliveMid : colors.ink,
                                 fontStyle: isSub ? "italic" : "normal",
                               }}>{item.name}</div>
                               {item.desc && (
-                                <p className="ff-body" style={{ fontSize: isSub ? 13 : 14, lineHeight: 1.5, color: C.body, marginTop: 3 }}>{item.desc}</p>
+                                <p className="ff-body" style={{ fontSize: isSub ? 13 : 14, lineHeight: 1.5, color: colors.body, marginTop: 3 }}>{item.desc}</p>
                               )}
                             </div>
                             {item.price && !isSub && (
                               <div style={{
                                 padding: "4px 10px", borderRadius: 999,
-                                border: `2px solid ${C.olive}`, background: C.orange, color: C.warmWhite,
+                                border: `2px solid ${colors.olive}`, background: colors.orange, color: colors.warmWhite,
                                 fontFamily: "'BogueSlab', serif", fontWeight: 700, fontSize: 13,
                                 whiteSpace: "nowrap", flexShrink: 0,
-                              }}>${item.price}</div>
+                              }}>{item.price.startsWith("$") ? item.price : `$${item.price}`}</div>
                             )}
                             {item.price && isSub && (
-                              <span className="ff-ui" style={{ fontSize: 11, color: C.oliveMid, fontWeight: 600, whiteSpace: "nowrap" }}>{item.price}</span>
+                              <span className="ff-ui" style={{ fontSize: 11, color: colors.oliveMid, fontWeight: 600, whiteSpace: "nowrap" }}>{item.price}</span>
                             )}
                           </div>
                         </div>
@@ -787,7 +819,7 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <div className="events-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
             <Reveal>
-              <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${C.olive}30` }}>
+              <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
                 <img src={A.maplefest} alt="Maple Fest 2026 — Saturday, March 28th at 27 Fairgrounds Road" style={{ width: "100%", height: "auto", display: "block" }} />
               </div>
               <div style={{ marginTop: 20, textAlign: "center" }}>
@@ -800,31 +832,31 @@ export default function TheFaregroundsHomepage() {
                 <div style={{ padding: "clamp(24px, 3vw, 40px)" }}>
                   <SectionLabel>Upcoming Events</SectionLabel>
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 12 }}>
-                    More Than a Restaurant
+                    {content?.events?.heading || "More Than a Restaurant"}
                   </h2>
                   <Divider />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    {EVENTS.map((event) => (
+                    {eventsData.map((event) => (
                       <div key={event.title} className="event-card" style={{
-                        border: `2px solid ${event.featured ? C.orange + "50" : C.oliveMid + "25"}`,
-                        background: event.featured ? `linear-gradient(135deg, ${C.cream}, #f0dca0)` : C.cream,
+                        border: `2px solid ${event.featured ? colors.orange + "50" : colors.oliveMid + "25"}`,
+                        background: event.featured ? `linear-gradient(135deg, ${colors.cream}, #f0dca0)` : colors.cream,
                       }}>
                         <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
                           <div style={{ flexShrink: 0, width: 56, textAlign: "center" }}>
-                            <div className="ff-display" style={{ fontSize: 28, fontWeight: 900, lineHeight: 1, color: C.ink }}>{event.date.split(" ")[1]}</div>
-                            <div className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.12em", color: C.oliveMid, marginTop: 2 }}>{event.date.split(" ")[0]}</div>
+                            <div className="ff-display" style={{ fontSize: 28, fontWeight: 900, lineHeight: 1, color: colors.ink }}>{event.date.split(" ")[1]}</div>
+                            <div className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.12em", color: colors.oliveMid, marginTop: 2 }}>{event.date.split(" ")[0]}</div>
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                               <h3 className="ff-body" style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.1 }}>{event.title}</h3>
                               <span style={{
-                                padding: "3px 10px", borderRadius: 999, border: `1.5px solid ${C.olive}`,
-                                background: event.featured ? C.orange : C.oliveMid, color: C.warmWhite,
+                                padding: "3px 10px", borderRadius: 999, border: `1.5px solid ${colors.olive}`,
+                                background: event.featured ? colors.orange : colors.oliveMid, color: colors.warmWhite,
                                 fontFamily: "'Source Sans 3', sans-serif", fontWeight: 700,
                                 fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase",
                               }}>{event.badge}</span>
                             </div>
-                            <p className="ff-body" style={{ fontSize: 15, lineHeight: 1.55, color: C.body, marginTop: 5 }}>{event.desc}</p>
+                            <p className="ff-body" style={{ fontSize: 15, lineHeight: 1.55, color: colors.body, marginTop: 5 }}>{event.desc}</p>
                           </div>
                         </div>
                       </div>
@@ -866,7 +898,7 @@ export default function TheFaregroundsHomepage() {
             const goTo = (n) => setGallerySlide((n + slides.length) % slides.length);
             return (
               <div style={{ position: "relative", maxWidth: 900, margin: "0 auto" }}>
-                <div style={{ borderRadius: 20, overflow: "hidden", border: `2px solid rgba(122,126,46,0.2)`, position: "relative", aspectRatio: "16/9", background: C.ink }}>
+                <div style={{ borderRadius: 20, overflow: "hidden", border: `2px solid rgba(122,126,46,0.2)`, position: "relative", aspectRatio: "16/9", background: colors.ink }}>
                   {slides.map((s, i) => (
                     <img key={i} src={s.src} alt={s.caption} style={{
                       position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
@@ -899,10 +931,10 @@ export default function TheFaregroundsHomepage() {
                 </div>
                 {/* Caption below the image */}
                 <div style={{ textAlign: "center", marginTop: 14, minHeight: 48 }}>
-                  <p className="ff-accent" style={{ fontSize: "clamp(14px, 1.3vw, 17px)", color: C.ink, lineHeight: 1.5, margin: 0, transition: "opacity 0.4s" }}>
+                  <p className="ff-accent" style={{ fontSize: "clamp(14px, 1.3vw, 17px)", color: colors.ink, lineHeight: 1.5, margin: 0, transition: "opacity 0.4s" }}>
                     {slides[si].caption}
                   </p>
-                  <p className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.12em", color: C.oliveMid, marginTop: 4, textTransform: "uppercase" }}>
+                  <p className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.12em", color: colors.oliveMid, marginTop: 4, textTransform: "uppercase" }}>
                     {slides[si].credit}
                   </p>
                 </div>
@@ -921,14 +953,14 @@ export default function TheFaregroundsHomepage() {
               <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
                 Reserve, Order & Review
               </h2>
-              <p className="ff-accent" style={{ fontSize: "clamp(15px, 1.4vw, 18px)", color: C.body, maxWidth: 420, margin: "14px auto 0" }}>
+              <p className="ff-accent" style={{ fontSize: "clamp(15px, 1.4vw, 18px)", color: colors.body, maxWidth: 420, margin: "14px auto 0" }}>
                 Whether you're dining in or ordering from home — we've got you covered.
               </p>
             </div>
           </Reveal>
 
           {(() => {
-            const o = C.olive;
+            const o = colors.olive;
             const svc = [
               {
                 name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: "https://www.opentable.com", btn: "RESERVE NOW", btnClass: "btn-primary",
@@ -963,12 +995,12 @@ export default function TheFaregroundsHomepage() {
                   <Reveal key={s.name} delay={i * 0.08}>
                     <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
                       <div className="poster-card poster-card-hover" style={{ padding: "clamp(20px, 2.5vw, 32px)", textAlign: "center", height: "100%", cursor: "pointer" }}>
-                        <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${C.olive}25`, background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                        <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${colors.olive}25`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
                           {s.icon}
                         </div>
-                        <div className="ff-ui" style={{ fontSize: 9, letterSpacing: "0.18em", color: C.oliveMid, marginBottom: 6 }}>{s.cat}</div>
+                        <div className="ff-ui" style={{ fontSize: 9, letterSpacing: "0.18em", color: colors.oliveMid, marginBottom: 6 }}>{s.cat}</div>
                         <h3 className="ff-body" style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
-                        <p className="ff-accent" style={{ fontSize: 13, color: C.body, marginTop: 6, lineHeight: 1.5 }}>{s.desc}</p>
+                        <p className="ff-accent" style={{ fontSize: 13, color: colors.body, marginTop: 6, lineHeight: 1.5 }}>{s.desc}</p>
                         {s.btn && <div style={{ marginTop: 14 }}><span className={s.btnClass} style={{ display: "inline-block", padding: "8px 20px", fontSize: 10, letterSpacing: "0.14em", borderRadius: 999 }}>{s.btn}</span></div>}
                       </div>
                     </a>
@@ -980,11 +1012,11 @@ export default function TheFaregroundsHomepage() {
                   <Reveal key={s.name} delay={(i + 3) * 0.06}>
                     <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
                       <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", cursor: "pointer" }}>
-                        <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${C.olive}20`, background: `linear-gradient(135deg, ${C.cream}, ${C.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                        <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${colors.olive}20`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
                           {s.icon}
                         </div>
                         <h3 className="ff-body" style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
-                        <p className="ff-accent" style={{ fontSize: 12, color: C.body, marginTop: 4 }}>{s.desc}</p>
+                        <p className="ff-accent" style={{ fontSize: 12, color: colors.body, marginTop: 4 }}>{s.desc}</p>
                       </div>
                     </a>
                   </Reveal>
@@ -1012,18 +1044,18 @@ export default function TheFaregroundsHomepage() {
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 16 }}>
                     Stay in the Loop
                   </h2>
-                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.6vw, 20px)", lineHeight: 1.7, color: C.body, maxWidth: 480, margin: "14px auto 0" }}>
+                  <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.6vw, 20px)", lineHeight: 1.7, color: colors.body, maxWidth: 480, margin: "14px auto 0" }}>
                     Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.
                   </p>
                   <div style={{
                     display: "flex", maxWidth: 460, margin: "24px auto 0",
-                    borderRadius: 999, border: `2px solid ${C.olive}`, background: C.cream, padding: 4,
+                    borderRadius: 999, border: `2px solid ${colors.olive}`, background: colors.cream, padding: 4,
                   }}>
                     <input value={email} onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com" className="ff-body"
-                      style={{ flex: 1, background: "transparent", border: "none", outline: "none", padding: "12px 20px", fontSize: 16, color: C.ink, minWidth: 0 }}
+                      style={{ flex: 1, background: "transparent", border: "none", outline: "none", padding: "12px 20px", fontSize: 16, color: colors.ink, minWidth: 0 }}
                     />
-                    <button className="btn-accent" style={{ borderRadius: 999, padding: "10px 24px", fontSize: 11, border: `2px solid ${C.olive}`, flexShrink: 0 }}>Join</button>
+                    <button className="btn-accent" style={{ borderRadius: 999, padding: "10px 24px", fontSize: 11, border: `2px solid ${colors.olive}`, flexShrink: 0 }}>Join</button>
                   </div>
                 </div>
               </div>
@@ -1042,18 +1074,18 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <WhaleTail size={30} />
-                      <span className="ff-display" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 900, color: C.ink, lineHeight: 1 }}>The Faregrounds</span>
+                      <span className="ff-display" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 900, color: colors.ink, lineHeight: 1 }}>{siteSettings.site_name || "The Faregrounds"}</span>
                     </div>
-                    <p className="ff-body" style={{ fontSize: 16, lineHeight: 1.7, color: C.body, marginTop: 14, maxWidth: 300 }}>
+                    <p className="ff-body" style={{ fontSize: 16, lineHeight: 1.7, color: colors.body, marginTop: 14, maxWidth: 300 }}>
                       Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island.
                     </p>
                     <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
                       {[
-                        { name: "instagram", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
-                        { name: "facebook", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-                        { name: "twitter", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
+                        { name: "instagram", href: siteSettings.instagram_url || "#", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
+                        { name: "facebook", href: siteSettings.facebook_url || "#", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
+                        { name: "twitter", href: siteSettings.twitter_url || "#", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
                       ].map((icon) => (
-                        <a key={icon.name} className="social-icon" href="#" aria-label={icon.name}>
+                        <a key={icon.name} className="social-icon" href={icon.href} target="_blank" rel="noopener noreferrer" aria-label={icon.name}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={icon.path}/></svg>
                         </a>
                       ))}
@@ -1068,9 +1100,18 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Hours</SectionLabel>
                     <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
-                      {[["Mon–Thu", "8am – 3pm"], ["Fri–Sun", "8am – 8pm"], ["Events", "Seasonal evenings"]].map(([day, time]) => (
-                        <div key={day} className="ff-body" style={{ fontSize: 16, color: C.body }}>
-                          <span style={{ fontWeight: 700, color: C.ink }}>{day}</span><br/>{time}
+                      {[
+                        siteSettings.hours_weekday || "Mon\u2013Thu: 8am \u2013 3pm",
+                        siteSettings.hours_weekend || "Fri\u2013Sun: 8am \u2013 8pm",
+                        siteSettings.hours_events || "Events: Seasonal evenings",
+                      ].map((h) => {
+                        const idx = h.indexOf(": ");
+                        const day = idx >= 0 ? h.slice(0, idx) : h;
+                        const time = idx >= 0 ? h.slice(idx + 2) : "";
+                        return [day, time];
+                      }).map(([day, time]) => (
+                        <div key={day} className="ff-body" style={{ fontSize: 16, color: colors.body }}>
+                          <span style={{ fontWeight: 700, color: colors.ink }}>{day}</span><br/>{time}
                         </div>
                       ))}
                     </div>
@@ -1078,21 +1119,21 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <SectionLabel>Find Us</SectionLabel>
                     <div style={{ marginTop: 14 }}>
-                      <a href="https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554" target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none" }}>
+                      <a href={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"} target="_blank" rel="noopener noreferrer" style={{ display: "block", textDecoration: "none" }}>
                         <div style={{
                           borderRadius: 16, border: "2px solid rgba(122,126,46,0.25)",
                           overflow: "hidden", marginBottom: 12,
                           cursor: "pointer", transition: "all 0.3s ease",
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.olive; e.currentTarget.style.transform = "scale(1.02)"; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = colors.olive; e.currentTarget.style.transform = "scale(1.02)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(122,126,46,0.25)"; e.currentTarget.style.transform = "scale(1)"; }}
                         >
                           <img src={A.nantucketMap} alt="Hand-drawn map of Nantucket Island showing The Faregrounds at 27 Fairgrounds Rd" style={{ width: "100%", height: "auto", display: "block" }} />
                         </div>
                       </a>
-                      <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: C.olive }}>27 Fairgrounds Road</div>
-                      <div className="ff-body" style={{ fontSize: 15, color: C.body, marginTop: 3 }}>Nantucket, MA 02554</div>
-                      <div className="ff-body" style={{ fontSize: 15, color: C.body, marginTop: 2 }}>(508) 555-FARE</div>
+                      <div className="ff-display" style={{ fontSize: 17, fontWeight: 900, color: colors.olive }}>{siteSettings.address_line1 || "27 Fairgrounds Road"}</div>
+                      <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
+                      <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2 }}>{siteSettings.phone || "(508) 555-FARE"}</div>
                     </div>
                   </div>
                 </div>
@@ -1101,13 +1142,13 @@ export default function TheFaregroundsHomepage() {
                   marginTop: 32, paddingTop: 18, borderTop: "1px solid rgba(122,126,46,0.15)",
                   display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
                 }}>
-                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: C.muted }}>© 2026 The Faregrounds • Nantucket Island</span>
+                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{`\u00A9 2026 ${siteSettings.site_name || "The Faregrounds"} \u2022 Nantucket Island`}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div className="divider-line" style={{ width: 40 }} />
                     <WhaleTail size={18} style={{ opacity: 0.4 }} />
                     <div className="divider-line" style={{ width: 40 }} />
                   </div>
-                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: C.muted }}>Privacy • Terms • Accessibility</span>
+                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>Privacy • Terms • Accessibility</span>
                 </div>
               </div>
             </PosterCard>

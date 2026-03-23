@@ -1,0 +1,423 @@
+{
+  "menu": {
+    "appetizers": [
+      {
+        "name": "Pupu Platter",
+        "price": "$26.99",
+        "desc": "Skewers: beef, chicken & prawn. Chicken wings. Pork ribs. Pierogi. Lumpia.",
+        "sub": false
+      },
+      {
+        "name": "Raclette Fries",
+        "price": "$19.99",
+        "desc": "Hand-cut fries smothered tableside in molten cheese.",
+        "sub": false
+      },
+      {
+        "name": "Mezze Platter",
+        "price": "$14.99",
+        "desc": "Hummus, Green Goddess, whipped feta, veggies, pita.",
+        "sub": false
+      },
+      {
+        "name": "Wings",
+        "price": "$11.99 / 14.99",
+        "desc": "Buffalo, Jamaican, Garlic Parm, BBQ, or Honey Sriracha. 6pc or 10pc.",
+        "sub": false
+      },
+      {
+        "name": "Wing Dings",
+        "price": "$11.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Popcorn Chicken",
+        "price": "$12.99",
+        "desc": "Lemon aioli, pimentón aioli, or FG secret sauce.",
+        "sub": false
+      },
+      {
+        "name": "Nachos Deluxe",
+        "price": "$14.99",
+        "desc": "Cheese, lettuce, tomato, olives, salsa, sour cream. Add guac +$4.99.",
+        "sub": false
+      },
+      {
+        "name": "Potato Skins",
+        "price": "$12.99 / 14.99",
+        "desc": "Cheese & scallions, or bacon & cheese with scallions.",
+        "sub": false
+      },
+      {
+        "name": "Soft Pretzel",
+        "price": "$10.99",
+        "desc": "Pimento cheese dip.",
+        "sub": false
+      },
+      {
+        "name": "Calamari",
+        "price": "$15.99",
+        "desc": "Lemon aioli or pimentón aioli.",
+        "sub": false
+      },
+      {
+        "name": "Mozzarella Sticks",
+        "price": "$10.99",
+        "desc": "",
+        "sub": false
+      }
+    ],
+    "salads & soups": [
+      {
+        "name": "Caesar",
+        "price": "$14.99",
+        "desc": "House dressing, sourdough croutons, parmigiano.",
+        "sub": false
+      },
+      {
+        "name": "Wedge",
+        "price": "$15.99",
+        "desc": "Buttermilk dressing, blue cheese, bacon, tomato.",
+        "sub": false
+      },
+      {
+        "name": "House Salad",
+        "price": "$12.99",
+        "desc": "Mixed greens, cherry tomato, cucumber, shredded carrot, champagne vinaigrette.",
+        "sub": false
+      },
+      {
+        "name": "Add Protein",
+        "price": "+$8.00",
+        "desc": "Chicken, steak, or salmon on any salad.",
+        "sub": true
+      },
+      {
+        "name": "Quahog Chowder",
+        "price": "$7.99 / 10.99",
+        "desc": "Cup or bowl. A Nantucket classic.",
+        "sub": false
+      },
+      {
+        "name": "French Onion Soup",
+        "price": "$11.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "The Best Chili",
+        "price": "$12.99",
+        "desc": "Beef long-simmered with Rancho Gordo heirloom beans. Cheese & sour cream.",
+        "sub": false
+      },
+      {
+        "name": "Oxtail Pho",
+        "price": "$18.99",
+        "desc": "Bone broth, rice noodles, aromatic herbs & lime.",
+        "sub": false
+      }
+    ],
+    "handhelds": [
+      {
+        "name": "Cheeseburger",
+        "price": "$16.99",
+        "desc": "American or cheddar, lettuce, tomato, onion, pickle, FG secret sauce. Add bacon or avo +$2.",
+        "sub": false
+      },
+      {
+        "name": "Chicken Sandwich",
+        "price": "$16.99",
+        "desc": "Grilled or fried. Lettuce, tomato, onion, pickle. Fries. Choice of sauce.",
+        "sub": false
+      },
+      {
+        "name": "Fish Sandwich",
+        "price": "$16.99",
+        "desc": "Fried cod with tartar sauce. Fries.",
+        "sub": false
+      },
+      {
+        "name": "Open Faced Turkey",
+        "price": "$16.99",
+        "desc": "Turkey, stuffing, mashed potatoes, and gravy.",
+        "sub": false
+      },
+      {
+        "name": "Chicken Quesadilla",
+        "price": "$15.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Sub veggie burger",
+        "price": "+$2.00",
+        "desc": "",
+        "sub": true
+      }
+    ],
+    "fries": [
+      {
+        "name": "Plain Fries",
+        "price": "$7.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Truffle Fries",
+        "price": "$12.99",
+        "desc": "Parmigiano, fried parsley, truffle oil.",
+        "sub": false
+      },
+      {
+        "name": "Waffle Fries",
+        "price": "$7.99",
+        "desc": "",
+        "sub": false
+      },
+      {
+        "name": "Pickle Fries",
+        "price": "$7.99",
+        "desc": "If a pickle were a french fry.",
+        "sub": false
+      }
+    ],
+    "bowls": [
+      {
+        "name": "Build Your Bowl",
+        "price": "$21.99",
+        "desc": "Pick your protein, base, sauce & toppings.",
+        "sub": false
+      },
+      {
+        "name": "Proteins",
+        "price": "",
+        "desc": "Salmon • Chicken • Steak • Tofu",
+        "sub": true
+      },
+      {
+        "name": "Bases",
+        "price": "",
+        "desc": "Rice • Quinoa • Charred Kale • Salad Greens",
+        "sub": true
+      },
+      {
+        "name": "Sauces",
+        "price": "",
+        "desc": "Tahini Lemon • Spicy Mayo • Green Goddess • Umami Soy Butter",
+        "sub": true
+      },
+      {
+        "name": "Toppings",
+        "price": "",
+        "desc": "First free, then $2 each: Crispy Onion, Pickled Veg, Roasted Veg, Crispy Capers, Ranch Pepitas.",
+        "sub": true
+      }
+    ],
+    "pizza": [
+      {
+        "name": "Cheese Pizza",
+        "price": "$14.99 / 18.99",
+        "desc": "14\" or 18\".",
+        "sub": false
+      },
+      {
+        "name": "Toppings",
+        "price": "+$2.00 / +2.50",
+        "desc": "Pepperoni, Peppers, Onions, Mushrooms, Sausage, Ham, Pineapple.",
+        "sub": true
+      }
+    ]
+  },
+  "events": [
+    {
+      "title": "Maple Fest Weekend",
+      "date": "Mar 28",
+      "badge": "Seasonal",
+      "desc": "Sugar on snow, live bluegrass, family-friendly fun, and maple treats all afternoon.",
+      "featured": true
+    },
+    {
+      "title": "Bluegrass on the Lawn",
+      "date": "Apr 12",
+      "badge": "Live Music",
+      "desc": "An easygoing early-evening set with local players and picnic-style seating.",
+      "featured": false
+    },
+    {
+      "title": "Kids Craft Brunch",
+      "date": "Apr 19",
+      "badge": "Family",
+      "desc": "Weekend brunch with hands-on activities, balloons, and seasonal treats for the little ones.",
+      "featured": false
+    },
+    {
+      "title": "Island Supper Club",
+      "date": "May 3",
+      "badge": "Prix Fixe",
+      "desc": "A five-course prix fixe dinner celebrating Nantucket's spring harvest.",
+      "featured": false
+    }
+  ],
+  "content": {
+    "atmosphere": {
+      "heading": "Old-School Energy, Island Soul"
+    },
+    "events": {
+      "heading": "More Than a Restaurant"
+    },
+    "footer": {
+      "tagline": "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."
+    },
+    "hero": {
+      "menu_title": "Lunch",
+      "subtitle": "Nantucket Island • Restaurant • Events • Community",
+      "tagline": "Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road."
+    },
+    "newsletter": {
+      "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.",
+      "heading": "Stay in the Loop"
+    },
+    "order": {
+      "description": "Whether you’re dining in or ordering from home — we’ve got you covered.",
+      "heading": "Reserve, Order & Review"
+    },
+    "story": {
+      "heading": "A Farmstand Poster Turned Into a Restaurant.",
+      "paragraph1": "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.",
+      "paragraph2": "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."
+    }
+  },
+  "theme": {
+    "cream": "#dce8f0",
+    "parchment": "#e8f0f6",
+    "warmWhite": "#f0f6fa",
+    "primary": "#003366",
+    "primaryMid": "#1a5c8a",
+    "accent": "#c79b34",
+    "accentLight": "#d4af5a",
+    "highlight": "#d96a1f",
+    "highlightHot": "#e8782a",
+    "ink": "#0a1520",
+    "body": "#2a3a4a",
+    "muted": "#5a6a7a"
+  },
+  "themePresets": [
+    {
+      "id": 1,
+      "name": "Olive & Cream",
+      "colors": {
+        "cream": "#efe1ab",
+        "parchment": "#f6edc8",
+        "warmWhite": "#fff7e4",
+        "primary": "#4e5420",
+        "primaryMid": "#7a7e2e",
+        "accent": "#c79b34",
+        "accentLight": "#d4af5a",
+        "highlight": "#d96a1f",
+        "highlightHot": "#e8782a",
+        "ink": "#161616",
+        "body": "#3d3d3d",
+        "muted": "#6a6a6a"
+      },
+      "active": false
+    },
+    {
+      "id": 2,
+      "name": "Red Orange",
+      "colors": {
+        "cream": "#fde8d4",
+        "parchment": "#fef0e2",
+        "warmWhite": "#fff8f0",
+        "primary": "#8b2500",
+        "primaryMid": "#c0440f",
+        "accent": "#d96a1f",
+        "accentLight": "#e8782a",
+        "highlight": "#c79b34",
+        "highlightHot": "#d4af5a",
+        "ink": "#1a1008",
+        "body": "#3d2b1a",
+        "muted": "#6a5a4a"
+      },
+      "active": false
+    },
+    {
+      "id": 3,
+      "name": "Dark Orange",
+      "colors": {
+        "cream": "#f5e0c0",
+        "parchment": "#faecd4",
+        "warmWhite": "#fff5e6",
+        "primary": "#6e3310",
+        "primaryMid": "#a14b18",
+        "accent": "#d96a1f",
+        "accentLight": "#e8782a",
+        "highlight": "#4e5420",
+        "highlightHot": "#7a7e2e",
+        "ink": "#1a0f05",
+        "body": "#3d2a18",
+        "muted": "#6a5540"
+      },
+      "active": false
+    },
+    {
+      "id": 4,
+      "name": "Ocean Blue",
+      "colors": {
+        "cream": "#dce8f0",
+        "parchment": "#e8f0f6",
+        "warmWhite": "#f0f6fa",
+        "primary": "#003366",
+        "primaryMid": "#1a5c8a",
+        "accent": "#c79b34",
+        "accentLight": "#d4af5a",
+        "highlight": "#d96a1f",
+        "highlightHot": "#e8782a",
+        "ink": "#0a1520",
+        "body": "#2a3a4a",
+        "muted": "#5a6a7a"
+      },
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Night Mode",
+      "colors": {
+        "cream": "#1a1a1a",
+        "parchment": "#222222",
+        "warmWhite": "#2a2a2a",
+        "primary": "#c79b34",
+        "primaryMid": "#d4af5a",
+        "accent": "#d96a1f",
+        "accentLight": "#e8782a",
+        "highlight": "#7a7e2e",
+        "highlightHot": "#4e5420",
+        "ink": "#f0e8d8",
+        "body": "#d8d0c0",
+        "muted": "#8a8070"
+      },
+      "active": false
+    }
+  ],
+  "settings": {
+    "site_name": "The Faregrounds",
+    "site_subtitle": "Nantucket Island",
+    "phone": "(508) 555-FARE",
+    "address_line1": "27 Fairgrounds Road",
+    "address_line2": "Nantucket, MA 02554",
+    "hours_weekday": "Mon–Thu: 8am – 3pm",
+    "hours_weekend": "Fri–Sun: 8am – 8pm",
+    "hours_events": "Events: Seasonal evenings",
+    "opentable_url": "https://www.opentable.com",
+    "ubereats_url": "https://www.ubereats.com",
+    "doordash_url": "https://www.doordash.com",
+    "grubhub_url": "https://www.grubhub.com",
+    "yelp_url": "https://www.yelp.com",
+    "google_maps_url": "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554",
+    "instagram_url": "#",
+    "facebook_url": "#",
+    "twitter_url": "#",
+    "menu_pdf_url": "/the-faregrounds/menu.pdf"
+  },
+  "exportedAt": "2026-03-23T17:35:14.975Z"
+}
