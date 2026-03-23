@@ -1091,13 +1091,18 @@
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-23T20:22:36.189Z",
-  "_sha": "53ded5312c75dced87a082779aadf2d40164ecea",
+  "exportedAt": "2026-03-23T21:09:33.172Z",
+  "_sha": "dc2197fd9589464e7ea1b9f23c2783d61f73da2a",
   "users": [
     {
       "username": "admin",
       "passwordHash": "h_yuzymd",
       "role": "admin"
+    },
+    {
+      "username": "ethan",
+      "passwordHash": "h_fyppeh",
+      "role": "editor"
     }
   ]
 }
