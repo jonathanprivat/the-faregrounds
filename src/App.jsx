@@ -930,8 +930,8 @@ export default function TheFaregroundsHomepage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     {eventsData.map((event) => (
                       <div key={event.title} className="event-card" style={{
-                        border: `2px solid ${event.featured ? colors.orange + "50" : colors.oliveMid + "25"}`,
-                        background: event.featured ? `linear-gradient(135deg, ${colors.cream}, #f0dca0)` : colors.cream,
+                        border: `2px solid ${event.featured ? colors.gold + "60" : colors.oliveMid + "25"}`,
+                        background: event.featured ? `linear-gradient(135deg, ${colors.parchment}, ${colors.gold}25)` : colors.cream,
                       }}>
                         <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
                           <div style={{ flexShrink: 0, width: 56, textAlign: "center" }}>
@@ -942,8 +942,8 @@ export default function TheFaregroundsHomepage() {
                             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                               <h3 className="ff-body" style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.1 }}>{event.title}</h3>
                               <span style={{
-                                padding: "3px 10px", borderRadius: 999, border: `1.5px solid ${colors.olive}`,
-                                background: event.featured ? colors.orange : colors.oliveMid, color: colors.warmWhite,
+                                padding: "3px 10px", borderRadius: 999, border: `1.5px solid ${event.featured ? colors.gold : colors.oliveMid}`,
+                                background: event.featured ? colors.gold : colors.oliveMid, color: colors.warmWhite,
                                 fontFamily: "'Source Sans 3', sans-serif", fontWeight: 700,
                                 fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase",
                               }}>{event.badge}</span>
