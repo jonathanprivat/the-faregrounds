@@ -255,7 +255,7 @@ export default function TheFaregroundsHomepage() {
   const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
-    fetch(B + 'data/site.json')
+    fetch(B + 'data/site.json?v=' + Date.now())
       .then(r => r.json())
       .then(data => setSiteData(data))
       .catch(() => setSiteData(null));
