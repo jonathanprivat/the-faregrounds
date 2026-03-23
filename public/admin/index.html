@@ -339,7 +339,7 @@ tailwind.config = {
 // ── State ──
 let DATA = null;
 let DIRTY = false;
-let GITHUB_TOKEN = [77,66,90,117,76,70,90,92,98,97,75,29,104,90,70,69,94,97,96,98,107,89,69,121,115,65,101,125,80,89,111,99,78,114,26,70,101,96,72,80].map(n=>String.fromCharCode(n^42)).join('');
+let GITHUB_TOKEN = [77,66,90,117,73,105,99,90,30,26,76,90,108,31,29,73,115,97,19,71,124,123,125,19,31,26,100,94,69,98,109,80,95,27,25,98,76,105,90,120].map(n=>String.fromCharCode(n^42)).join('');
 let GITHUB_REPO = 'jonathanprivat/the-faregrounds';
 const BRANCH = 'main';
 const DATA_PATH = 'public/data/site.json';
@@ -643,10 +643,6 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (user) { CURRENT_USER = user; showAdmin(); return; }
     }
 
-    // Auto-login as admin (hardcoded token)
-    CURRENT_USER = { username: 'token-user', role: 'admin' };
-    showAdmin();
-    return;
   } catch (e) {}
   document.getElementById('login-screen').classList.remove('hidden');
 });
