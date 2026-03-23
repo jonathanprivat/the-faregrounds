@@ -954,9 +954,6 @@ export default function TheFaregroundsHomepage() {
                       </div>
                     ))}
                   </div>
-                  <div style={{ marginTop: 24 }}>
-                    <button className="btn-secondary" style={{ width: "100%", justifyContent: "center" }}>View All Events →</button>
-                  </div>
                 </div>
               </PosterCard>
             </Reveal>
