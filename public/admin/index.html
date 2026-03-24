@@ -1282,6 +1282,10 @@ function deleteUser(idx) {
 
 // ── Dark Mode ──
 function initDarkMode() {
+  if (!localStorage.getItem('fg_theme_v2')) {
+    localStorage.removeItem('fg_admin_theme');
+    localStorage.setItem('fg_theme_v2', '1');
+  }
   const saved = localStorage.getItem('fg_admin_theme') || 'system';
   document.documentElement.setAttribute('data-theme', saved);
   updateDarkToggle();
