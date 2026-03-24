@@ -1281,16 +1281,21 @@ function deleteUser(idx) {
 }
 
 // ── Dark Mode ──
+function resolveTheme(mode) {
+  if (mode === 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return mode;
+}
 function initDarkMode() {
   if (!localStorage.getItem('fg_theme_v2')) {
     localStorage.removeItem('fg_admin_theme');
     localStorage.setItem('fg_theme_v2', '1');
   }
   const saved = localStorage.getItem('fg_admin_theme') || 'system';
-  document.documentElement.setAttribute('data-theme', saved);
+  document.documentElement.setAttribute('data-theme', resolveTheme(saved));
   updateDarkToggle();
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if ((localStorage.getItem('fg_admin_theme') || 'system') === 'system') {
+      document.documentElement.setAttribute('data-theme', resolveTheme('system'));
       updateDarkToggle();
     }
   });
@@ -1298,7 +1303,7 @@ function initDarkMode() {
 function toggleDarkMode() {
   const current = localStorage.getItem('fg_admin_theme') || 'system';
   const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
-  document.documentElement.setAttribute('data-theme', next);
+  document.documentElement.setAttribute('data-theme', resolveTheme(next));
   localStorage.setItem('fg_admin_theme', next);
   updateDarkToggle();
 }
