@@ -1085,14 +1085,14 @@
     "facebook_url": "#",
     "twitter_url": "#",
     "tiktok_url": "#",
-    "auto_theme": "false",
+    "auto_theme": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-24T04:45:15.282Z",
-  "_sha": "3aaefb6002a0086720893c6675818ba251d69e25",
+  "exportedAt": "2026-03-24T04:47:11.869Z",
+  "_sha": "7716d3774ad59bc032684527a5006411355f738a",
   "users": [
     {
       "username": "admin",
