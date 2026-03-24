@@ -441,62 +441,54 @@ export default function TheFaregroundsHomepage() {
         radial-gradient(ellipse at 50% 80%, rgba(0,0,0,0.02), transparent 50%),
         ${colors.cream};
     }
-    .paper-texture::before {
-      content: ''; position: fixed; inset: -50%; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 600px 600px at 20% 20%, ${colors.olive}${isDark ? '28' : '18'}, transparent),
-        radial-gradient(ellipse 500px 500px at 80% 30%, ${colors.orange}${isDark ? '22' : '14'}, transparent),
-        radial-gradient(ellipse 700px 700px at 50% 80%, ${colors.gold}${isDark ? '22' : '14'}, transparent);
-      animation: oceanDrift 25s ease-in-out infinite;
-    }
-    .paper-texture::after {
-      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      opacity: ${isDark ? '0.06' : '0.04'};
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 200px;
-      animation: grain 5s steps(6) infinite;
-    }
     .paper-texture > * { position: relative; z-index: 1; }
 
     .ocean-blob {
       position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-      filter: blur(80px); opacity: ${isDark ? '0.18' : '0.10'};
+      filter: blur(120px);
     }
     .ocean-blob-1 {
-      width: 500px; height: 500px; background: ${colors.olive};
-      top: -10%; left: -5%; animation: blobFloat1 30s ease-in-out infinite;
+      width: 70vw; height: 70vw; max-width: 900px; max-height: 900px;
+      background: radial-gradient(circle, ${colors.olive}, transparent 70%);
+      top: -15%; left: -10%; opacity: ${isDark ? '0.35' : '0.18'};
+      animation: blobFloat1 35s ease-in-out infinite;
     }
     .ocean-blob-2 {
-      width: 400px; height: 400px; background: ${colors.gold};
-      top: 40%; right: -8%; animation: blobFloat2 25s ease-in-out infinite;
+      width: 60vw; height: 60vw; max-width: 800px; max-height: 800px;
+      background: radial-gradient(circle, ${colors.gold}, transparent 70%);
+      top: 30%; right: -15%; opacity: ${isDark ? '0.30' : '0.15'};
+      animation: blobFloat2 28s ease-in-out infinite;
     }
     .ocean-blob-3 {
-      width: 450px; height: 450px; background: ${colors.orange};
-      bottom: -5%; left: 20%; animation: blobFloat3 28s ease-in-out infinite;
+      width: 65vw; height: 65vw; max-width: 850px; max-height: 850px;
+      background: radial-gradient(circle, ${colors.orange}, transparent 70%);
+      bottom: 5%; left: 10%; opacity: ${isDark ? '0.25' : '0.12'};
+      animation: blobFloat3 32s ease-in-out infinite;
+    }
+    .ocean-blob-4 {
+      width: 50vw; height: 50vw; max-width: 650px; max-height: 650px;
+      background: radial-gradient(circle, ${colors.olive}, transparent 70%);
+      top: 60%; left: 40%; opacity: ${isDark ? '0.20' : '0.10'};
+      animation: blobFloat2 40s ease-in-out infinite reverse;
     }
 
-    @keyframes oceanDrift {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(5%, 3%) rotate(1deg); }
-      66% { transform: translate(-3%, -2%) rotate(-1deg); }
-    }
     @keyframes blobFloat1 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(80px, 60px) scale(1.1); }
-      50% { transform: translate(30px, 120px) scale(0.95); }
-      75% { transform: translate(-40px, 50px) scale(1.05); }
+      25% { transform: translate(10vw, 8vh) scale(1.15); }
+      50% { transform: translate(5vw, 15vh) scale(0.95); }
+      75% { transform: translate(-5vw, 5vh) scale(1.1); }
     }
     @keyframes blobFloat2 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(-70px, 40px) scale(1.08); }
-      50% { transform: translate(-30px, -80px) scale(0.92); }
-      75% { transform: translate(50px, -30px) scale(1.05); }
+      25% { transform: translate(-8vw, 6vh) scale(1.1); }
+      50% { transform: translate(-3vw, -10vh) scale(0.9); }
+      75% { transform: translate(6vw, -3vh) scale(1.08); }
     }
     @keyframes blobFloat3 {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(60px, -50px) scale(1.12); }
-      50% { transform: translate(-50px, -20px) scale(0.9); }
-      75% { transform: translate(20px, 60px) scale(1.06); }
+      25% { transform: translate(7vw, -6vh) scale(1.12); }
+      50% { transform: translate(-6vw, -3vh) scale(0.92); }
+      75% { transform: translate(3vw, 8vh) scale(1.05); }
     }
     @keyframes grain {
       0% { transform: translate(0, 0); }
@@ -702,6 +694,7 @@ export default function TheFaregroundsHomepage() {
       <div className="ocean-blob ocean-blob-1" aria-hidden="true" />
       <div className="ocean-blob ocean-blob-2" aria-hidden="true" />
       <div className="ocean-blob ocean-blob-3" aria-hidden="true" />
+      <div className="ocean-blob ocean-blob-4" aria-hidden="true" />
 
       {/* ═══════ NAV ═══════ */}
       <nav style={{
