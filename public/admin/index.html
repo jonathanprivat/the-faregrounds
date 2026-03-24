@@ -41,6 +41,15 @@ tailwind.config = {
     --accent: #111111; --accent-hover: #333333; --accent-bg: #f5f5f5; --accent-border: rgba(0,0,0,0.08);
     --item-bg: #fafafa; --gold: #c79b34;
   }
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] {
+      --bg: #111111; --bg-card: #1a1a1a; --bg-input: #222222; --bg-hover: #252525; --bg-sidebar: #161616;
+      --border: #2a2a2a; --border-input: #333333; --border-focus: #ffffff;
+      --text: #e5e5e5; --text-secondary: #b0b0b0; --text-muted: #808080; --text-faint: #555555;
+      --accent: #ffffff; --accent-hover: #e0e0e0; --accent-bg: #1e1e1e; --accent-border: rgba(255,255,255,0.08);
+      --item-bg: #1e1e1e; --gold: #d4af5a;
+    }
+  }
   [data-theme="dark"] {
     --bg: #111111; --bg-card: #1a1a1a; --bg-input: #222222; --bg-hover: #252525; --bg-sidebar: #161616;
     --border: #2a2a2a; --border-input: #333333; --border-focus: #ffffff;
@@ -88,8 +97,8 @@ tailwind.config = {
   .admin-main { margin-left: 210px; margin-top: 56px; padding: 40px 48px; max-width: 960px; }
   .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 45; }
   .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--text); }
-  .dark-toggle { background: none; border: 1px solid var(--border-input); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--text-muted); transition: all 0.15s; }
-  .dark-toggle:hover { border-color: var(--text); color: var(--text); }
+  .dark-toggle { background: var(--bg-hover); border: 1px solid var(--border); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; color: var(--text); transition: all 0.15s; }
+  .dark-toggle:hover { border-color: var(--text-muted); background: var(--border); }
   @media (max-width: 768px) {
     .admin-topbar { padding: 0 16px; }
     .admin-sidebar { transform: translateX(-100%); }
@@ -1273,21 +1282,18 @@ function deleteUser(idx) {
 
 // ── Dark Mode ──
 function initDarkMode() {
-  const saved = localStorage.getItem('fg_admin_theme');
-  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
+  const saved = localStorage.getItem('fg_admin_theme') || 'system';
+  document.documentElement.setAttribute('data-theme', saved);
   updateDarkToggle();
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    if (!localStorage.getItem('fg_admin_theme')) {
-      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if ((localStorage.getItem('fg_admin_theme') || 'system') === 'system') {
       updateDarkToggle();
     }
   });
 }
 function toggleDarkMode() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const next = isDark ? 'light' : 'dark';
+  const current = localStorage.getItem('fg_admin_theme') || 'system';
+  const next = current === 'system' ? 'light' : current === 'light' ? 'dark' : 'system';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('fg_admin_theme', next);
   updateDarkToggle();
@@ -1295,9 +1301,11 @@ function toggleDarkMode() {
 function updateDarkToggle() {
   const btn = document.getElementById('dark-toggle');
   if (!btn) return;
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  btn.innerHTML = isDark ? '&#9788;' : '&#9790;';
-  btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+  const mode = localStorage.getItem('fg_admin_theme') || 'system';
+  const labels = { system: 'System', light: 'Light', dark: 'Dark' };
+  const icons = { system: '\u25D0', light: '\u2600', dark: '\u263E' };
+  btn.innerHTML = icons[mode];
+  btn.title = 'Theme: ' + labels[mode];
 }
 initDarkMode();
 
