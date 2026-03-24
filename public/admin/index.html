@@ -5,36 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Faregrounds - Admin</title>
 <meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="/the-faregrounds/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" href="/the-faregrounds/images/whale.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-display: swap; }
   @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-display: swap; }
-</style>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        fg: {
-          olive: '#4e5420',
-          cream: '#efe1ab',
-          parchment: '#f6edc8',
-          warm: '#fff7e4',
-          orange: '#d96a1f',
-          gold: '#c79b34',
-          ink: '#161616',
-          body: '#3d3d3d',
-          muted: '#6a6a6a',
-        }
-      }
-    }
+  /* Utility classes (replaces Tailwind CDN) */
+  .flex { display: flex; } .grid { display: grid; } .hidden { display: none; }
+  .flex-1 { flex: 1 1 0%; } .items-center { align-items: center; } .items-start { align-items: flex-start; }
+  .justify-center { justify-content: center; } .justify-between { justify-content: space-between; }
+  .gap-1 { gap: 0.25rem; } .gap-2 { gap: 0.5rem; } .gap-3 { gap: 0.75rem; } .gap-4 { gap: 1rem; } .gap-6 { gap: 1.5rem; }
+  .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mb-1 { margin-bottom: 0.25rem; } .mb-2 { margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 0.75rem; }
+  .mb-4 { margin-bottom: 1rem; } .mb-6 { margin-bottom: 1.5rem; } .mb-8 { margin-bottom: 2rem; }
+  .mt-1 { margin-top: 0.25rem; } .mt-2 { margin-top: 0.5rem; } .mt-3 { margin-top: 0.75rem; } .mt-6 { margin-top: 1.5rem; }
+  .mx-4 { margin-left: 1rem; margin-right: 1rem; } .pt-3 { padding-top: 0.75rem; }
+  .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; } .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+  .w-full { width: 100%; } .max-w-sm { max-width: 24rem; } .min-h-screen { min-height: 100vh; } .overflow-hidden { overflow: hidden; }
+  .text-xs { font-size: 0.75rem; line-height: 1rem; } .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .text-lg { font-size: 1.125rem; line-height: 1.75rem; } .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+  .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+  .font-medium { font-weight: 500; } .font-semibold { font-weight: 600; } .font-bold { font-weight: 700; }
+  .text-center { text-align: center; } .text-left { text-align: left; }
+  .text-red-400 { color: #f87171; } .text-red-500 { color: #ef4444; } .hover\:text-red-600:hover { color: #dc2626; }
+  .text-fg-olive { color: #4e5420; } .underline { text-decoration: underline; } .capitalize { capitalize; }
+  .rounded-lg { border-radius: 0.5rem; } .cursor-pointer { cursor: pointer; }
+  .space-y-3 > :not(:first-child) { margin-top: 0.75rem; } .space-y-4 > :not(:first-child) { margin-top: 1rem; }
+  .text-\[color\:var\(--text\)\] { color: var(--text); } .text-\[color\:var\(--text-muted\)\] { color: var(--text-muted); }
+  .text-\[color\:var\(--text-secondary\)\] { color: var(--text-secondary); } .text-\[color\:var\(--text-faint\)\] { color: var(--text-faint); }
+  .animate-spin { animation: spin 1s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
+  @media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .md\:col-span-2 { grid-column: span 2 / span 2; }
   }
-}
-</script>
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>
 <style>
   :root {
     --bg: #ffffff; --bg-card: #ffffff; --bg-input: #ffffff; --bg-hover: #f7f7f7; --bg-sidebar: #ffffff;
@@ -122,10 +135,9 @@ tailwind.config = {
     <h1 style="font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px;letter-spacing:-0.02em;">The Fairgrounds</h1>
     <p style="color:var(--text-muted);font-size:13px;margin-bottom:32px;">Sign in to manage your site</p>
 
-    <!-- Tab toggle -->
-    <div class="flex mb-6" style="border-bottom:1px solid var(--border);">
-      <button id="tab-password" onclick="switchLoginTab('password')" class="flex-1 py-2 text-sm font-medium" style="color:var(--text);border-bottom:2px solid var(--text);margin-bottom:-1px;">Username</button>
-      <button id="tab-token" onclick="switchLoginTab('token')" class="flex-1 py-2 text-sm font-medium" style="color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;">GitHub Token</button>
+    <!-- Login heading -->
+    <div class="mb-6" style="border-bottom:1px solid var(--border);padding-bottom:8px;">
+      <span class="text-sm font-medium" style="color:var(--text);border-bottom:2px solid var(--text);padding-bottom:9px;">Sign In</span>
     </div>
 
     <!-- Password login -->
