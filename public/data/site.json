@@ -1083,16 +1083,16 @@
     "google_maps_url": "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554",
     "instagram_url": "https://www.instagram.com/nantucketfairgrounds",
     "facebook_url": "https://www.facebook.com/profile.php?id=100063617316611",
-    "twitter_url": "#",
-    "tiktok_url": "#",
+    "twitter_url": "https://x.com/faregrounds_ack",
+    "tiktok_url": "https://www.tiktok.com/@nantucketfairgrounds",
     "auto_theme": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-29T06:11:16.000Z",
-  "_sha": "74426c0657943ce47ed4182d7781984db225e606",
+  "exportedAt": "2026-03-29T06:13:06.371Z",
+  "_sha": "4fb3cd92a197707566b73d45c716e843b112d65a",
   "users": [
     {
       "username": "admin",
