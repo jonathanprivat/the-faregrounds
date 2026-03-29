@@ -1081,7 +1081,7 @@
     "grubhub_url": "https://www.grubhub.com",
     "yelp_url": "https://www.yelp.com",
     "google_maps_url": "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554",
-    "instagram_url": "#",
+    "instagram_url": "https://www.instagram.com/nantucketfairgrounds",
     "facebook_url": "https://www.facebook.com/people/Faregrounds-Pudleys-Pub-Nantucket/",
     "twitter_url": "#",
     "tiktok_url": "#",
@@ -1091,8 +1091,8 @@
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-29T05:58:52.901Z",
-  "_sha": "cea2b8022b9dc607397e99e21341c043ca72c632",
+  "exportedAt": "2026-03-29T06:08:34.160Z",
+  "_sha": "ddd78abb2cab2ded7af17086f3e4d2ea70fe93c1",
   "users": [
     {
       "username": "admin",
