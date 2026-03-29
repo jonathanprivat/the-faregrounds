@@ -357,6 +357,7 @@ async function ghFetch(endpoint, opts = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `https://api.github.com/repos/${GITHUB_REPO}/${endpoint}`;
   const res = await fetch(url, {
     ...opts,
+    cache: 'no-store',
     headers: {
       'Authorization': `Bearer ${GITHUB_TOKEN}`,
       'Accept': 'application/vnd.github.v3+json',
