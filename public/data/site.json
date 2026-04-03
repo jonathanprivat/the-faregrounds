@@ -623,18 +623,18 @@
     }
   },
   "theme": {
-    "cream": "#f0e8f0",
-    "parchment": "#f5eef5",
-    "warmWhite": "#faf4fa",
-    "primary": "#6a3d8a",
-    "primaryMid": "#8855aa",
-    "accent": "#d4608a",
-    "accentLight": "#e070a0",
-    "highlight": "#5a9a40",
-    "highlightHot": "#70b050",
-    "ink": "#1a1020",
-    "body": "#3a2a42",
-    "muted": "#6a5a78"
+    "cream": "#dce8f0",
+    "parchment": "#e8f0f6",
+    "warmWhite": "#f0f6fa",
+    "primary": "#003366",
+    "primaryMid": "#1a5c8a",
+    "accent": "#c79b34",
+    "accentLight": "#d4af5a",
+    "highlight": "#d96a1f",
+    "highlightHot": "#e8782a",
+    "ink": "#0a1520",
+    "body": "#2a3a4a",
+    "muted": "#5a6a7a"
   },
   "themePresets": [
     {
@@ -753,7 +753,7 @@
         "body": "#2a3a4a",
         "muted": "#5a6a7a"
       },
-      "active": false,
+      "active": true,
       "darkColors": {
         "cream": "#0c1520",
         "parchment": "#121d2a",
@@ -975,7 +975,7 @@
         "body": "#3a2a42",
         "muted": "#6a5a78"
       },
-      "active": true,
+      "active": false,
       "darkColors": {
         "cream": "#1a1020",
         "parchment": "#201628",
@@ -1085,14 +1085,14 @@
     "facebook_url": "https://www.facebook.com/profile.php?id=100063617316611",
     "twitter_url": "https://x.com/faregrounds_ack",
     "tiktok_url": "https://www.tiktok.com/@nantucketfairgrounds",
-    "auto_theme": "true",
+    "auto_theme": "false",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-03-31T05:21:44.030Z",
-  "_sha": "57b58bddaf55b3aee232c4e2456f85baf94fd027",
+  "exportedAt": "2026-04-03T23:37:01.917Z",
+  "_sha": "a465dc60904ca64f9648c84718b32f1a452790b5",
   "users": [
     {
       "username": "admin",
