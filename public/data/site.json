@@ -1067,7 +1067,7 @@
     }
   ],
   "settings": {
-    "site_name": "The Fairgrounds",
+    "site_name": "The Fairgrounds ",
     "site_subtitle": "Nantucket Island",
     "phone": "508-228-4095",
     "address_line1": "27 Fairgrounds Road",
@@ -1091,8 +1091,8 @@
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
     "event_link_url": ""
   },
-  "exportedAt": "2026-04-03T23:37:01.917Z",
-  "_sha": "a465dc60904ca64f9648c84718b32f1a452790b5",
+  "exportedAt": "2026-04-18T17:11:16.325Z",
+  "_sha": "d6cac3d5cbdfbb0e200c4a912dddbe01b1fb2a6f",
   "users": [
     {
       "username": "admin",
