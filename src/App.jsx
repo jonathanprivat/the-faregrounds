@@ -270,6 +270,150 @@ export default function TheFaregroundsHomepage() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  // ── SEO: sync <head> tags from CMS settings at runtime ──
+  // Static fallback values stay in index.html for non-JS crawlers; this overrides them.
+  useEffect(() => {
+    if (!siteData) return;
+    const s = siteData.settings || {};
+
+    const title = s.seo_title || (s.site_name ? `${s.site_name} | ${s.site_subtitle || ''}`.replace(/\|\s*$/, '').trim() : document.title);
+    if (title) document.title = title;
+
+    const upsertMeta = (selector, create) => {
+      let el = document.head.querySelector(selector);
+      if (!el) {
+        el = create();
+        document.head.appendChild(el);
+      }
+      return el;
+    };
+    const setMetaByName = (name, value) => {
+      if (value == null) return;
+      const el = upsertMeta(`meta[name="${name}"]`, () => { const m = document.createElement('meta'); m.setAttribute('name', name); return m; });
+      el.setAttribute('content', value);
+    };
+    const setMetaByProperty = (property, value) => {
+      if (value == null) return;
+      const el = upsertMeta(`meta[property="${property}"]`, () => { const m = document.createElement('meta'); m.setAttribute('property', property); return m; });
+      el.setAttribute('content', value);
+    };
+    const setLink = (rel, href) => {
+      if (!href) return;
+      const el = upsertMeta(`link[rel="${rel}"]`, () => { const l = document.createElement('link'); l.setAttribute('rel', rel); return l; });
+      el.setAttribute('href', href);
+    };
+
+    // Standard meta
+    setMetaByName('description', s.seo_description || '');
+    setMetaByName('keywords', s.seo_keywords || '');
+    setMetaByName('robots', s.seo_robots || 'index, follow');
+    setMetaByName('theme-color', s.seo_theme_color || '#4e5420');
+
+    // Canonical
+    setLink('canonical', s.seo_canonical_url || '');
+
+    // Open Graph
+    setMetaByProperty('og:type', 'restaurant');
+    setMetaByProperty('og:title', s.seo_og_title || s.seo_title || title);
+    setMetaByProperty('og:description', s.seo_og_description || s.seo_description || '');
+    setMetaByProperty('og:url', s.seo_canonical_url || '');
+    setMetaByProperty('og:image', s.seo_og_image || '');
+    setMetaByProperty('og:site_name', s.site_name || 'The Faregrounds');
+    setMetaByProperty('og:locale', 'en_US');
+
+    // Twitter
+    setMetaByName('twitter:card', s.seo_twitter_card || 'summary_large_image');
+    setMetaByName('twitter:title', s.seo_og_title || s.seo_title || title);
+    setMetaByName('twitter:description', s.seo_og_description || s.seo_description || '');
+    setMetaByName('twitter:image', s.seo_twitter_image || s.seo_og_image || '');
+
+    // Geo
+    setMetaByName('geo.region', s.seo_geo_region || '');
+    setMetaByName('geo.placename', s.seo_geo_placename || '');
+    setMetaByName('geo.position', s.seo_geo_position || '');
+    setMetaByName('ICBM', (s.seo_geo_position || '').replace(';', ', '));
+
+    // JSON-LD Restaurant schema — derived from settings + content
+    const [latStr, lngStr] = (s.seo_geo_position || '').split(';');
+    const latitude = parseFloat(latStr);
+    const longitude = parseFloat(lngStr);
+    const sameAs = [s.facebook_url, s.instagram_url, s.twitter_url, s.tiktok_url, s.yelp_url]
+      .filter(u => u && u !== '#');
+
+    const hoursSpec = [];
+    if (s.hours_weekday) {
+      const m = String(s.hours_weekday).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
+      if (m) {
+        const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
+        let close = parseInt(m[2], 10);
+        if (/pm/i.test(m[3]) && close < 12) close += 12;
+        const closes = String(close).padStart(2, '0') + ':00';
+        hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday'], opens, closes });
+      }
+    }
+    if (s.hours_weekend) {
+      const m = String(s.hours_weekend).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
+      if (m) {
+        const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
+        let close = parseInt(m[2], 10);
+        if (/pm/i.test(m[3]) && close < 12) close += 12;
+        const closes = String(close).padStart(2, '0') + ':00';
+        hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Friday','Saturday','Sunday'], opens, closes });
+      }
+    }
+
+    const restaurantSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Restaurant',
+      name: s.site_name || 'The Faregrounds',
+      description: s.seo_description || '',
+      url: s.seo_canonical_url || '',
+      telephone: s.phone || '',
+      image: s.seo_og_image || '',
+      logo: s.seo_og_image || '',
+      servesCuisine: (s.seo_schema_cuisine || '').split(',').map(x => x.trim()).filter(Boolean),
+      priceRange: s.seo_schema_price_range || '$$',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: s.address_line1 || '',
+        addressLocality: (s.address_line2 || '').split(',')[0]?.trim() || 'Nantucket',
+        addressRegion: ((s.address_line2 || '').match(/,\s*([A-Z]{2})/) || [])[1] || 'MA',
+        postalCode: ((s.address_line2 || '').match(/(\d{5})/) || [])[1] || '02554',
+        addressCountry: 'US',
+      },
+      ...(isFinite(latitude) && isFinite(longitude) ? { geo: { '@type': 'GeoCoordinates', latitude, longitude } } : {}),
+      ...(hoursSpec.length ? { openingHoursSpecification: hoursSpec } : {}),
+      ...(s.opentable_url ? { acceptsReservations: true, potentialAction: { '@type': 'ReserveAction', target: s.opentable_url } } : { acceptsReservations: String(s.seo_accepts_reservations).toLowerCase() !== 'false' }),
+      ...(sameAs.length ? { sameAs } : {}),
+    };
+
+    let restaurantLd = document.head.querySelector('script[type="application/ld+json"][data-seo="restaurant"]');
+    if (!restaurantLd) {
+      restaurantLd = document.createElement('script');
+      restaurantLd.setAttribute('type', 'application/ld+json');
+      restaurantLd.setAttribute('data-seo', 'restaurant');
+      document.head.appendChild(restaurantLd);
+    }
+    restaurantLd.textContent = JSON.stringify(restaurantSchema);
+
+    // WebSite schema
+    const websiteSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: s.site_name || 'The Faregrounds',
+      url: s.seo_canonical_url || '',
+      description: s.seo_description || '',
+    };
+    let websiteLd = document.head.querySelector('script[type="application/ld+json"][data-seo="website"]');
+    if (!websiteLd) {
+      websiteLd = document.createElement('script');
+      websiteLd.setAttribute('type', 'application/ld+json');
+      websiteLd.setAttribute('data-seo', 'website');
+      document.head.appendChild(websiteLd);
+    }
+    websiteLd.textContent = JSON.stringify(websiteSchema);
+  }, [siteData]);
+
   // Persist color mode preference
   const cycleColorMode = useCallback(() => {
     const next = colorMode === "system" ? "light" : colorMode === "light" ? "dark" : "system";
@@ -753,7 +897,7 @@ export default function TheFaregroundsHomepage() {
         </div>
         <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8, opacity: 0.5 }}>
           <WhaleTail size={20} />
-          <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>Nantucket Island</span>
+          <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{content?.header?.subtitle || "Nantucket Island"}</span>
         </div>
       </div>
 
@@ -796,15 +940,15 @@ export default function TheFaregroundsHomepage() {
                   <Divider />
 
                   <div className="hero-tags" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 4 }}>
-                    {["Seasonal Menu", "Community Events", "Family Friendly", "Island Charm", "Live Music"].map((t) => (
+                    {(content?.hero?.tags && content.hero.tags.length > 0 ? content.hero.tags : ["Seasonal Menu", "Community Events", "Family Friendly", "Island Charm", "Live Music"]).map((t) => (
                       <span key={t} className="tag">{t}</span>
                     ))}
                   </div>
 
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
-                    <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>View Menu</button>
-                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>Download {currentMenu?.label || "Lunch"} Menu (PDF)</a>}
-                    <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>Upcoming Events</button>
+                    <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>{content?.hero?.primary_cta || "View Menu"}</button>
+                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>{content?.hero?.download_cta_prefix || "Download"} {currentMenu?.label || "Lunch"} Menu (PDF)</a>}
+                    <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>{content?.hero?.secondary_cta || "Upcoming Events"}</button>
                   </div>
                 </div>
 
@@ -812,7 +956,7 @@ export default function TheFaregroundsHomepage() {
                 <div className="float" style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "40px auto 0" }}>
                   <Truck style={{ maxWidth: 400 }} />
                   <span className="ff-accent" style={{ fontSize: "clamp(13px, 1.2vw, 16px)", color: colors.oliveMid, textAlign: "center", marginTop: 14 }}>
-                    Old-School Island Gathering Place
+                    {content?.hero?.truck_tagline || "Old-School Island Gathering Place"}
                   </span>
                 </div>
               </div>
@@ -828,7 +972,7 @@ export default function TheFaregroundsHomepage() {
             <Reveal>
               <PosterCard style={{ height: "100%" }}>
                 <div style={{ padding: "clamp(24px, 4vw, 40px)" }}>
-                  <SectionLabel>Our Story</SectionLabel>
+                  <SectionLabel>{content?.story?.section_label || "Our Story"}</SectionLabel>
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 12 }}>
                     {content?.story?.heading || "A Farmstand Poster Turned Into a Restaurant."}
                   </h2>
@@ -840,7 +984,7 @@ export default function TheFaregroundsHomepage() {
                     {content?.story?.paragraph2 || "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."}
                   </p>
                   <div style={{ marginTop: 28 }}>
-                    <button className="btn-secondary" onClick={() => smoothScrollTo("visit")}>Come Visit Us</button>
+                    <button className="btn-secondary" onClick={() => smoothScrollTo("visit")}>{content?.story?.button_label || "Come Visit Us"}</button>
                   </div>
                 </div>
               </PosterCard>
@@ -851,15 +995,25 @@ export default function TheFaregroundsHomepage() {
                 <div style={{ borderRadius: 24, border: "2px solid rgba(122,126,46,0.25)", background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
                   <img src={A.ticket} alt="1888 Nantucket Agricultural Society Exhibition Ticket" draggable={false} style={{ width: "100%", maxWidth: 500, height: "auto", borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", border: `1.5px solid ${colors.olive}30` }} />
                   <span className="ff-accent" style={{ fontSize: 13, color: colors.oliveMid, textAlign: "center" }}>
-                    33rd Annual Exhibition, 1888 — Where it all began.
+                    {content?.story?.ticket_caption || "33rd Annual Exhibition, 1888 — Where it all began."}
                   </span>
                 </div>
               </Reveal>
-              {[
-                { title: "Seasonal Menu", body: "Warm plates that rotate with the season — crafted from local ingredients and island traditions.", delay: 0.15, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={colors.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg> },
-                { title: "Community Space", body: "Built for neighbors, families, and pop-ups — a gathering place that brings the island together.", delay: 0.25, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={colors.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/></svg> },
-                { title: "Event-Driven", body: "Events are central, not an afterthought — from maple fests to live music nights on the field.", delay: 0.35, icon: <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={colors.olive} opacity="0.12"/><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg> },
-              ].map((p, i) => (
+              {(() => {
+                const featureDefaults = [
+                  { title: "Seasonal Menu", body: "Warm plates that rotate with the season — crafted from local ingredients and island traditions." },
+                  { title: "Community Space", body: "Built for neighbors, families, and pop-ups — a gathering place that brings the island together." },
+                  { title: "Event-Driven", body: "Events are central, not an afterthought — from maple fests to live music nights on the field." },
+                ];
+                const featureIcons = [
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z" fill={colors.olive} opacity="0.15"/><path d="M12 6c-2 0-4 2-4 4 0 3 4 6 4 8 0-2 4-5 4-8 0-2-2-4-4-4z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="10" y1="12" x2="12" y2="14"/><line x1="14" y1="11" x2="12" y2="13"/></svg>,
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><rect x="9" y="13" width="6" height="8" fill={colors.olive} opacity="0.15"/><rect x="9" y="13" width="6" height="8"/><path d="M9 9h2v2H9z"/><path d="M13 9h2v2h-2z"/><path d="M1 21h22"/></svg>,
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.olive} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="13" rx="2" fill={colors.olive} opacity="0.12"/><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><path d="M2 9h20"/><path d="M8 3v3"/><path d="M16 3v3"/></svg>,
+                ];
+                const featureDelays = [0.15, 0.25, 0.35];
+                const source = (content?.story?.features && content.story.features.length > 0) ? content.story.features : featureDefaults;
+                return source.map((f, i) => ({ title: f.title, body: f.body, delay: featureDelays[i] ?? 0.15 + i * 0.1, icon: featureIcons[i] ?? featureIcons[0] }));
+              })().map((p, i) => (
                 <Reveal key={i} delay={p.delay}>
                   <div style={{
                     display: "flex", alignItems: "center", gap: "clamp(16px, 2vw, 24px)",
@@ -1007,7 +1161,7 @@ export default function TheFaregroundsHomepage() {
                       <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
                         <button className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                          Download {currentMenu?.label} Menu (PDF)
+                          {content?.hero?.download_cta_prefix || "Download"} {currentMenu?.label} Menu (PDF)
                         </button>
                       </a>
                     )}
@@ -1047,7 +1201,7 @@ export default function TheFaregroundsHomepage() {
             <Reveal delay={0.12}>
               <PosterCard style={{ height: "100%" }}>
                 <div style={{ padding: "clamp(24px, 3vw, 40px)" }}>
-                  <SectionLabel>Upcoming Events</SectionLabel>
+                  <SectionLabel>{content?.events?.section_label || "Upcoming Events"}</SectionLabel>
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 12 }}>
                     {content?.events?.heading || "More Than a Restaurant"}
                   </h2>
@@ -1091,9 +1245,9 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 28 }}>
-              <SectionLabel>The Atmosphere</SectionLabel>
+              <SectionLabel>{content?.atmosphere?.section_label || "The Atmosphere"}</SectionLabel>
               <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
-                Old-School Energy, Island Soul
+                {content?.atmosphere?.heading || "Old-School Energy, Island Soul"}
               </h2>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "16px auto 0", maxWidth: 300 }}>
                 <div style={{ width: 70 }}><Swash /></div>
@@ -1163,12 +1317,12 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)" }}>
           <Reveal>
             <div style={{ textAlign: "center", marginBottom: 28 }}>
-              <SectionLabel>Dine With Us</SectionLabel>
+              <SectionLabel>{content?.order?.section_label || "Dine With Us"}</SectionLabel>
               <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 8 }}>
-                Reserve, Order & Review
+                {content?.order?.heading || "Reserve, Order & Review"}
               </h2>
               <p className="ff-accent" style={{ fontSize: "clamp(15px, 1.4vw, 18px)", color: colors.body, maxWidth: 420, margin: "14px auto 0" }}>
-                Whether you're dining in or ordering from home — we've got you covered.
+                {content?.order?.description || "Whether you're dining in or ordering from home — we've got you covered."}
               </p>
             </div>
           </Reveal>
@@ -1256,10 +1410,10 @@ export default function TheFaregroundsHomepage() {
                 <div style={{ position: "relative", zIndex: 2 }}>
                   <img src={A.logoOrange} alt="The Faregrounds" draggable={false} className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 16 }}>
-                    Stay in the Loop
+                    {content?.newsletter?.heading || "Stay in the Loop"}
                   </h2>
                   <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.6vw, 20px)", lineHeight: 1.7, color: colors.body, maxWidth: 480, margin: "14px auto 0" }}>
-                    Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.
+                    {content?.newsletter?.description || "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff."}
                   </p>
                   <div style={{
                     display: "flex", maxWidth: 460, margin: "24px auto 0",
@@ -1291,7 +1445,7 @@ export default function TheFaregroundsHomepage() {
                       <span className="ff-display" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 900, color: colors.ink, lineHeight: 1 }}>{siteSettings.site_name || "The Faregrounds"}</span>
                     </div>
                     <p className="ff-body" style={{ fontSize: 16, lineHeight: 1.7, color: colors.body, marginTop: 14, maxWidth: 300 }}>
-                      Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island.
+                      {content?.footer?.tagline || "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."}
                     </p>
                     <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
                       {[
@@ -1353,7 +1507,7 @@ export default function TheFaregroundsHomepage() {
                   marginTop: 32, paddingTop: 18, borderTop: "1px solid rgba(122,126,46,0.15)",
                   display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
                 }}>
-                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{`\u00A9 2026 ${siteSettings.site_name || "The Faregrounds"} \u2022 Nantucket Island`}</span>
+                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{`\u00A9 ${new Date().getFullYear()} ${siteSettings.site_name || "The Faregrounds"} \u2022 ${content?.footer?.copyright_suffix || "Nantucket Island"}`}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div className="divider-line" style={{ width: 40 }} />
                     <WhaleTail size={18} style={{ opacity: 0.4 }} />

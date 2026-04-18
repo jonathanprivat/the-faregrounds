@@ -595,18 +595,32 @@
   ],
   "content": {
     "atmosphere": {
-      "heading": "Old-School Energy, Island Soul"
+      "heading": "Old-School Energy, Island Soul",
+      "section_label": "The Atmosphere"
     },
     "events": {
-      "heading": "More Than a Restaurant"
+      "heading": "More Than a Restaurant",
+      "section_label": "Upcoming Events"
     },
     "footer": {
-      "tagline": "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."
+      "tagline": "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island.",
+      "copyright_suffix": "Nantucket Island"
     },
     "hero": {
       "menu_title": "Lunch",
       "subtitle": "Nantucket Island • Restaurant • Events • Community",
-      "tagline": "Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road."
+      "tagline": "Seasonal food, local gatherings, and fairground energy — all wrapped in a nostalgic island experience at 27 Fairgrounds Road.",
+      "tags": [
+        "Seasonal Menu",
+        "Community Events",
+        "Family Friendly",
+        "Island Charm",
+        "Live Music"
+      ],
+      "truck_tagline": "Old-School Island Gathering Place",
+      "primary_cta": "View Menu",
+      "secondary_cta": "Upcoming Events",
+      "download_cta_prefix": "Download"
     },
     "newsletter": {
       "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.",
@@ -614,12 +628,33 @@
     },
     "order": {
       "description": "Whether you’re dining in or ordering from home — we’ve got you covered.",
-      "heading": "Reserve, Order & Review"
+      "heading": "Reserve, Order & Review",
+      "section_label": "Dine With Us"
     },
     "story": {
       "heading": "A Farmstand Poster Turned Into a Restaurant.",
       "paragraph1": "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.",
-      "paragraph2": "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."
+      "paragraph2": "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee.",
+      "section_label": "Our Story",
+      "button_label": "Come Visit Us",
+      "ticket_caption": "33rd Annual Exhibition, 1888 — Where it all began.",
+      "features": [
+        {
+          "title": "Seasonal Menu",
+          "body": "Warm plates that rotate with the season — crafted from local ingredients and island traditions."
+        },
+        {
+          "title": "Community Space",
+          "body": "Built for neighbors, families, and pop-ups — a gathering place that brings the island together."
+        },
+        {
+          "title": "Event-Driven",
+          "body": "Events are central, not an afterthought — from maple fests to live music nights on the field."
+        }
+      ]
+    },
+    "header": {
+      "subtitle": "Nantucket Island"
     }
   },
   "theme": {
@@ -1089,7 +1124,24 @@
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
-    "event_link_url": ""
+    "event_link_url": "",
+    "seo_title": "The Faregrounds | Nantucket Island Restaurant, Events & Community",
+    "seo_description": "Seasonal food, local gatherings, and fairground energy on Nantucket Island. Comfort food, live music, community events, and old-school island charm at 27 Fairgrounds Road.",
+    "seo_keywords": "Nantucket restaurant, Nantucket Island dining, Faregrounds, seasonal menu, live music Nantucket, community events, Nantucket food, island dining, Fairgrounds Road",
+    "seo_canonical_url": "https://jonathanprivat.github.io/the-faregrounds/",
+    "seo_og_image": "https://jonathanprivat.github.io/the-faregrounds/images/logo.png",
+    "seo_og_title": "",
+    "seo_og_description": "",
+    "seo_twitter_card": "summary_large_image",
+    "seo_twitter_image": "",
+    "seo_geo_region": "US-MA",
+    "seo_geo_placename": "Nantucket",
+    "seo_geo_position": "41.265267;-70.087760",
+    "seo_robots": "index, follow",
+    "seo_theme_color": "#4e5420",
+    "seo_schema_cuisine": "American, Comfort Food, Seasonal",
+    "seo_schema_price_range": "$$",
+    "seo_accepts_reservations": "true"
   },
   "exportedAt": "2026-04-18T17:11:34.475Z",
   "_sha": "ec3a3ad2a175e31ce3b41541e4ca725ca87d110e",

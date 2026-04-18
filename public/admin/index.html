@@ -1054,6 +1054,7 @@ function deleteEvent(idx) {
 function renderContent() {
   const container = document.getElementById('content-editor');
   const sectionLabels = {
+    header: 'Header',
     hero: 'Hero Section',
     story: 'Our Story',
     events: 'Events Section',
@@ -1062,31 +1063,125 @@ function renderContent() {
     newsletter: 'Newsletter Section',
     footer: 'Footer',
   };
-  const sections = Object.keys(DATA.content);
+  const preferredOrder = ['header', 'hero', 'story', 'events', 'atmosphere', 'order', 'newsletter', 'footer'];
+  const sections = Object.keys(DATA.content).sort((a, b) => {
+    const ia = preferredOrder.indexOf(a); const ib = preferredOrder.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
   container.innerHTML = sections.map(section => `
     <div class="card mb-4">
       <h4 class="font-bold text-[color:var(--text)] mb-4 flex items-center gap-2">
         <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
-        ${escHtml(sectionLabels[section] || section)}
+        ${escHtml(sectionLabels[section] || formatLabel(section))}
       </h4>
       <div class="space-y-4">
-        ${Object.keys(DATA.content[section]).map(key => `
-          <div>
-            <label class="field-label">${escHtml(formatLabel(key))}</label>
-            ${DATA.content[section][key].length > 80
-              ? `<textarea class="field-input" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">${escHtml(DATA.content[section][key])}</textarea>`
-              : `<input class="field-input" value="${escAttr(DATA.content[section][key])}" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">`
-            }
-          </div>
-        `).join('')}
+        ${Object.keys(DATA.content[section]).map(key => renderContentField(section, key)).join('')}
       </div>
     </div>
   `).join('');
 }
 
+function renderContentField(section, key) {
+  const value = DATA.content[section][key];
+  const label = `<label class="field-label">${escHtml(formatLabel(key))}</label>`;
+
+  // Array of strings (e.g. hero.tags)
+  if (Array.isArray(value) && value.every(v => typeof v === 'string')) {
+    return `
+      <div>
+        ${label}
+        <div class="text-xs text-[color:var(--text-muted)] mb-2">List of short labels.</div>
+        <div id="arr-${escAttr(section)}-${escAttr(key)}" class="space-y-2">
+          ${value.map((v, i) => `
+            <div class="flex gap-2">
+              <input class="field-input" value="${escAttr(v)}" onchange="updateContentArrayItem('${escAttr(section)}','${escAttr(key)}',${i},this.value)">
+              <button class="btn btn-secondary text-xs" style="flex-shrink:0;padding:6px 10px" onclick="removeContentArrayItem('${escAttr(section)}','${escAttr(key)}',${i})" title="Remove">✕</button>
+            </div>
+          `).join('')}
+        </div>
+        <button class="btn btn-secondary text-xs mt-2" onclick="addContentArrayItem('${escAttr(section)}','${escAttr(key)}','')">+ Add item</button>
+      </div>
+    `;
+  }
+
+  // Array of objects with title/body (e.g. story.features)
+  if (Array.isArray(value) && value.every(v => v && typeof v === 'object')) {
+    const itemKeys = Object.keys(value[0] || {});
+    return `
+      <div>
+        ${label}
+        <div class="space-y-3">
+          ${value.map((item, i) => `
+            <div class="rounded-lg" style="border:1px solid var(--border);padding:12px;background:var(--bg-subtle, transparent)">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-[color:var(--text-muted)]">Item ${i + 1}</span>
+                <button class="btn btn-secondary text-xs" style="padding:4px 8px" onclick="removeContentArrayItem('${escAttr(section)}','${escAttr(key)}',${i})" title="Remove">Remove</button>
+              </div>
+              <div class="grid grid-cols-1 gap-2">
+                ${itemKeys.map(ik => `
+                  <div>
+                    <label class="field-label" style="font-size:11px">${escHtml(formatLabel(ik))}</label>
+                    ${String(item[ik] || '').length > 80
+                      ? `<textarea class="field-input" rows="2" onchange="updateContentObjectArrayItem('${escAttr(section)}','${escAttr(key)}',${i},'${escAttr(ik)}',this.value)">${escHtml(item[ik] || '')}</textarea>`
+                      : `<input class="field-input" value="${escAttr(item[ik] || '')}" onchange="updateContentObjectArrayItem('${escAttr(section)}','${escAttr(key)}',${i},'${escAttr(ik)}',this.value)">`
+                    }
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="btn btn-secondary text-xs mt-2" onclick="addContentObjectArrayItem('${escAttr(section)}','${escAttr(key)}')">+ Add item</button>
+      </div>
+    `;
+  }
+
+  // Default: string
+  const strVal = String(value || '');
+  return `
+    <div>
+      ${label}
+      ${strVal.length > 80
+        ? `<textarea class="field-input" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">${escHtml(strVal)}</textarea>`
+        : `<input class="field-input" value="${escAttr(strVal)}" onchange="updateContent('${escAttr(section)}','${escAttr(key)}',this.value)">`
+      }
+    </div>
+  `;
+}
+
 function updateContent(section, key, value) {
   DATA.content[section][key] = value;
   markDirty();
+}
+
+function updateContentArrayItem(section, key, idx, value) {
+  DATA.content[section][key][idx] = value;
+  markDirty();
+}
+
+function addContentArrayItem(section, key, value) {
+  DATA.content[section][key].push(value);
+  markDirty();
+  renderContent();
+}
+
+function removeContentArrayItem(section, key, idx) {
+  DATA.content[section][key].splice(idx, 1);
+  markDirty();
+  renderContent();
+}
+
+function updateContentObjectArrayItem(section, key, idx, field, value) {
+  DATA.content[section][key][idx][field] = value;
+  markDirty();
+}
+
+function addContentObjectArrayItem(section, key) {
+  const arr = DATA.content[section][key];
+  const template = arr[0] ? Object.fromEntries(Object.keys(arr[0]).map(k => [k, ''])) : { title: '', body: '' };
+  arr.push(template);
+  markDirty();
+  renderContent();
 }
 
 // ── Theme Picker ──
@@ -1185,6 +1280,55 @@ function activateTheme(idx) {
 }
 
 // ── Settings Editor ──
+// Per-field widget config. Any key not listed here defaults to a single-line input.
+// type: 'text' | 'textarea' | 'select'
+// span: 1 (half width) | 2 (full width)
+// help: small helper text under the label
+// options: for select
+const SETTINGS_FIELD_CONFIG = {
+  seo_title:                 { span: 2, help: 'Browser tab + search result headline. Aim for 50–60 characters.' },
+  seo_description:           { type: 'textarea', span: 2, help: 'Meta description shown in search results. Aim for 140–160 characters.' },
+  seo_keywords:              { type: 'textarea', span: 2, help: 'Comma-separated. Legacy, low SEO weight, but still read by some engines.' },
+  seo_canonical_url:         { span: 2, help: 'Preferred URL for this page. Used for canonical + og:url.' },
+  seo_og_image:              { span: 2, help: 'Absolute URL to the image used when the site is shared on social media. 1200×630 recommended.' },
+  seo_og_title:              { span: 1, help: 'Optional. Falls back to SEO Title if empty.' },
+  seo_og_description:        { type: 'textarea', span: 1, help: 'Optional. Falls back to SEO Description if empty.' },
+  seo_twitter_card:          { type: 'select', span: 1, options: [['summary_large_image','Large image'], ['summary','Summary']] },
+  seo_twitter_image:         { span: 1, help: 'Optional. Falls back to OG Image if empty.' },
+  seo_geo_region:            { span: 1, help: 'ISO 3166-2. e.g. US-MA.' },
+  seo_geo_placename:         { span: 1 },
+  seo_geo_position:          { span: 1, help: 'Semicolon-separated lat;long. e.g. 41.265267;-70.087760' },
+  seo_robots:                { type: 'select', span: 1, options: [['index, follow','Indexable (default)'], ['noindex, nofollow','Hidden from search engines']] },
+  seo_theme_color:           { span: 1, help: 'Browser chrome color on mobile. Hex, e.g. #4e5420.' },
+  seo_schema_cuisine:        { span: 2, help: 'Comma-separated. Used in Restaurant structured data (JSON-LD).' },
+  seo_schema_price_range:    { type: 'select', span: 1, options: [['$','$ (budget)'], ['$$','$$ (moderate)'], ['$$$','$$$ (upscale)'], ['$$$$','$$$$ (fine dining)']] },
+  seo_accepts_reservations:  { type: 'select', span: 1, options: [['true','Yes'], ['false','No']] },
+};
+
+function renderSettingField(key) {
+  const cfg = SETTINGS_FIELD_CONFIG[key] || {};
+  const span = cfg.span === 2 ? ' style="grid-column:1 / -1"' : '';
+  const value = DATA.settings[key] ?? '';
+  const help = cfg.help ? `<div class="text-xs text-[color:var(--text-muted)] mt-1">${escHtml(cfg.help)}</div>` : '';
+  let widget;
+  if (cfg.type === 'textarea') {
+    widget = `<textarea class="field-input" rows="3" onchange="updateSetting('${escAttr(key)}',this.value)">${escHtml(value)}</textarea>`;
+  } else if (cfg.type === 'select') {
+    widget = `<select class="field-input" onchange="updateSetting('${escAttr(key)}',this.value)">`
+      + cfg.options.map(([v, label]) => `<option value="${escAttr(v)}"${String(value) === String(v) ? ' selected' : ''}>${escHtml(label)}</option>`).join('')
+      + `</select>`;
+  } else {
+    widget = `<input class="field-input" value="${escAttr(value)}" onchange="updateSetting('${escAttr(key)}',this.value)">`;
+  }
+  return `
+    <div${span}>
+      <label class="field-label">${escHtml(formatLabel(key))}</label>
+      ${widget}
+      ${help}
+    </div>
+  `;
+}
+
 function renderSettings() {
   const container = document.getElementById('settings-editor');
   const groups = {
@@ -1193,35 +1337,40 @@ function renderSettings() {
     'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
     'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url'],
     'Social Media': ['instagram_url', 'facebook_url', 'twitter_url', 'tiktok_url'],
+    'SEO': [
+      'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
+      'seo_og_image', 'seo_og_title', 'seo_og_description',
+      'seo_twitter_card', 'seo_twitter_image',
+      'seo_geo_region', 'seo_geo_placename', 'seo_geo_position',
+      'seo_robots', 'seo_theme_color',
+      'seo_schema_cuisine', 'seo_schema_price_range', 'seo_accepts_reservations',
+    ],
   };
-  container.innerHTML = Object.entries(groups).map(([group, keys]) => `
-    <div class="card mb-4">
-      <h4 class="font-bold text-[color:var(--text)] mb-4">${escHtml(group)}</h4>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        ${keys.filter(k => k in DATA.settings).map(key => `
-          <div>
-            <label class="field-label">${escHtml(formatLabel(key))}</label>
-            <input class="field-input" value="${escAttr(DATA.settings[key])}" onchange="updateSetting('${escAttr(key)}',this.value)">
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
+  // Keys that live in site.json but are edited elsewhere — don't show them in "Other"
+  const managedElsewhere = ['auto_theme', 'event_poster_url', 'event_button_text', 'event_pdf_url', 'event_link_url'];
 
-  // Show any extra keys not in the defined groups
+  container.innerHTML = Object.entries(groups).map(([group, keys]) => {
+    const present = keys.filter(k => k in DATA.settings);
+    if (present.length === 0) return '';
+    return `
+      <div class="card mb-4">
+        <h4 class="font-bold text-[color:var(--text)] mb-4">${escHtml(group)}</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${present.map(renderSettingField).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Show any unknown keys (not grouped, not managed elsewhere) in "Other"
   const groupedKeys = Object.values(groups).flat();
-  const extraKeys = Object.keys(DATA.settings).filter(k => !groupedKeys.includes(k));
+  const extraKeys = Object.keys(DATA.settings).filter(k => !groupedKeys.includes(k) && !managedElsewhere.includes(k));
   if (extraKeys.length > 0) {
     container.innerHTML += `
       <div class="card mb-4">
         <h4 class="font-bold text-[color:var(--text)] mb-4">Other</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${extraKeys.map(key => `
-            <div>
-              <label class="field-label">${escHtml(formatLabel(key))}</label>
-              <input class="field-input" value="${escAttr(DATA.settings[key])}" onchange="updateSetting('${escAttr(key)}',this.value)">
-            </div>
-          `).join('')}
+          ${extraKeys.map(renderSettingField).join('')}
         </div>
       </div>
     `;
@@ -1343,7 +1492,12 @@ function toggleSidebar() {
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function escAttr(s) { return String(s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 function formatLabel(key) {
-  return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()).replace(/Url\b/g, 'URL');
+  return key.replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .replace(/\bSeo\b/g, 'SEO')
+    .replace(/\bOg\b/g, 'OG')
+    .replace(/\bUrl\b/g, 'URL')
+    .replace(/\bId\b/g, 'ID');
 }
 </script>
 </body>
