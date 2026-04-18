@@ -26,6 +26,8 @@ const A = {
   logoOrange: B + "images/logoOrange.svg",
   logoArch: B + "images/logoArch.svg",
   uberEatsBrand: B + "images/uberEatsBrand.svg",
+  toastBrand: B + "images/toastBrand.svg",
+  resyBrand: B + "images/resyBrand.svg",
 };
 
 // ─── Brand Tokens ───────────────────────────────────────────────
@@ -1336,11 +1338,11 @@ export default function TheFaregroundsHomepage() {
               },
               {
                 name: "Resy", cat: "RESERVATIONS", desc: "Reserve your spot with a tap.", href: siteSettings.resy_url || "https://resy.com", btn: "RESERVE NOW", btnClass: "btn-primary",
-                icon: <svg width="28" height="28" viewBox="0 0 28 28" fill={o}><path d="M6 4h9.5c3.6 0 6 2 6 5.2 0 2.5-1.4 4.3-3.7 5l4.2 9.8h-4.3l-3.9-9.2h-3.5V24H6V4zm4.3 3.7v4.5h4.8c1.7 0 2.7-.8 2.7-2.3 0-1.4-1-2.2-2.7-2.2h-4.8z"/></svg>
+                icon: <img src={A.resyBrand} alt="Resy" width="28" height="28" style={{ objectFit: "contain" }} />
               },
               {
                 name: "Toast", cat: "ONLINE ORDERING", desc: "Order directly — pickup or delivery.", href: siteSettings.toast_url || "https://www.toasttab.com", btn: "ORDER NOW", btnClass: "btn-secondary",
-                icon: <svg width="28" height="28" viewBox="0 0 28 28" fill={o}><path d="M10 4h4v5h6v4h-6v7c0 1.3.7 2 2 2h3v3h-4c-3.5 0-5-1.5-5-5v-7H6V9h4V4z"/></svg>
+                icon: <img src={A.toastBrand} alt="Toast" width="28" height="28" style={{ objectFit: "contain" }} />
               },
               {
                 name: "Uber Eats", cat: "DELIVERY", desc: "Get Faregrounds delivered to your door.", href: siteSettings.ubereats_url || "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
