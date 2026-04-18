@@ -129,10 +129,28 @@
     .menu-item-row { grid-template-columns: 1fr; }
     .event-poster-grid { grid-template-columns: 1fr !important; }
     .hide-mobile { display: none !important; }
-    .admin-main .flex.items-center.justify-between { flex-wrap: wrap; gap: 12px; }
-    .admin-main .flex.gap-2 { flex-wrap: wrap; }
-    .admin-main .flex.gap-3 { flex-wrap: wrap; }
+    /* Card header rows (title on left, actions on right) stack cleanly */
+    .admin-main .card > .flex.items-center.justify-between { flex-wrap: wrap; gap: 12px; }
+    /* Page-level header rows (h3 + add button) also stack */
+    .admin-main > div[data-page] > .flex.items-center.justify-between { flex-wrap: wrap; gap: 12px; }
+    /* Button clusters wrap, but array-row stays on single line (input + ✕) */
+    .admin-main .flex.gap-2:not(.array-row) { flex-wrap: wrap; }
+    .admin-main .flex.gap-3:not(.array-row) { flex-wrap: wrap; }
+    .array-row { flex-wrap: nowrap !important; }
+    .array-row > .field-input { min-width: 0; flex: 1 1 auto; }
+    /* Tighter buttons, cards, and form density on mobile */
     .btn { padding: 10px 16px; font-size: 11px; }
+    .card { padding: 16px; }
+    .field-input { padding: 9px 10px; font-size: 13px; }
+    .field-label { font-size: 10px; }
+    .admin-main h3 { font-size: 18px; }
+    .admin-main h4 { font-size: 14px; }
+    /* Event row: stop flex-row from squeezing content + delete button */
+    .events-row { flex-direction: column; align-items: stretch; }
+    .events-row > button { align-self: flex-end; margin-top: 0 !important; }
+    /* Menu tabs horizontal scroll instead of overflow */
+    #menu-tabs { overflow-x: auto; flex-wrap: nowrap !important; white-space: nowrap; scrollbar-width: thin; }
+    #menu-tabs > * { flex-shrink: 0; }
   }
 </style>
 </head>
@@ -1016,7 +1034,7 @@ function renderEvents() {
   const container = document.getElementById('events-editor');
   container.innerHTML = DATA.events.map((evt, idx) => `
     <div class="card mb-4">
-      <div class="flex items-start gap-4">
+      <div class="flex items-start gap-4 events-row">
         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="field-label">Title</label>
@@ -1115,7 +1133,7 @@ function renderContentField(section, key) {
         <div class="text-xs text-[color:var(--text-muted)] mb-2">List of short labels.</div>
         <div id="arr-${escAttr(section)}-${escAttr(key)}" class="space-y-2">
           ${value.map((v, i) => `
-            <div class="flex gap-2">
+            <div class="flex gap-2 array-row">
               <input class="field-input" value="${escAttr(v)}" onchange="updateContentArrayItem('${escAttr(section)}','${escAttr(key)}',${i},this.value)">
               <button class="btn btn-secondary text-xs" style="flex-shrink:0;padding:6px 10px" onclick="removeContentArrayItem('${escAttr(section)}','${escAttr(key)}',${i})" title="Remove">✕</button>
             </div>
@@ -1357,7 +1375,7 @@ function renderSettings() {
     'General': ['site_name', 'site_subtitle'],
     'Contact': ['phone', 'address_line1', 'address_line2'],
     'Hours': ['hours_weekday', 'hours_weekend', 'hours_events'],
-    'External Links': ['opentable_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url'],
+    'External Links': ['opentable_url', 'resy_url', 'toast_url', 'ubereats_url', 'doordash_url', 'grubhub_url', 'yelp_url', 'google_maps_url'],
     'Social Media': ['instagram_url', 'facebook_url', 'twitter_url', 'tiktok_url'],
     'SEO': [
       'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',

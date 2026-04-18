@@ -1331,34 +1331,42 @@ export default function TheFaregroundsHomepage() {
             const o = colors.olive;
             const svc = [
               {
-                name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: "https://www.opentable.com", btn: "RESERVE NOW", btnClass: "btn-primary",
+                name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: siteSettings.opentable_url || "https://www.opentable.com", btn: "RESERVE NOW", btnClass: "btn-primary",
                 icon: <svg width="28" height="28" viewBox="0 0 131 95" fill={o}><path d="M83.36 0a47.5 47.5 0 1047.46 47.5A47.48 47.48 0 0083.36 0zm0 59.37A11.87 11.87 0 1195.22 47.5a11.87 11.87 0 01-11.87 11.87zM0 47.5a11.87 11.87 0 1111.87 11.87A11.87 11.87 0 010 47.5"/></svg>
               },
               {
-                name: "Uber Eats", cat: "DELIVERY", desc: "Get Faregrounds delivered to your door.", href: "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                name: "Resy", cat: "RESERVATIONS", desc: "Reserve your spot with a tap.", href: siteSettings.resy_url || "https://resy.com", btn: "RESERVE NOW", btnClass: "btn-primary",
+                icon: <svg width="28" height="28" viewBox="0 0 28 28" fill={o}><path d="M6 4h9.5c3.6 0 6 2 6 5.2 0 2.5-1.4 4.3-3.7 5l4.2 9.8h-4.3l-3.9-9.2h-3.5V24H6V4zm4.3 3.7v4.5h4.8c1.7 0 2.7-.8 2.7-2.3 0-1.4-1-2.2-2.7-2.2h-4.8z"/></svg>
+              },
+              {
+                name: "Toast", cat: "ONLINE ORDERING", desc: "Order directly — pickup or delivery.", href: siteSettings.toast_url || "https://www.toasttab.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                icon: <svg width="28" height="28" viewBox="0 0 28 28" fill={o}><path d="M10 4h4v5h6v4h-6v7c0 1.3.7 2 2 2h3v3h-4c-3.5 0-5-1.5-5-5v-7H6V9h4V4z"/></svg>
+              },
+              {
+                name: "Uber Eats", cat: "DELIVERY", desc: "Get Faregrounds delivered to your door.", href: siteSettings.ubereats_url || "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
                 icon: <img src={A.uberEatsBrand} alt="Uber Eats" width="28" height="28" style={{ objectFit: "contain" }} />
               },
               {
-                name: "DoorDash", cat: "DELIVERY", desc: "Comfort food, right to your doorstep.", href: "https://www.doordash.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                name: "DoorDash", cat: "DELIVERY", desc: "Comfort food, right to your doorstep.", href: siteSettings.doordash_url || "https://www.doordash.com", btn: null, btnClass: null,
                 icon: <svg width="28" height="28" viewBox="0 0 99.5 56.5" fill={o}><path d="M95.64,13.38A25.24,25.24,0,0,0,73.27,0H2.43A2.44,2.44,0,0,0,.72,4.16L16.15,19.68a7.26,7.26,0,0,0,5.15,2.14H71.24a6.44,6.44,0,1,1,.13,12.88H36.94a2.44,2.44,0,0,0-1.72,4.16L50.66,54.39a7.25,7.25,0,0,0,5.15,2.14H71.38c20.26,0,35.58-21.66,24.26-43.16"/></svg>
               },
               {
-                name: "Grubhub", cat: "PICKUP", desc: "Order for pickup or delivery.", href: "https://www.grubhub.com", btn: null, btnClass: null,
+                name: "Grubhub", cat: "PICKUP", desc: "Order for pickup or delivery.", href: siteSettings.grubhub_url || "https://www.grubhub.com", btn: null, btnClass: null,
                 icon: <svg width="28" height="28" viewBox="0 0 24 20" fill="none"><path d="M23.267 20H.35A.35.35 0 010 19.632V.368A.354.354 0 01.351 0h22.931a.366.366 0 01.351.521l-3.121 9.525a.353.353 0 000 .306l3.075 9.189a.369.369 0 01-.32.459z" fill={o}/><path d="M8.806 3.475a3.748 3.748 0 00-1.05-.139 3.245 3.245 0 00-2.466.99A3.86 3.86 0 004.453 7v4.887a3.892 3.892 0 00.853 2.675 3.245 3.245 0 002.465.99c.355.003.708-.043 1.05-.14a2.898 2.898 0 001.415-.85 3.829 3.829 0 00.868-2.675V9.197a.203.203 0 00-.063-.148.196.196 0 00-.15-.053H7.969a.214.214 0 00-.213.201v1.995a.214.214 0 00.213.2h.76v.45c.02.346-.077.69-.273.974a.832.832 0 01-.7.324.817.817 0 01-.685-.324 1.565 1.565 0 01-.274-.975V7.017c-.016-.342.08-.68.274-.96a.817.817 0 01.685-.324.832.832 0 01.7.325c.193.28.29.617.274.959v.463a.17.17 0 00.076.14h2.085a.18.18 0 00.134-.044.187.187 0 00.064-.126V7c.06-.972-.251-1.93-.868-2.675a3.034 3.034 0 00-1.415-.85zM18.722 3.333h-1.955a.181.181 0 00-.166.112.237.237 0 000 .097v4.564h-2.03V3.542a.203.203 0 00-.197-.209h-1.955a.203.203 0 00-.197.209v11.74c0 .115.088.208.197.208h1.955a.203.203 0 00.196-.208v-4.725h2v4.805a.237.237 0 000 .096.165.165 0 00.167.097h1.954a.176.176 0 00.145-.056.199.199 0 00.052-.153V3.542a.205.205 0 00-.166-.209z" fill="#fff"/></svg>
               },
               {
-                name: "Yelp", cat: "REVIEWS", desc: "Read reviews and see photos.", href: "https://www.yelp.com", btn: null, btnClass: null,
+                name: "Yelp", cat: "REVIEWS", desc: "Read reviews and see photos.", href: siteSettings.yelp_url || "https://www.yelp.com", btn: null, btnClass: null,
                 icon: <svg width="28" height="28" viewBox="0 0 14 19" fill={o}><g clipPath="url(#yc)"><path d="M4.606 11.38l.801-.186a.824.824 0 00.079-.02.883.883 0 00.631-1.052l-.003-.015a.88.88 0 00-.136-.297 1.116 1.116 0 00-.327-.28 3.026 3.026 0 00-.465-.215l-.878-.32a82.459 82.459 0 00-1.484-.536c-.323-.115-.596-.215-.833-.289-.045-.014-.095-.027-.135-.041-.287-.088-.489-.125-.66-.126a.786.786 0 00-.333.06.85.85 0 00-.288.206c-.04.046-.078.093-.114.143a1.685 1.685 0 00-.168.336 4.547 4.547 0 00-.24 1.494c.004.46.016 1.05.27 1.449a.853.853 0 00.24.26c.18.124.361.14.55.154.283.02.557-.05.83-.112l2.661-.614h.002zm8.935-4.25a4.55 4.55 0 00-.87-1.24 1.725 1.725 0 00-.299-.228 1.699 1.699 0 00-.164-.078.787.787 0 00-.675.034c-.153.076-.319.198-.538.402-.03.03-.069.064-.103.096-.181.17-.383.38-.623.625-.37.374-.736.751-1.098 1.132l-.65.673a3.026 3.026 0 00-.323.397c-.082.119-.14.253-.171.395a.881.881 0 00.008.327c0 .005.002.01.003.014a.883.883 0 001.029.669.836.836 0 00.08-.016l3.462-.8c.273-.062.55-.12.795-.262.165-.095.321-.19.428-.38a.853.853 0 00.102-.34c.053-.471-.194-1.006-.393-1.42zM7.344 8.586c.25-.315.25-.785.272-1.168.075-1.282.154-2.565.216-3.847.024-.486.076-.966.047-1.455-.025-.404-.028-.868-.283-1.2C7.145.333 6.184.38 5.529.472a6.307 6.307 0 00-.602.113c-.2.048-.397.1-.59.162-.629.206-1.513.584-1.662 1.308-.085.41.116.828.271 1.202.188.452.446.86.68 1.287.62 1.125 1.251 2.243 1.88 3.363.188.334.393.757.757.93a.78.78 0 00.073.028.88.88 0 00.95-.219.786.786 0 00.058-.06zm-.301 3.431a.801.801 0 00-1.16-.156 2.077 2.077 0 00-.376.385c-.028.035-.054.082-.087.113l-.557.765c-.315.429-.627.859-.935 1.295-.201.282-.375.52-.513.731-.026.04-.053.084-.078.12-.165.254-.258.44-.306.606a.791.791 0 00-.033.342.85.85 0 00.119.338c.033.052.07.102.108.15a1.694 1.694 0 00.28.257c.384.267.805.46 1.248.608.368.122.751.195 1.139.217a1.735 1.735 0 00.38-.03c.06-.014.118-.03.177-.051a.863.863 0 00.302-.192.793.793 0 00.184-.29c.064-.16.107-.363.134-.665l.013-.142c.022-.25.032-.545.048-.891.027-.533.048-1.063.064-1.595l.036-.946a2.27 2.27 0 00-.06-.675 1.01 1.01 0 00-.127-.294zm6.289 1.478c-.116-.127-.28-.254-.54-.411-.038-.02-.082-.049-.123-.073-.216-.13-.477-.267-.781-.432a87.6 87.6 0 00-1.409-.754l-.834-.442c-.044-.013-.088-.044-.128-.064a2.078 2.078 0 00-.507-.18 1.067 1.067 0 00-.304-.013.802.802 0 00-.668.662.992.992 0 00.011.317c.041.222.14.442.243.634l.446.834c.249.47.5.939.757 1.405.167.304.305.565.434.78.025.041.053.085.074.122.157.26.284.423.412.54a.81.81 0 00.292.179.864.864 0 00.357.04c.061-.008.122-.018.182-.032a1.776 1.776 0 00.354-.14c.338-.19.65-.423.928-.694.333-.328.627-.685.856-1.093.032-.058.06-.118.083-.18.021-.057.04-.116.055-.175.014-.06.024-.12.031-.182a.86.86 0 00-.04-.355.792.792 0 00-.18-.293z"/></g><defs><clipPath id="yc"><rect width="14" height="19" fill="#fff"/></clipPath></defs></svg>
               },
               {
-                name: "Google Maps", cat: "REVIEWS", desc: "Reviews, directions & hours.", href: "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554", btn: null, btnClass: null,
+                name: "Google Maps", cat: "REVIEWS", desc: "Reviews, directions & hours.", href: siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554", btn: null, btnClass: null,
                 icon: <svg width="28" height="28" viewBox="0 0 24 24" fill={o}><path d="M18.7 3.8C15 .1 9 .1 5.3 3.8c-3.7 3.7-3.7 9.8 0 13.5L12 24l6.7-6.8c3.7-3.6 3.7-9.7 0-13.4ZM12 12.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
               },
             ];
-            const big = svc.slice(0, 3);
-            const small = svc.slice(3);
+            const big = svc.slice(0, 4);
+            const small = svc.slice(4);
             return (<>
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 16 }}>
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 16 }}>
                 {big.map((s, i) => (
                   <Reveal key={s.name} delay={i * 0.08}>
                     <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
@@ -1375,9 +1383,9 @@ export default function TheFaregroundsHomepage() {
                   </Reveal>
                 ))}
               </div>
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
                 {small.map((s, i) => (
-                  <Reveal key={s.name} delay={(i + 3) * 0.06}>
+                  <Reveal key={s.name} delay={(i + 4) * 0.06}>
                     <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
                       <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", cursor: "pointer" }}>
                         <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${colors.olive}20`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
