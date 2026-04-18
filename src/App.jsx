@@ -2,28 +2,27 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 const B = import.meta.env.BASE_URL;
 const A = {
-  logo: B + "images/logo.png",
-  seal: B + "images/seal.png",
-  whale: B + "images/whale.png",
-  maplefest: B + "images/maplefest.jpeg",
-  wallpic1: B + "images/wallpic1.jpeg",
-  wallpic2: B + "images/wallpic2.jpeg",
-  wallpic_full1: B + "images/wallpic_full1.jpeg",
-  wallpic_full2: B + "images/wallpic_full2.jpeg",
-  fairCrowd: B + "images/fairCrowd.jpeg",
-  nantucketMap: B + "images/nantucketMap.png",
-  ticket: B + "images/ticket.jpeg",
-  logoFrame: B + "images/logoFrame.svg",
-  whaleHat: B + "images/whaleHat.svg",
-  whaleTailSvg: B + "images/whaleTailSvg.svg",
-  swashL: B + "images/swashL.png",
-  swashR: B + "images/swashR.png",
-  swashL2: B + "images/swashL2.png",
-  swashR2: B + "images/swashR2.png",
-  truck: B + "images/truck.png",
-  bracketL: B + "images/bracketL.png",
-  bracketR: B + "images/bracketR.png",
-  logoOrange: B + "images/logoOrange.svg",
+  logo: B + "images/logo.webp",
+  seal: B + "images/seal.webp",
+  whale: B + "images/whale.webp",
+  maplefest: B + "images/maplefest.webp",
+  wallpic1: B + "images/wallpic1.webp",
+  wallpic2: B + "images/wallpic2.webp",
+  wallpic_full1: B + "images/wallpic_full1.webp",
+  wallpic_full2: B + "images/wallpic_full2.webp",
+  fairCrowd: B + "images/fairCrowd.webp",
+  nantucketMap: B + "images/nantucketMap.webp",
+  ticket: B + "images/ticket.webp",
+  whaleHat: B + "images/whaleHat.webp",
+  whaleTailSvg: B + "images/whaleTailSvg.webp",
+  swashL: B + "images/swashL.webp",
+  swashR: B + "images/swashR.webp",
+  swashL2: B + "images/swashL2.webp",
+  swashR2: B + "images/swashR2.webp",
+  truck: B + "images/truck.webp",
+  bracketL: B + "images/bracketL.webp",
+  bracketR: B + "images/bracketR.webp",
+  logoOrange: B + "images/logoOrange.webp",
   logoArch: B + "images/logoArch.svg",
 };
 
@@ -76,35 +75,35 @@ function Reveal({ children, delay = 0, direction = "up", style: extra = {} }) {
 // ─── Real Asset Components ──────────────────────────────────────
 
 function Logo({ size = 180, style = {} }) {
-  return <img src={A.logo} alt="The Faregrounds" draggable={false} style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.logo} alt="The Faregrounds" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function SealColor({ size = 220, style = {} }) {
-  return <img src={A.seal} alt="The Faregrounds Seal" draggable={false} style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.seal} alt="The Faregrounds Seal" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function WhaleTail({ size = 48, style = {} }) {
-  return <img src={A.whaleTailSvg} alt="" draggable={false} className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
+  return <img src={A.whaleTailSvg} alt="" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
 }
 
 function WhaleHat({ size = 120, style = {} }) {
-  return <img src={A.whaleHat} alt="" draggable={false} className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
+  return <img src={A.whaleHat} alt="" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: size, height: "auto", objectFit: "contain", flexShrink: 0, ...style }} />;
 }
 
 function Swash({ flip = false, style = {} }) {
-  return <img src={flip ? A.swashR : A.swashL} alt="" draggable={false} className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
+  return <img src={flip ? A.swashR : A.swashL} alt="" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
 }
 
 function Swash2({ flip = false, style = {} }) {
-  return <img src={flip ? A.swashR2 : A.swashL2} alt="" draggable={false} className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
+  return <img src={flip ? A.swashR2 : A.swashL2} alt="" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: "100%", height: "auto", display: "block", ...style }} />;
 }
 
 function Bracket({ side = "left", style = {} }) {
-  return <img src={side === "left" ? A.bracketL : A.bracketR} alt="" draggable={false} className="ink-art" style={{ height: "100%", width: "auto", display: "block", ...style }} />;
+  return <img src={side === "left" ? A.bracketL : A.bracketR} alt="" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ height: "100%", width: "auto", display: "block", ...style }} />;
 }
 
 function Truck({ style = {} }) {
-  return <img src={A.truck} alt="Nantucket Truck" draggable={false} className="ink-art" style={{ width: "100%", maxWidth: 300, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.truck} alt="Nantucket Truck" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: "100%", maxWidth: 300, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function MapleLeaf({ size = 20, color = "#c0440f", style = {} }) {
@@ -923,7 +922,7 @@ export default function TheFaregroundsHomepage() {
                       <Swash flip />
                     </div>
                     <h1 style={{ margin: 0, padding: 0, lineHeight: 1 }}>
-                      <img src={A.logoArch} alt="The Faregrounds - Nantucket Island Restaurant" className="ink-shadow ink-art" style={{
+                      <img src={A.logoArch} alt="The Faregrounds - Nantucket Island Restaurant" className="ink-shadow ink-art" fetchpriority="high" decoding="async" style={{
                         width: "clamp(280px, 55vw, 620px)", height: "auto", display: "block", margin: "0 auto",
                       }} />
                     </h1>
@@ -992,7 +991,7 @@ export default function TheFaregroundsHomepage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <Reveal delay={0.12}>
                 <div style={{ borderRadius: 24, border: "2px solid rgba(122,126,46,0.25)", background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                  <img src={A.ticket} alt="1888 Nantucket Agricultural Society Exhibition Ticket" draggable={false} style={{ width: "100%", maxWidth: 500, height: "auto", borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", border: `1.5px solid ${colors.olive}30` }} />
+                  <img src={A.ticket} alt="1888 Nantucket Agricultural Society Exhibition Ticket" draggable={false} loading="lazy" decoding="async" style={{ width: "100%", maxWidth: 500, height: "auto", borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.12)", border: `1.5px solid ${colors.olive}30` }} />
                   <span className="ff-accent" style={{ fontSize: 13, color: colors.oliveMid, textAlign: "center" }}>
                     {content?.story?.ticket_caption || "33rd Annual Exhibition, 1888 — Where it all began."}
                   </span>
@@ -1179,7 +1178,7 @@ export default function TheFaregroundsHomepage() {
             <Reveal>
               {(() => {
                 const eventLink = siteSettings.event_link_url || siteSettings.event_pdf_url;
-                const posterImg = <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" style={{ width: "100%", height: "auto", display: "block", cursor: eventLink ? "pointer" : "default" }} />;
+                const posterImg = <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block", cursor: eventLink ? "pointer" : "default" }} />;
                 return <>
                   <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
                     {eventLink ? <a href={eventLink} target="_blank" rel="noopener noreferrer">{posterImg}</a> : posterImg}
@@ -1267,7 +1266,7 @@ export default function TheFaregroundsHomepage() {
               <div style={{ position: "relative", maxWidth: 900, margin: "0 auto" }}>
                 <div style={{ borderRadius: 20, overflow: "hidden", border: `2px solid rgba(122,126,46,0.2)`, position: "relative", aspectRatio: "16/9", background: colors.ink }}>
                   {slides.map((s, i) => (
-                    <img key={i} src={s.src} alt={s.caption} style={{
+                    <img key={i} src={s.src} alt={s.caption} loading="lazy" decoding="async" style={{
                       position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
                       opacity: i === si ? 1 : 0, transition: "opacity 0.6s ease",
                     }} />
@@ -1415,7 +1414,7 @@ export default function TheFaregroundsHomepage() {
                   <Bracket side="right" />
                 </div>
                 <div style={{ position: "relative", zIndex: 2 }}>
-                  <img src={A.logoOrange} alt="The Faregrounds" draggable={false} className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
+                  <img src={A.logoOrange} alt="The Faregrounds" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 16 }}>
                     {content?.newsletter?.heading || "Stay in the Loop"}
                   </h2>
