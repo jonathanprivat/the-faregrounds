@@ -1143,8 +1143,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-18T17:49:15.258Z",
-  "_sha": "04241947eb0dde91cb48990ab1ad8d8ed43b27b5",
+  "exportedAt": "2026-04-18T19:05:29.693Z",
+  "_sha": "3a990e355cf3868d500f2f7befde4de8e2de01f2",
   "users": [
     {
       "username": "admin",
@@ -1153,7 +1153,7 @@
     },
     {
       "username": "ethan",
-      "passwordHash": "h_fyppeh",
+      "passwordHash": "h_11p04f",
       "role": "editor"
     }
   ]
