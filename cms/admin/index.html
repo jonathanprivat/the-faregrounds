@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Faregrounds | Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F40B;</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="react.js"></script>
+  <script src="react-dom.js"></script>
+  <script src="babel.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    body { margin: 0; background: #f8fafc; }
+    .fade-in { animation: fadeIn 0.25s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .toast-enter { animation: toastIn 0.3s ease-out; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    .spinner { border: 3px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.6s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sidebar-link { transition: all 0.15s ease; }
+    .sidebar-link:hover { background: rgba(255,255,255,0.08); }
+    .sidebar-link.active { background: rgba(255,255,255,0.12); border-right: 3px solid #a3e635; }
+    .card-hover { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .card-hover:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); transform: translateY(-1px); }
+    .collapsible-content { overflow: hidden; transition: max-height 0.3s ease; }
+    input:focus, textarea:focus, select:focus { outline: none; box-shadow: 0 0 0 2px #a3e635; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f7fee7', 100: '#ecfccb', 200: '#d9f99d', 300: '#bef264', 400: '#a3e635', 500: '#84cc16', 600: '#65a30d', 700: '#4d7c0f', 800: '#3f6212', 900: '#365314' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useRef, useMemo } = React;
+
+    /* ------------------------------------------------------------------ */
+    /*  API helpers                                                        */
+    /* ------------------------------------------------------------------ */
+    const api = {
+      get:    (url) => fetch(url).then(r => r.ok ? r.json() : Promise.reject(r)),
+      post:   (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.ok ? r.json() : Promise.reject(r)),
+      put:    (url, body) => fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.ok ? r.json() : Promise.reject(r)),
+      delete: (url) => fetch(url, { method: 'DELETE' }).then(r => r.ok ? r.json() : Promise.reject(r)),
+    };
+
+    /* ------------------------------------------------------------------ */
+    /*  Icons (inline SVG components)                                      */
+    /* ------------------------------------------------------------------ */
+    const Icon = ({ name, size = 20, className = '' }) => {
+      const icons = {
+        dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
+        menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>,
+        utensils: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>,
+        calendar: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
+        file: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+        palette: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="2"/><circle cx="17.5" cy="10.5" r="2"/><circle cx="8.5" cy="7.5" r="2"/><circle cx="6.5" cy="12" r="2"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.7-.4-1.1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-10-10-10z"/></svg>,
+        settings: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+        deploy: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
+        plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
+        edit: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+        check: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+        x: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+        chevronDown: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>,
+        chevronUp: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>,
+        arrowUp: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>,
+        arrowDown: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>,
+        star: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>,
+        starOutline: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>,
+        refresh: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+      };
+      return <span className={`inline-flex items-center ${className}`}>{icons[name] || null}</span>;
+    };
+
+    /* ------------------------------------------------------------------ */
+    /*  Toast Notification System                                          */
+    /* ------------------------------------------------------------------ */
+    let toastId = 0;
+    const ToastContext = React.createContext();
+
+    function ToastProvider({ children }) {
+      const [toasts, setToasts] = useState([]);
+      const addToast = useCallback((message, type = 'success') => {
+        const id = ++toastId;
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+      }, []);
+      return (
+        <ToastContext.Provider value={addToast}>
+          {children}
+          <div className="fixed top-4 right-4 z-50 flex flex-col gap-2" style={{ maxWidth: 380 }}>
+            {toasts.map(t => (
+              <div key={t.id} className={`toast-enter px-4 py-3 rounded-lg shadow-lg text-sm font-medium text-white flex items-center gap-2 ${t.type === 'success' ? 'bg-green-600' : t.type === 'error' ? 'bg-red-600' : 'bg-blue-600'}`}>
+                {t.type === 'success' && <Icon name="check" size={16} />}
+                {t.type === 'error' && <Icon name="x" size={16} />}
+                {t.message}
+              </div>
+            ))}
+          </div>
+        </ToastContext.Provider>
+      );
+    }
+    function useToast() { return React.useContext(ToastContext); }
+
+    /* ------------------------------------------------------------------ */
+    /*  Confirm Dialog                                                     */
+    /* ------------------------------------------------------------------ */
+    function ConfirmDialog({ open, title, message, onConfirm, onCancel }) {
+      if (!open) return null;
+      return (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40" onClick={onCancel}>
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 fade-in" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">{title || 'Confirm'}</h3>
+            <p className="text-slate-600 text-sm mb-6">{message}</p>
+            <div className="flex justify-end gap-3">
+              <button onClick={onCancel} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition">Cancel</button>
+              <button onClick={onConfirm} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition">Delete</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Shared UI Components                                               */
+    /* ------------------------------------------------------------------ */
+    function Spinner({ className = '' }) {
+      return <div className={`spinner ${className}`} />;
+    }
+
+    function LoadingScreen() {
+      return <div className="flex items-center justify-center h-64"><Spinner /><span className="ml-3 text-slate-500">Loading...</span></div>;
+    }
+
+    function EmptyState({ icon, title, description, action }) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center fade-in">
+          <div className="text-slate-300 mb-4">{icon || <Icon name="file" size={48} />}</div>
+          <h3 className="text-lg font-semibold text-slate-500 mb-1">{title || 'Nothing here yet'}</h3>
+          <p className="text-sm text-slate-400 mb-4 max-w-xs">{description}</p>
+          {action}
+        </div>
+      );
+    }
+
+    function PageHeader({ title, subtitle, children }) {
+      return (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
+            {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+          </div>
+          {children && <div className="flex items-center gap-2">{children}</div>}
+        </div>
+      );
+    }
+
+    function Card({ children, className = '', hover = false }) {
+      return <div className={`bg-white rounded-xl border border-slate-200 shadow-sm ${hover ? 'card-hover cursor-pointer' : ''} ${className}`}>{children}</div>;
+    }
+
+    function Button({ children, variant = 'primary', size = 'md', onClick, disabled, className = '', type = 'button' }) {
+      const base = 'inline-flex items-center justify-center font-medium rounded-lg transition-all gap-2 disabled:opacity-50 disabled:cursor-not-allowed';
+      const sizes = { sm: 'px-3 py-1.5 text-xs', md: 'px-4 py-2 text-sm', lg: 'px-5 py-2.5 text-base' };
+      const variants = {
+        primary: 'bg-brand-500 text-white hover:bg-brand-600 shadow-sm',
+        secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
+        danger: 'bg-red-50 text-red-600 hover:bg-red-100',
+        ghost: 'text-slate-500 hover:bg-slate-100',
+        outline: 'border border-slate-300 text-slate-700 hover:bg-slate-50',
+      };
+      return <button type={type} onClick={onClick} disabled={disabled} className={`${base} ${sizes[size]} ${variants[variant]} ${className}`}>{children}</button>;
+    }
+
+    function Input({ label, required, ...props }) {
+      return (
+        <div className="flex flex-col gap-1">
+          {label && <label className="text-xs font-medium text-slate-600">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>}
+          <input {...props} className={`px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 transition ${props.className || ''}`} />
+        </div>
+      );
+    }
+
+    function Textarea({ label, required, ...props }) {
+      return (
+        <div className="flex flex-col gap-1">
+          {label && <label className="text-xs font-medium text-slate-600">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>}
+          <textarea {...props} className={`px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 transition resize-y ${props.className || ''}`} />
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Sidebar                                                            */
+    /* ------------------------------------------------------------------ */
+    function Sidebar({ activePage, setActivePage, mobileOpen, setMobileOpen }) {
+      const links = [
+        { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { id: 'menu', label: 'Menu Editor', icon: 'utensils' },
+        { id: 'events', label: 'Events', icon: 'calendar' },
+        { id: 'content', label: 'Content', icon: 'file' },
+        { id: 'theme', label: 'Theme', icon: 'palette' },
+        { id: 'settings', label: 'Settings', icon: 'settings' },
+        { id: 'export', label: 'Export & Deploy', icon: 'deploy' },
+      ];
+      const handleNav = (id) => { setActivePage(id); setMobileOpen(false); };
+      return (
+        <>
+          {/* Mobile overlay */}
+          {mobileOpen && <div className="fixed inset-0 bg-black/40 z-30 md:hidden" onClick={() => setMobileOpen(false)} />}
+          <aside className={`fixed left-0 top-0 bottom-0 w-60 bg-slate-900 text-white flex flex-col z-40 transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+            <div className="px-5 py-5 border-b border-slate-700/50">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">&#x1F40B;</span>
+                <div>
+                  <div className="font-bold text-base tracking-tight">The Faregrounds</div>
+                  <span className="inline-block text-[10px] font-semibold uppercase tracking-widest bg-brand-500/20 text-brand-400 px-1.5 py-0.5 rounded mt-0.5">CMS</span>
+                </div>
+              </div>
+            </div>
+            <nav className="flex-1 py-3 flex flex-col gap-0.5 px-2">
+              {links.map(link => (
+                <button key={link.id} onClick={() => handleNav(link.id)} className={`sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left ${activePage === link.id ? 'active bg-white/10 text-white font-medium' : 'text-slate-400 hover:text-white'}`}>
+                  <Icon name={link.icon} size={18} />
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+            <div className="px-4 py-4 border-t border-slate-700/50 text-xs text-slate-500">
+              <div>The Faregrounds CMS</div>
+              <div className="text-slate-600 mt-0.5">v1.0.0</div>
+            </div>
+          </aside>
+        </>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Dashboard Page                                                     */
+    /* ------------------------------------------------------------------ */
+    function DashboardPage() {
+      const [stats, setStats] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const toast = useToast();
+
+      useEffect(() => {
+        Promise.all([
+          api.get('/api/menu').catch(() => ({ categories: [] })),
+          api.get('/api/events').catch(() => ({ events: [] })),
+          api.get('/api/themes').catch(() => ({ themes: [], active_theme: null })),
+        ]).then(([menuData, eventsData, themesData]) => {
+          const categories = menuData.categories || menuData || [];
+          const totalItems = Array.isArray(categories) ? categories.reduce((sum, cat) => sum + (cat.items ? cat.items.length : 0), 0) : 0;
+          const catCount = Array.isArray(categories) ? categories.length : 0;
+          const events = eventsData.events || eventsData || [];
+          const themes = themesData.themes || themesData || [];
+          const activeTheme = themesData.active_theme || themes.find(t => t.is_active);
+          setStats({ totalItems, catCount, eventCount: events.length, activeTheme: activeTheme ? activeTheme.name : 'Default' });
+        }).catch(() => {
+          setStats({ totalItems: 0, catCount: 0, eventCount: 0, activeTheme: 'N/A' });
+        }).finally(() => setLoading(false));
+      }, []);
+
+      if (loading) return <LoadingScreen />;
+
+      const statCards = [
+        { label: 'Menu Items', value: stats.totalItems, color: 'bg-blue-50 text-blue-700', icon: '&#x1F372;' },
+        { label: 'Categories', value: stats.catCount, color: 'bg-purple-50 text-purple-700', icon: '&#x1F4CB;' },
+        { label: 'Events', value: stats.eventCount, color: 'bg-amber-50 text-amber-700', icon: '&#x1F389;' },
+        { label: 'Active Theme', value: stats.activeTheme, color: 'bg-green-50 text-green-700', icon: '&#x1F3A8;' },
+      ];
+
+      return (
+        <div className="fade-in">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
+            <p className="text-slate-500 mt-1">Here is an overview of The Faregrounds CMS.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {statCards.map((s, i) => (
+              <Card key={i} className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-2xl" dangerouslySetInnerHTML={{ __html: s.icon }} />
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${s.color}`}>{s.label}</span>
+                </div>
+                <div className="text-2xl font-bold text-slate-900">{s.value}</div>
+              </Card>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
+              <div className="grid grid-cols-2 gap-3">
+                <QuickAction icon="utensils" label="Edit Menu" desc="Add or update dishes" />
+                <QuickAction icon="calendar" label="Manage Events" desc="Upcoming happenings" />
+                <QuickAction icon="palette" label="Change Theme" desc="Switch color schemes" />
+                <QuickAction icon="deploy" label="Export Site" desc="Publish your changes" />
+              </div>
+            </Card>
+            <Card className="p-6">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Getting Started</h2>
+              <div className="space-y-3">
+                <Step num="1" text="Build your menu by adding categories and items" />
+                <Step num="2" text="Create events to showcase on the site" />
+                <Step num="3" text="Edit page content sections" />
+                <Step num="4" text="Choose a theme that fits your brand" />
+                <Step num="5" text="Export and deploy to see it live" />
+              </div>
+            </Card>
+          </div>
+        </div>
+      );
+    }
+
+    function QuickAction({ icon, label, desc }) {
+      return (
+        <div className="p-3 rounded-lg border border-slate-200 hover:border-brand-300 hover:bg-brand-50/50 transition cursor-pointer group">
+          <div className="text-slate-400 group-hover:text-brand-600 mb-1"><Icon name={icon} size={20} /></div>
+          <div className="text-sm font-medium text-slate-800">{label}</div>
+          <div className="text-xs text-slate-400">{desc}</div>
+        </div>
+      );
+    }
+
+    function Step({ num, text }) {
+      return (
+        <div className="flex items-start gap-3">
+          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center">{num}</span>
+          <span className="text-sm text-slate-600">{text}</span>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Menu Editor Page                                                   */
+    /* ------------------------------------------------------------------ */
+    function MenuEditorPage() {
+      const [categories, setCategories] = useState([]);
+      const [selectedCatId, setSelectedCatId] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [editingCatId, setEditingCatId] = useState(null);
+      const [editingCatName, setEditingCatName] = useState('');
+      const [newCatName, setNewCatName] = useState('');
+      const [showAddCat, setShowAddCat] = useState(false);
+      const [editingItem, setEditingItem] = useState(null);
+      const [showAddItem, setShowAddItem] = useState(false);
+      const [itemForm, setItemForm] = useState({ name: '', description: '', price: '', is_sub_item: false });
+      const [confirm, setConfirm] = useState({ open: false });
+      const [saving, setSaving] = useState(false);
+      const toast = useToast();
+
+      const loadMenu = useCallback(() => {
+        setLoading(true);
+        api.get('/api/menu').then(data => {
+          const cats = data.categories || data || [];
+          setCategories(cats);
+          if (!selectedCatId && cats.length > 0) setSelectedCatId(cats[0].id);
+        }).catch(() => toast('Failed to load menu', 'error')).finally(() => setLoading(false));
+      }, []);
+
+      useEffect(() => { loadMenu(); }, [loadMenu]);
+
+      const selectedCat = categories.find(c => c.id === selectedCatId);
+
+      const addCategory = () => {
+        if (!newCatName.trim()) return;
+        setSaving(true);
+        api.post('/api/menu/categories', { name: newCatName.trim() })
+          .then(() => { setNewCatName(''); setShowAddCat(false); loadMenu(); toast('Category added'); })
+          .catch(() => toast('Failed to add category', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      const saveCategory = (id) => {
+        if (!editingCatName.trim()) return;
+        setSaving(true);
+        api.put(`/api/menu/categories/${id}`, { name: editingCatName.trim() })
+          .then(() => { setEditingCatId(null); loadMenu(); toast('Category updated'); })
+          .catch(() => toast('Failed to update category', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      const deleteCategory = (id) => {
+        setConfirm({ open: true, title: 'Delete Category', message: 'This will delete the category and all its items. Are you sure?', onConfirm: () => {
+          api.delete(`/api/menu/categories/${id}`)
+            .then(() => { if (selectedCatId === id) setSelectedCatId(null); loadMenu(); toast('Category deleted'); })
+            .catch(() => toast('Failed to delete', 'error'));
+          setConfirm({ open: false });
+        }});
+      };
+
+      const moveCat = (idx, dir) => {
+        const ids = categories.map(c => c.id);
+        const newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= ids.length) return;
+        [ids[idx], ids[newIdx]] = [ids[newIdx], ids[idx]];
+        api.put('/api/menu/categories/reorder', { ids }).then(() => loadMenu()).catch(() => toast('Reorder failed', 'error'));
+      };
+
+      const saveItem = () => {
+        if (!itemForm.name.trim()) { toast('Name is required', 'error'); return; }
+        setSaving(true);
+        const body = { ...itemForm, price: itemForm.price || null, category_id: selectedCatId };
+        const req = editingItem ? api.put(`/api/menu/items/${editingItem.id}`, body) : api.post('/api/menu/items', body);
+        req.then(() => { resetItemForm(); loadMenu(); toast(editingItem ? 'Item updated' : 'Item added'); })
+          .catch(() => toast('Failed to save item', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      const deleteItem = (id) => {
+        setConfirm({ open: true, title: 'Delete Item', message: 'Are you sure you want to delete this menu item?', onConfirm: () => {
+          api.delete(`/api/menu/items/${id}`).then(() => { loadMenu(); toast('Item deleted'); }).catch(() => toast('Failed to delete', 'error'));
+          setConfirm({ open: false });
+        }});
+      };
+
+      const startEditItem = (item) => {
+        setEditingItem(item);
+        setItemForm({ name: item.name, description: item.description || '', price: item.price || '', is_sub_item: !!item.is_sub_item });
+        setShowAddItem(true);
+      };
+
+      const resetItemForm = () => {
+        setEditingItem(null);
+        setItemForm({ name: '', description: '', price: '', is_sub_item: false });
+        setShowAddItem(false);
+      };
+
+      if (loading) return <LoadingScreen />;
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Menu Editor" subtitle="Manage your restaurant menu categories and items" />
+          <ConfirmDialog {...confirm} onCancel={() => setConfirm({ open: false })} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Category Sidebar */}
+            <div className="lg:col-span-4 xl:col-span-3">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-slate-700">Categories</h3>
+                  <Button variant="ghost" size="sm" onClick={() => setShowAddCat(!showAddCat)}><Icon name="plus" size={16} /></Button>
+                </div>
+                {showAddCat && (
+                  <div className="flex gap-2 mb-3 fade-in">
+                    <input value={newCatName} onChange={e => setNewCatName(e.target.value)} placeholder="Category name" className="flex-1 px-2 py-1.5 rounded border border-slate-300 text-sm" onKeyDown={e => e.key === 'Enter' && addCategory()} />
+                    <Button size="sm" onClick={addCategory} disabled={saving}><Icon name="check" size={14} /></Button>
+                  </div>
+                )}
+                {categories.length === 0 ? (
+                  <p className="text-xs text-slate-400 text-center py-4">No categories yet. Add one above.</p>
+                ) : (
+                  <div className="space-y-1">
+                    {categories.map((cat, idx) => (
+                      <div key={cat.id} className={`group flex items-center gap-1 px-3 py-2 rounded-lg cursor-pointer transition text-sm ${selectedCatId === cat.id ? 'bg-brand-50 text-brand-700 font-medium' : 'text-slate-600 hover:bg-slate-50'}`} onClick={() => setSelectedCatId(cat.id)}>
+                        {editingCatId === cat.id ? (
+                          <div className="flex-1 flex gap-1" onClick={e => e.stopPropagation()}>
+                            <input value={editingCatName} onChange={e => setEditingCatName(e.target.value)} className="flex-1 px-1 py-0.5 border rounded text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && saveCategory(cat.id)} />
+                            <button onClick={() => saveCategory(cat.id)} className="text-green-600"><Icon name="check" size={14} /></button>
+                            <button onClick={() => setEditingCatId(null)} className="text-slate-400"><Icon name="x" size={14} /></button>
+                          </div>
+                        ) : (
+                          <>
+                            <span className="flex-1 truncate">{cat.name}</span>
+                            <span className="text-xs text-slate-400">{cat.items ? cat.items.length : 0}</span>
+                            <div className="hidden group-hover:flex items-center gap-0.5 ml-1" onClick={e => e.stopPropagation()}>
+                              <button onClick={() => moveCat(idx, -1)} className="text-slate-400 hover:text-slate-600 p-0.5"><Icon name="arrowUp" size={12} /></button>
+                              <button onClick={() => moveCat(idx, 1)} className="text-slate-400 hover:text-slate-600 p-0.5"><Icon name="arrowDown" size={12} /></button>
+                              <button onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name); }} className="text-slate-400 hover:text-blue-600 p-0.5"><Icon name="edit" size={12} /></button>
+                              <button onClick={() => deleteCategory(cat.id)} className="text-slate-400 hover:text-red-600 p-0.5"><Icon name="trash" size={12} /></button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </div>
+
+            {/* Items Panel */}
+            <div className="lg:col-span-8 xl:col-span-9">
+              {selectedCat ? (
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-800">{selectedCat.name}</h3>
+                    <Button onClick={() => { resetItemForm(); setShowAddItem(true); }}><Icon name="plus" size={16} /> Add Item</Button>
+                  </div>
+
+                  {showAddItem && (
+                    <div className="mb-5 p-4 border border-brand-200 bg-brand-50/30 rounded-xl fade-in">
+                      <h4 className="text-sm font-semibold text-slate-700 mb-3">{editingItem ? 'Edit Item' : 'New Item'}</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <Input label="Name" required value={itemForm.name} onChange={e => setItemForm({ ...itemForm, name: e.target.value })} placeholder="Dish name" />
+                        <Input label="Price" value={itemForm.price} onChange={e => setItemForm({ ...itemForm, price: e.target.value })} placeholder="e.g. 14 or 12/16" />
+                      </div>
+                      <Textarea label="Description" value={itemForm.description} onChange={e => setItemForm({ ...itemForm, description: e.target.value })} placeholder="Brief description..." rows={2} />
+                      <label className="flex items-center gap-2 mt-3 text-sm text-slate-600 cursor-pointer">
+                        <input type="checkbox" checked={itemForm.is_sub_item} onChange={e => setItemForm({ ...itemForm, is_sub_item: e.target.checked })} className="rounded border-slate-300" />
+                        Sub-item (add-on or variant)
+                      </label>
+                      <div className="flex gap-2 mt-4">
+                        <Button onClick={saveItem} disabled={saving}>{saving ? <Spinner /> : <Icon name="check" size={16} />} {editingItem ? 'Update' : 'Add'}</Button>
+                        <Button variant="secondary" onClick={resetItemForm}>Cancel</Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {(!selectedCat.items || selectedCat.items.length === 0) && !showAddItem ? (
+                    <EmptyState title="No items" description="Add your first item to this category." action={<Button onClick={() => setShowAddItem(true)}><Icon name="plus" size={16} /> Add Item</Button>} />
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                      {(selectedCat.items || []).map(item => (
+                        <div key={item.id} className="group p-4 rounded-xl border border-slate-200 hover:border-brand-300 transition bg-white">
+                          <div className="flex items-start justify-between mb-1">
+                            <div className="flex-1">
+                              <span className="text-sm font-semibold text-slate-800">{item.name}</span>
+                              {item.is_sub_item && <span className="ml-2 text-[10px] font-semibold uppercase bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">sub</span>}
+                            </div>
+                            {item.price && <span className="text-sm font-bold text-brand-700 whitespace-nowrap ml-2">${item.price}</span>}
+                          </div>
+                          {item.description && <p className="text-xs text-slate-500 mb-2 line-clamp-2">{item.description}</p>}
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => startEditItem(item)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Icon name="edit" size={12} /> Edit</button>
+                            <button onClick={() => deleteItem(item.id)} className="text-xs text-red-500 hover:underline flex items-center gap-1 ml-2"><Icon name="trash" size={12} /> Delete</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Card>
+              ) : (
+                <Card className="p-12">
+                  <EmptyState icon={<Icon name="utensils" size={48} className="text-slate-300" />} title="Select a category" description="Choose a category from the left panel to view and manage its items." />
+                </Card>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Events Manager Page                                                */
+    /* ------------------------------------------------------------------ */
+    function EventsPage() {
+      const [events, setEvents] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [showForm, setShowForm] = useState(false);
+      const [editingEvent, setEditingEvent] = useState(null);
+      const [form, setForm] = useState({ title: '', date_display: '', badge: '', description: '', featured: false });
+      const [confirm, setConfirm] = useState({ open: false });
+      const [saving, setSaving] = useState(false);
+      const toast = useToast();
+
+      const loadEvents = useCallback(() => {
+        setLoading(true);
+        api.get('/api/events').then(data => {
+          setEvents(data.events || data || []);
+        }).catch(() => toast('Failed to load events', 'error')).finally(() => setLoading(false));
+      }, []);
+
+      useEffect(() => { loadEvents(); }, [loadEvents]);
+
+      const resetForm = () => { setEditingEvent(null); setForm({ title: '', date_display: '', badge: '', description: '', featured: false }); setShowForm(false); };
+
+      const saveEvent = () => {
+        if (!form.title.trim() || !form.date_display.trim()) { toast('Title and date are required', 'error'); return; }
+        setSaving(true);
+        const req = editingEvent ? api.put(`/api/events/${editingEvent.id}`, form) : api.post('/api/events', form);
+        req.then(() => { resetForm(); loadEvents(); toast(editingEvent ? 'Event updated' : 'Event added'); })
+          .catch(() => toast('Failed to save event', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      const startEdit = (ev) => {
+        setEditingEvent(ev);
+        setForm({ title: ev.title, date_display: ev.date_display || '', badge: ev.badge || '', description: ev.description || '', featured: !!ev.featured });
+        setShowForm(true);
+      };
+
+      const deleteEvent = (id) => {
+        setConfirm({ open: true, title: 'Delete Event', message: 'Are you sure you want to delete this event?', onConfirm: () => {
+          api.delete(`/api/events/${id}`).then(() => { loadEvents(); toast('Event deleted'); }).catch(() => toast('Failed to delete', 'error'));
+          setConfirm({ open: false });
+        }});
+      };
+
+      const toggleFeatured = (ev) => {
+        api.put(`/api/events/${ev.id}`, { ...ev, featured: !ev.featured })
+          .then(() => { loadEvents(); toast(ev.featured ? 'Unfeatured' : 'Featured'); })
+          .catch(() => toast('Failed to update', 'error'));
+      };
+
+      if (loading) return <LoadingScreen />;
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Events" subtitle="Manage upcoming events and happenings">
+            <Button onClick={() => { resetForm(); setShowForm(true); }}><Icon name="plus" size={16} /> New Event</Button>
+          </PageHeader>
+          <ConfirmDialog {...confirm} onCancel={() => setConfirm({ open: false })} />
+
+          {showForm && (
+            <Card className="p-5 mb-6 fade-in border-brand-200">
+              <h3 className="text-sm font-semibold text-slate-700 mb-4">{editingEvent ? 'Edit Event' : 'New Event'}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                <Input label="Title" required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Event name" />
+                <Input label="Date Display" required value={form.date_display} onChange={e => setForm({ ...form, date_display: e.target.value })} placeholder="e.g. March 15, 2026" />
+                <Input label="Badge" value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} placeholder="e.g. Live Music" />
+              </div>
+              <Textarea label="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Event details..." rows={3} />
+              <label className="flex items-center gap-2 mt-3 text-sm text-slate-600 cursor-pointer">
+                <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} className="rounded border-slate-300" />
+                Featured event
+              </label>
+              <div className="flex gap-2 mt-4">
+                <Button onClick={saveEvent} disabled={saving}>{saving ? <Spinner /> : <Icon name="check" size={16} />} {editingEvent ? 'Update' : 'Add'}</Button>
+                <Button variant="secondary" onClick={resetForm}>Cancel</Button>
+              </div>
+            </Card>
+          )}
+
+          {events.length === 0 && !showForm ? (
+            <Card className="p-12"><EmptyState icon={<span className="text-5xl">&#x1F389;</span>} title="No events" description="Create your first event to display on the site." action={<Button onClick={() => setShowForm(true)}><Icon name="plus" size={16} /> New Event</Button>} /></Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {events.map(ev => (
+                <Card key={ev.id} className="p-5 flex flex-col" hover>
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700">{ev.date_display}</span>
+                    <button onClick={() => toggleFeatured(ev)} className="text-amber-400 hover:text-amber-500 transition">
+                      <Icon name={ev.featured ? 'star' : 'starOutline'} size={18} />
+                    </button>
+                  </div>
+                  <h3 className="text-base font-semibold text-slate-800 mb-1">{ev.title}</h3>
+                  {ev.badge && <span className="self-start text-[10px] font-semibold uppercase bg-brand-100 text-brand-700 px-2 py-0.5 rounded mb-2">{ev.badge}</span>}
+                  {ev.description && <p className="text-sm text-slate-500 flex-1 mb-3">{ev.description}</p>}
+                  <div className="flex gap-2 mt-auto pt-2 border-t border-slate-100">
+                    <button onClick={() => startEdit(ev)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Icon name="edit" size={12} /> Edit</button>
+                    <button onClick={() => deleteEvent(ev.id)} className="text-xs text-red-500 hover:underline flex items-center gap-1"><Icon name="trash" size={12} /> Delete</button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Content Editor Page                                                */
+    /* ------------------------------------------------------------------ */
+    function ContentPage() {
+      const [content, setContent] = useState({});
+      const [loading, setLoading] = useState(true);
+      const [openSections, setOpenSections] = useState({});
+      const [saving, setSaving] = useState({});
+      const [edited, setEdited] = useState({});
+      const toast = useToast();
+
+      const sectionConfig = [
+        { id: 'hero', label: 'Hero Section', icon: '&#x1F3E0;', desc: 'Main banner headline and subtitle' },
+        { id: 'story', label: 'Story / About', icon: '&#x1F4D6;', desc: 'Restaurant story and history' },
+        { id: 'events', label: 'Events Section', icon: '&#x1F389;', desc: 'Events section header text' },
+        { id: 'atmosphere', label: 'Atmosphere', icon: '&#x2728;', desc: 'Ambiance and dining experience' },
+        { id: 'order', label: 'Order Section', icon: '&#x1F4E6;', desc: 'Online ordering section' },
+        { id: 'newsletter', label: 'Newsletter', icon: '&#x2709;', desc: 'Email signup section' },
+        { id: 'footer', label: 'Footer', icon: '&#x1F4CD;', desc: 'Footer text and info' },
+      ];
+
+      useEffect(() => {
+        api.get('/api/content').then(data => {
+          const organized = {};
+          const items = data.content || data || [];
+          if (Array.isArray(items)) {
+            items.forEach(item => {
+              if (!organized[item.section]) organized[item.section] = {};
+              organized[item.section][item.key] = item.value;
+            });
+          } else if (typeof items === 'object') {
+            Object.assign(organized, items);
+          }
+          setContent(organized);
+          if (sectionConfig.length > 0) setOpenSections({ [sectionConfig[0].id]: true });
+        }).catch(() => toast('Failed to load content', 'error')).finally(() => setLoading(false));
+      }, []);
+
+      const toggleSection = (id) => setOpenSections(prev => ({ ...prev, [id]: !prev[id] }));
+
+      const updateField = (section, key, value) => {
+        setEdited(prev => ({ ...prev, [`${section}.${key}`]: true }));
+        setContent(prev => ({ ...prev, [section]: { ...prev[section], [key]: value } }));
+      };
+
+      const saveSection = (section) => {
+        const fields = content[section] || {};
+        setSaving(prev => ({ ...prev, [section]: true }));
+        const promises = Object.entries(fields).map(([key, value]) =>
+          api.put('/api/content', { section, key, value })
+        );
+        Promise.all(promises)
+          .then(() => {
+            toast(`${section} section saved`);
+            const newEdited = { ...edited };
+            Object.keys(newEdited).forEach(k => { if (k.startsWith(section + '.')) delete newEdited[k]; });
+            setEdited(newEdited);
+          })
+          .catch(() => toast('Failed to save', 'error'))
+          .finally(() => setSaving(prev => ({ ...prev, [section]: false })));
+      };
+
+      if (loading) return <LoadingScreen />;
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Content Editor" subtitle="Edit the text content shown on your website" />
+          <div className="space-y-3">
+            {sectionConfig.map(sec => {
+              const isOpen = openSections[sec.id];
+              const fields = content[sec.id] || {};
+              const fieldKeys = Object.keys(fields);
+              const hasEdits = Object.keys(edited).some(k => k.startsWith(sec.id + '.'));
+              return (
+                <Card key={sec.id}>
+                  <button onClick={() => toggleSection(sec.id)} className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-slate-50 transition rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl" dangerouslySetInnerHTML={{ __html: sec.icon }} />
+                      <div>
+                        <div className="text-sm font-semibold text-slate-800">{sec.label}</div>
+                        <div className="text-xs text-slate-400">{sec.desc}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {hasEdits && <span className="w-2 h-2 rounded-full bg-amber-400" />}
+                      <Icon name={isOpen ? 'chevronUp' : 'chevronDown'} size={16} className="text-slate-400" />
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5 fade-in">
+                      <div className="border-t border-slate-100 pt-4">
+                        {fieldKeys.length === 0 ? (
+                          <p className="text-sm text-slate-400 text-center py-4">No content fields for this section yet.</p>
+                        ) : (
+                          <div className="space-y-3">
+                            {fieldKeys.map(key => (
+                              <div key={key}>
+                                <label className="text-xs font-medium text-slate-500 block mb-1">{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                                {(fields[key] || '').length > 80 ? (
+                                  <textarea value={fields[key] || ''} onChange={e => updateField(sec.id, key, e.target.value)} rows={3} className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900 resize-y" />
+                                ) : (
+                                  <input value={fields[key] || ''} onChange={e => updateField(sec.id, key, e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-900" />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 mt-4">
+                          <Button onClick={() => saveSection(sec.id)} disabled={saving[sec.id]}>
+                            {saving[sec.id] ? <Spinner /> : <Icon name="check" size={16} />} Save {sec.label}
+                          </Button>
+                          {hasEdits && <span className="text-xs text-amber-600">Unsaved changes</span>}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Theme Picker Page                                                  */
+    /* ------------------------------------------------------------------ */
+    function ThemePage() {
+      const [themes, setThemes] = useState([]);
+      const [activeId, setActiveId] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [showCreate, setShowCreate] = useState(false);
+      const [editingTheme, setEditingTheme] = useState(null);
+      const [themeName, setThemeName] = useState('');
+      const [themeColors, setThemeColors] = useState({ primary: '#84cc16', secondary: '#1e293b', accent: '#f59e0b', background: '#ffffff', text: '#1e293b', card: '#f8fafc' });
+      const [confirm, setConfirm] = useState({ open: false });
+      const [saving, setSaving] = useState(false);
+      const toast = useToast();
+
+      const defaultThemes = [
+        { name: 'Olive & Cream', colors: { primary: '#84cc16', secondary: '#4a5043', accent: '#d4a853', background: '#faf8f0', text: '#2d2d2d', card: '#f5f0e0' } },
+        { name: 'Red Orange', colors: { primary: '#ef4444', secondary: '#1e293b', accent: '#f97316', background: '#ffffff', text: '#1e293b', card: '#fef2f2' } },
+        { name: 'Dark Orange', colors: { primary: '#ea580c', secondary: '#292524', accent: '#fbbf24', background: '#1c1917', text: '#f5f5f4', card: '#292524' } },
+        { name: 'Ocean Blue', colors: { primary: '#0ea5e9', secondary: '#0c4a6e', accent: '#06b6d4', background: '#f0f9ff', text: '#0c4a6e', card: '#e0f2fe' } },
+        { name: 'Night Mode', colors: { primary: '#a78bfa', secondary: '#1e1b4b', accent: '#c084fc', background: '#0f0e17', text: '#e8e8e8', card: '#1a1a2e' } },
+      ];
+
+      const colorSlots = [
+        { key: 'primary', label: 'Primary' },
+        { key: 'secondary', label: 'Secondary' },
+        { key: 'accent', label: 'Accent' },
+        { key: 'background', label: 'Background' },
+        { key: 'text', label: 'Text' },
+        { key: 'card', label: 'Card' },
+      ];
+
+      const loadThemes = useCallback(() => {
+        setLoading(true);
+        api.get('/api/themes').then(data => {
+          const t = data.themes || data || [];
+          setThemes(t);
+          const active = data.active_theme || t.find(th => th.is_active);
+          if (active) setActiveId(active.id);
+        }).catch(() => { setThemes([]); }).finally(() => setLoading(false));
+      }, []);
+
+      useEffect(() => { loadThemes(); }, [loadThemes]);
+
+      const activateTheme = (id) => {
+        api.put(`/api/themes/${id}/activate`).then(() => { setActiveId(id); loadThemes(); toast('Theme activated'); }).catch(() => toast('Failed to activate', 'error'));
+      };
+
+      const saveTheme = () => {
+        if (!themeName.trim()) { toast('Theme name is required', 'error'); return; }
+        setSaving(true);
+        const body = { name: themeName, colors: themeColors };
+        const req = editingTheme ? api.put(`/api/themes/${editingTheme.id}`, body) : api.post('/api/themes', body);
+        req.then(() => { setShowCreate(false); setEditingTheme(null); setThemeName(''); loadThemes(); toast(editingTheme ? 'Theme updated' : 'Theme created'); })
+          .catch(() => toast('Failed to save theme', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      const deleteTheme = (id) => {
+        setConfirm({ open: true, title: 'Delete Theme', message: 'Are you sure you want to delete this theme?', onConfirm: () => {
+          api.delete(`/api/themes/${id}`).then(() => { loadThemes(); toast('Theme deleted'); }).catch(() => toast('Failed to delete', 'error'));
+          setConfirm({ open: false });
+        }});
+      };
+
+      const startEdit = (theme) => {
+        setEditingTheme(theme);
+        setThemeName(theme.name);
+        setThemeColors(theme.colors || { primary: '#84cc16', secondary: '#1e293b', accent: '#f59e0b', background: '#ffffff', text: '#1e293b', card: '#f8fafc' });
+        setShowCreate(true);
+      };
+
+      if (loading) return <LoadingScreen />;
+
+      const displayThemes = themes.length > 0 ? themes : defaultThemes.map((t, i) => ({ ...t, id: `preset-${i}`, is_preset: true }));
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Theme" subtitle="Choose a color scheme for your website">
+            <Button onClick={() => { setEditingTheme(null); setThemeName(''); setThemeColors({ primary: '#84cc16', secondary: '#1e293b', accent: '#f59e0b', background: '#ffffff', text: '#1e293b', card: '#f8fafc' }); setShowCreate(true); }}>
+              <Icon name="plus" size={16} /> Create Theme
+            </Button>
+          </PageHeader>
+          <ConfirmDialog {...confirm} onCancel={() => setConfirm({ open: false })} />
+
+          {showCreate && (
+            <Card className="p-5 mb-6 fade-in border-brand-200">
+              <h3 className="text-sm font-semibold text-slate-700 mb-4">{editingTheme ? 'Edit Theme' : 'Create New Theme'}</h3>
+              <Input label="Theme Name" required value={themeName} onChange={e => setThemeName(e.target.value)} placeholder="e.g. Sunset Glow" className="mb-4" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-4">
+                {colorSlots.map(slot => (
+                  <div key={slot.key} className="flex flex-col items-center gap-1">
+                    <label className="text-xs font-medium text-slate-500">{slot.label}</label>
+                    <div className="relative">
+                      <input type="color" value={themeColors[slot.key]} onChange={e => setThemeColors({ ...themeColors, [slot.key]: e.target.value })} className="w-12 h-12 rounded-lg border-2 border-slate-200 cursor-pointer" style={{ padding: 0 }} />
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">{themeColors[slot.key]}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Preview strip */}
+              <div className="mb-4">
+                <label className="text-xs font-medium text-slate-500 block mb-2">Live Preview</label>
+                <div className="rounded-xl overflow-hidden border border-slate-200" style={{ background: themeColors.background }}>
+                  <div className="px-4 py-3" style={{ background: themeColors.secondary }}>
+                    <span className="text-sm font-semibold" style={{ color: themeColors.primary }}>{themeName || 'Theme Name'}</span>
+                  </div>
+                  <div className="p-4 flex gap-3">
+                    <div className="flex-1 p-3 rounded-lg" style={{ background: themeColors.card }}>
+                      <div className="text-sm font-medium mb-1" style={{ color: themeColors.text }}>Card Title</div>
+                      <div className="text-xs" style={{ color: themeColors.text, opacity: 0.6 }}>Sample text content here</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <div className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: themeColors.primary }}>Primary</div>
+                      <div className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ background: themeColors.accent }}>Accent</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={saveTheme} disabled={saving}>{saving ? <Spinner /> : <Icon name="check" size={16} />} {editingTheme ? 'Update' : 'Create'}</Button>
+                <Button variant="secondary" onClick={() => { setShowCreate(false); setEditingTheme(null); }}>Cancel</Button>
+              </div>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayThemes.map(theme => {
+              const colors = theme.colors || {};
+              const isActive = theme.id === activeId;
+              return (
+                <Card key={theme.id} className={`p-5 ${isActive ? 'ring-2 ring-brand-500 ring-offset-2' : ''}`} hover>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold text-slate-800">{theme.name}</h4>
+                    {isActive && <span className="text-[10px] font-semibold uppercase bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">Active</span>}
+                  </div>
+                  <div className="flex gap-1.5 mb-4">
+                    {Object.entries(colors).slice(0, 6).map(([key, val]) => (
+                      <div key={key} className="flex flex-col items-center gap-0.5">
+                        <div className="w-8 h-8 rounded-lg border border-slate-200 shadow-sm" style={{ backgroundColor: val }} title={key} />
+                        <span className="text-[9px] text-slate-400 capitalize">{key.slice(0, 3)}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    {!isActive && !theme.is_preset && (
+                      <Button size="sm" onClick={() => activateTheme(theme.id)}>Activate</Button>
+                    )}
+                    {!theme.is_preset && (
+                      <>
+                        <Button size="sm" variant="ghost" onClick={() => startEdit(theme)}><Icon name="edit" size={14} /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => deleteTheme(theme.id)} className="text-red-500"><Icon name="trash" size={14} /></Button>
+                      </>
+                    )}
+                    {theme.is_preset && (
+                      <span className="text-xs text-slate-400 italic">Preset preview</span>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Settings Page                                                      */
+    /* ------------------------------------------------------------------ */
+    function SettingsPage() {
+      const [settings, setSettings] = useState({});
+      const [loading, setLoading] = useState(true);
+      const [saving, setSaving] = useState(false);
+      const toast = useToast();
+
+      const fieldGroups = [
+        { title: 'Site Identity', icon: '&#x1F3E0;', fields: [
+          { key: 'site_name', label: 'Restaurant Name', placeholder: 'The Faregrounds' },
+          { key: 'site_subtitle', label: 'Subtitle', placeholder: 'A gathering place for good food' },
+        ]},
+        { title: 'Contact', icon: '&#x1F4DE;', fields: [
+          { key: 'phone', label: 'Phone', placeholder: '(555) 123-4567' },
+          { key: 'address_line1', label: 'Address Line 1', placeholder: '123 Main Street' },
+          { key: 'address_line2', label: 'Address Line 2', placeholder: 'City, ST 12345' },
+        ]},
+        { title: 'Hours', icon: '&#x1F552;', fields: [
+          { key: 'hours_weekday', label: 'Weekday Hours', placeholder: 'Mon-Fri: 11am - 10pm' },
+          { key: 'hours_weekend', label: 'Weekend Hours', placeholder: 'Sat-Sun: 10am - 11pm' },
+          { key: 'hours_events', label: 'Events Hours', placeholder: 'Check event listings' },
+        ]},
+        { title: 'External Links', icon: '&#x1F517;', fields: [
+          { key: 'opentable_url', label: 'OpenTable', placeholder: 'https://opentable.com/...' },
+          { key: 'ubereats_url', label: 'Uber Eats', placeholder: 'https://ubereats.com/...' },
+          { key: 'doordash_url', label: 'DoorDash', placeholder: 'https://doordash.com/...' },
+          { key: 'grubhub_url', label: 'Grubhub', placeholder: 'https://grubhub.com/...' },
+          { key: 'yelp_url', label: 'Yelp', placeholder: 'https://yelp.com/...' },
+          { key: 'google_maps_url', label: 'Google Maps', placeholder: 'https://maps.google.com/...' },
+        ]},
+        { title: 'Social Media', icon: '&#x1F4F1;', fields: [
+          { key: 'instagram_url', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+          { key: 'facebook_url', label: 'Facebook', placeholder: 'https://facebook.com/...' },
+          { key: 'twitter_url', label: 'Twitter / X', placeholder: 'https://twitter.com/...' },
+        ]},
+        { title: 'Other', icon: '&#x2699;', fields: [
+          { key: 'menu_pdf_url', label: 'Menu PDF URL', placeholder: 'https://example.com/menu.pdf' },
+        ]},
+      ];
+
+      useEffect(() => {
+        api.get('/api/settings').then(data => {
+          const s = data.settings || data || {};
+          if (Array.isArray(s)) {
+            const obj = {};
+            s.forEach(item => { obj[item.key] = item.value; });
+            setSettings(obj);
+          } else {
+            setSettings(s);
+          }
+        }).catch(() => toast('Failed to load settings', 'error')).finally(() => setLoading(false));
+      }, []);
+
+      const updateSetting = (key, value) => setSettings(prev => ({ ...prev, [key]: value }));
+
+      const saveAll = () => {
+        setSaving(true);
+        api.put('/api/settings', { settings })
+          .then(() => toast('Settings saved'))
+          .catch(() => toast('Failed to save', 'error'))
+          .finally(() => setSaving(false));
+      };
+
+      if (loading) return <LoadingScreen />;
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Settings" subtitle="Configure your restaurant website">
+            <Button onClick={saveAll} disabled={saving}>
+              {saving ? <Spinner /> : <Icon name="check" size={16} />} Save All Settings
+            </Button>
+          </PageHeader>
+          <div className="space-y-6 max-w-3xl">
+            {fieldGroups.map(group => (
+              <Card key={group.title} className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-lg" dangerouslySetInnerHTML={{ __html: group.icon }} />
+                  <h3 className="text-sm font-semibold text-slate-800">{group.title}</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {group.fields.map(field => (
+                    <Input key={field.key} label={field.label} value={settings[field.key] || ''} onChange={e => updateSetting(field.key, e.target.value)} placeholder={field.placeholder} />
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Export & Deploy Page                                                */
+    /* ------------------------------------------------------------------ */
+    function ExportPage() {
+      const [exporting, setExporting] = useState(false);
+      const [lastExport, setLastExport] = useState(null);
+      const [exportResult, setExportResult] = useState(null);
+      const [exportError, setExportError] = useState(null);
+      const [showPreview, setShowPreview] = useState(false);
+      const [previewData, setPreviewData] = useState(null);
+      const [loadingPreview, setLoadingPreview] = useState(false);
+      const toast = useToast();
+
+      const [deploying, setDeploying] = useState(false);
+      const [deployResult, setDeployResult] = useState(null);
+
+      const doExport = () => {
+        setExporting(true);
+        setExportError(null);
+        setExportResult(null);
+        api.post('/api/export', {})
+          .then(data => {
+            setExportResult(data);
+            setLastExport(new Date().toISOString());
+            toast('Export completed successfully');
+          })
+          .catch(err => {
+            setExportError('Export failed. Please check the server and try again.');
+            toast('Export failed', 'error');
+          })
+          .finally(() => setExporting(false));
+      };
+
+      const doDeploy = () => {
+        setDeploying(true);
+        setDeployResult(null);
+        setExportError(null);
+        api.post('/api/deploy', {})
+          .then(data => {
+            setDeployResult(data);
+            if (data.success) {
+              setLastExport(new Date().toISOString());
+              toast('Deployed to GitHub successfully!');
+            } else {
+              toast('Deploy had issues. Check the steps below.', 'error');
+            }
+          })
+          .catch(err => {
+            setDeployResult({ success: false, error: 'Deploy request failed' });
+            toast('Deploy failed', 'error');
+          })
+          .finally(() => setDeploying(false));
+      };
+
+      const loadPreview = () => {
+        setLoadingPreview(true);
+        setShowPreview(true);
+        Promise.all([
+          api.get('/api/menu').catch(() => ({})),
+          api.get('/api/events').catch(() => ({})),
+          api.get('/api/content').catch(() => ({})),
+          api.get('/api/settings').catch(() => ({})),
+          api.get('/api/themes').catch(() => ({})),
+        ]).then(([menu, events, content, settings, themes]) => {
+          setPreviewData({ menu, events, content, settings, themes, exported_at: new Date().toISOString() });
+        }).catch(() => toast('Failed to load preview', 'error')).finally(() => setLoadingPreview(false));
+      };
+
+      return (
+        <div className="fade-in">
+          <PageHeader title="Export & Deploy" subtitle="Export your site data and deploy to production" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              {/* Export Card */}
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center">
+                    <Icon name="deploy" size={20} className="text-brand-700" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-800">Export Site Data</h3>
+                    <p className="text-xs text-slate-500">Generate a static export of all site data</p>
+                  </div>
+                </div>
+                {lastExport && (
+                  <div className="mb-4 px-3 py-2 bg-green-50 rounded-lg text-sm text-green-700 flex items-center gap-2">
+                    <Icon name="check" size={16} />
+                    Last export: {new Date(lastExport).toLocaleString()}
+                  </div>
+                )}
+                {exportError && (
+                  <div className="mb-4 px-3 py-2 bg-red-50 rounded-lg text-sm text-red-700 flex items-center gap-2">
+                    <Icon name="x" size={16} />
+                    {exportError}
+                  </div>
+                )}
+                {exportResult && (
+                  <div className="mb-4 px-3 py-2 bg-blue-50 rounded-lg text-sm text-blue-700">
+                    Export completed. {exportResult.message || 'Data is ready.'}
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <Button onClick={doExport} disabled={exporting} className="flex-1">
+                    {exporting ? <><Spinner /> Exporting...</> : <><Icon name="deploy" size={16} /> Export Site Data</>}
+                  </Button>
+                  <Button variant="outline" onClick={loadPreview}>
+                    Preview JSON
+                  </Button>
+                </div>
+              </Card>
+
+              {/* One-Click Deploy */}
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <span className="text-lg">🚀</span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-800">Deploy to GitHub Pages</h3>
+                    <p className="text-xs text-slate-500">Export, build, commit, and push in one click</p>
+                  </div>
+                </div>
+                {deployResult && (
+                  <div className={`mb-4 rounded-lg text-sm ${deployResult.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                    <div className={`px-3 py-2 font-medium ${deployResult.success ? 'text-green-700' : 'text-red-700'}`}>
+                      {deployResult.success ? '✅ Deployed successfully!' : '❌ ' + (deployResult.error || 'Deploy failed')}
+                    </div>
+                    {deployResult.steps && deployResult.steps.map((s, i) => (
+                      <div key={i} className="px-3 py-1 flex items-center gap-2 text-xs border-t border-white/50">
+                        <span>{s.success ? '✓' : '✗'}</span>
+                        <span className="font-medium capitalize">{s.step}:</span>
+                        <span>{s.message}</span>
+                      </div>
+                    ))}
+                    {deployResult.success && (
+                      <div className="px-3 py-2 border-t border-white/50 text-xs">
+                        GitHub Actions will rebuild the site shortly. View it at{' '}
+                        <a href="https://jonathanprivat.github.io/the-faregrounds/" target="_blank" className="underline font-medium">
+                          jonathanprivat.github.io/the-faregrounds
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <Button onClick={doDeploy} disabled={deploying} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  {deploying ? <><Spinner /> Deploying...</> : <><span>🚀</span> Deploy to GitHub Pages</>}
+                </Button>
+                <p className="mt-2 text-xs text-slate-400 text-center">Exports data, builds the site, commits, and pushes to GitHub</p>
+              </Card>
+            </div>
+
+            {/* JSON Preview */}
+            <div>
+              {showPreview && (
+                <Card className="p-5 fade-in">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-slate-700">Data Preview</h3>
+                    <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}><Icon name="x" size={16} /></Button>
+                  </div>
+                  {loadingPreview ? (
+                    <div className="flex items-center justify-center py-12"><Spinner /></div>
+                  ) : (
+                    <pre className="bg-slate-900 text-green-400 rounded-xl p-4 text-xs font-mono overflow-auto max-h-[600px] whitespace-pre-wrap">
+                      {previewData ? JSON.stringify(previewData, null, 2) : 'No data available'}
+                    </pre>
+                  )}
+                </Card>
+              )}
+              {!showPreview && (
+                <Card className="p-12">
+                  <EmptyState
+                    icon={<span className="text-5xl">&#x1F4E4;</span>}
+                    title="JSON Preview"
+                    description="Click 'Preview JSON' to see a snapshot of all your site data before exporting."
+                  />
+                </Card>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Main App                                                           */
+    /* ------------------------------------------------------------------ */
+    function App() {
+      const [activePage, setActivePage] = useState('dashboard');
+      const [mobileOpen, setMobileOpen] = useState(false);
+
+      const pages = {
+        dashboard: DashboardPage,
+        menu: MenuEditorPage,
+        events: EventsPage,
+        content: ContentPage,
+        theme: ThemePage,
+        settings: SettingsPage,
+        export: ExportPage,
+      };
+
+      const ActiveComponent = pages[activePage] || DashboardPage;
+
+      return (
+        <ToastProvider>
+          <div className="min-h-screen bg-slate-50">
+            <Sidebar activePage={activePage} setActivePage={setActivePage} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+            {/* Mobile top bar */}
+            <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 flex items-center px-4 z-20">
+              <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+                <Icon name="menu" size={22} />
+              </button>
+              <span className="ml-3 font-semibold text-slate-800 text-sm">The Faregrounds</span>
+              <span className="ml-1.5 text-[9px] font-semibold uppercase bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded">CMS</span>
+            </div>
+            <main className="md:ml-60 min-h-screen pt-14 md:pt-0">
+              <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
+                <ActiveComponent key={activePage} />
+              </div>
+            </main>
+          </div>
+        </ToastProvider>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Render                                                             */
+    /* ------------------------------------------------------------------ */
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

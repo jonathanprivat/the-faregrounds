@@ -769,7 +769,9 @@ export default function TheFaregroundsHomepage() {
 
     /* ── Desktop (≥1025px): equalize Order/Reserve card heights across both rows ── */
     @media (min-width: 1025px) {
-      .order-grid .poster-card { min-height: 260px; }
+      .order-grid > div { height: 100%; }
+      .order-grid a { display: block; height: 100%; }
+      .order-grid .poster-card { min-height: 280px; height: 100%; }
     }
 
     /* ── Tablet (≤1024px) ── */
