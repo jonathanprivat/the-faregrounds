@@ -767,6 +767,11 @@ export default function TheFaregroundsHomepage() {
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+    /* ── Desktop (≥1025px): equalize Order/Reserve card heights across both rows ── */
+    @media (min-width: 1025px) {
+      .order-grid .poster-card { min-height: 260px; }
+    }
+
     /* ── Tablet (≤1024px) ── */
     @media (max-width: 1024px) {
       .desktop-nav { display: none !important; }
@@ -1374,7 +1379,7 @@ export default function TheFaregroundsHomepage() {
                 {small.map((s, i) => (
                   <Reveal key={s.name} delay={(i + 4) * 0.06}>
                     <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
-                      <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", cursor: "pointer" }}>
+                      <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", height: "100%", cursor: "pointer", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                         <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${colors.olive}20`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
                           {s.icon}
                         </div>
