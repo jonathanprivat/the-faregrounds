@@ -12,8 +12,32 @@
     <link rel="icon" type="image/png" href="/the-faregrounds/images/whale.png" />
     <meta name="theme-color" content="#4e5420" />
 
-    <!-- Preload hero LCP image to speed up first paint -->
+    <!-- Preload hero LCP image + critical font + data in parallel with JS -->
     <link rel="preload" as="image" href="/the-faregrounds/images/logoArch.svg" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/the-faregrounds/fonts/BogueSlab-2.woff2" crossorigin />
+    <link rel="preload" as="fetch" href="/the-faregrounds/data/site.json" crossorigin />
+
+    <!-- Google Fonts: preconnect for Source Sans 3 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" />
+
+    <!-- Critical CSS: font-face + baseline styles so first paint doesn't wait for JS -->
+    <style>
+      @font-face { font-family: 'ZebrawoodFill'; src: url('/the-faregrounds/fonts/ZebrawoodFill.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-2.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-3.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'BogueSlab'; src: url('/the-faregrounds/fonts/BogueSlab-4.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+      body { overflow-x: hidden; background: #f7f1de; color: #2a2b1f; font-family: 'BogueSlab', Georgia, serif; }
+      button { cursor: pointer; }
+      img { user-select: none; -webkit-user-drag: none; }
+      .ff-display { font-family: "ZebrawoodFill", "Playfair Display", Georgia, serif; }
+      .ff-body { font-family: 'BogueSlab', Georgia, serif; }
+      .ff-ui { font-family: 'Source Sans 3', 'Segoe UI', Arial, sans-serif; }
+      .ff-accent { font-family: 'p22-franklin-caslon', 'P22 Franklin Caslon', Georgia, serif; font-style: italic; }
+    </style>
 
     <!-- Open Graph -->
     <meta property="og:type" content="restaurant" />

@@ -254,7 +254,11 @@ export default function TheFaregroundsHomepage() {
   const [systemDark, setSystemDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
-    fetch(B + 'data/site.json?v=' + Date.now())
+    // Stable URL matches the <link rel="preload"> in index.html — no cache-buster.
+    // GitHub Pages serves site.json with ETag/Last-Modified; returning visitors
+    // revalidate with If-None-Match and typically get 304 Not Modified (<10ms
+    // from disk cache within the 10-min default max-age window).
+    fetch(B + 'data/site.json', { cache: 'default' })
       .then(r => r.json())
       .then(data => setSiteData(data))
       .catch(() => setSiteData(null));
@@ -553,25 +557,10 @@ export default function TheFaregroundsHomepage() {
     }, 200);
   }, [currentMenuType, allMenus]);
 
+  // Critical CSS (font-face, resets, font families) now lives in index.html <style>
+  // so first paint doesn't have to wait for JS to load. This template only carries
+  // theme-color-dependent rules that need React state.
   const css = `
-    @font-face { font-family: 'ZebrawoodFill'; src: url('${B}fonts/ZebrawoodFill.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-2.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-3.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
-    @font-face { font-family: 'BogueSlab'; src: url('${B}fonts/BogueSlab-4.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
-
-    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap');
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-    body { overflow-x: hidden; }
-    button { cursor: pointer; }
-    img { user-select: none; -webkit-user-drag: none; }
-
-    .ff-display { font-family: "ZebrawoodFill", "Playfair Display", Georgia, serif; }
-    .ff-body { font-family: 'BogueSlab', Georgia, serif; }
-    .ff-ui { font-family: 'Source Sans 3', 'Segoe UI', Arial, sans-serif; }
-    .ff-accent { font-family: 'p22-franklin-caslon', 'P22 Franklin Caslon', Georgia, serif; font-style: italic; }
-
     .ink-shadow { text-shadow: 0 2px 0 rgba(78,84,32,0.08); }
     .ink-art { filter: hue-rotate(${artHueShift}deg); transition: filter 0.3s ease; }
     [data-dark="true"] .ink-art { filter: invert(1) sepia(1) saturate(3) hue-rotate(${artHueDarkShift}deg) brightness(0.85); }
