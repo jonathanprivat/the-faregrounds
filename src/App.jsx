@@ -75,11 +75,11 @@ function Reveal({ children, delay = 0, direction = "up", style: extra = {} }) {
 // ─── Real Asset Components ──────────────────────────────────────
 
 function Logo({ size = 180, style = {} }) {
-  return <img src={A.logo} alt="The Faregrounds" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.logo} alt="The Fairgrounds" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function SealColor({ size = 220, style = {} }) {
-  return <img src={A.seal} alt="The Faregrounds Seal" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
+  return <img src={A.seal} alt="The Fairgrounds Seal" draggable={false} loading="lazy" decoding="async" style={{ width: size, height: "auto", objectFit: "contain", ...style }} />;
 }
 
 function WhaleTail({ size = 48, style = {} }) {
@@ -240,7 +240,7 @@ function PhotoBlock({ gradient, aspect = "4/3", label = "", style = {} }) {
 }
 
 // ─── Main Component ─────────────────────────────────────────────
-export default function TheFaregroundsHomepage() {
+export default function TheFairgroundsHomepage() {
   const [siteData, setSiteData] = useState(null);
   const [scrollY, setScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -320,7 +320,7 @@ export default function TheFaregroundsHomepage() {
     setMetaByProperty('og:description', s.seo_og_description || s.seo_description || '');
     setMetaByProperty('og:url', s.seo_canonical_url || '');
     setMetaByProperty('og:image', s.seo_og_image || '');
-    setMetaByProperty('og:site_name', s.site_name || 'The Faregrounds');
+    setMetaByProperty('og:site_name', s.site_name || 'The Fairgrounds');
     setMetaByProperty('og:locale', 'en_US');
 
     // Twitter
@@ -367,7 +367,7 @@ export default function TheFaregroundsHomepage() {
     const restaurantSchema = {
       '@context': 'https://schema.org',
       '@type': 'Restaurant',
-      name: s.site_name || 'The Faregrounds',
+      name: s.site_name || 'The Fairgrounds',
       description: s.seo_description || '',
       url: s.seo_canonical_url || '',
       telephone: s.phone || '',
@@ -402,7 +402,7 @@ export default function TheFaregroundsHomepage() {
     const websiteSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: s.site_name || 'The Faregrounds',
+      name: s.site_name || 'The Fairgrounds',
       url: s.seo_canonical_url || '',
       description: s.seo_description || '',
     };
@@ -847,7 +847,7 @@ export default function TheFaregroundsHomepage() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 4vw, 24px)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
             <WhaleTail size={26} />
-            <span className="ff-display" style={{ fontSize: 22, fontWeight: 900, color: colors.olive, letterSpacing: "-0.02em" }}>{siteSettings.site_name || "The Faregrounds"}</span>
+            <span className="ff-display" style={{ fontSize: 22, fontWeight: 900, color: colors.olive, letterSpacing: "-0.02em" }}>{siteSettings.site_name || "The Fairgrounds"}</span>
           </button>
           <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: 28 }}>
             {NAV_LINKS.map(({ label, id }) => (
@@ -918,7 +918,7 @@ export default function TheFaregroundsHomepage() {
                       <Swash flip />
                     </div>
                     <h1 style={{ margin: 0, padding: 0, lineHeight: 1 }}>
-                      <img src={A.logoArch} alt="The Faregrounds - Nantucket Island Restaurant" className="ink-shadow ink-art" fetchpriority="high" decoding="async" style={{
+                      <img src={A.logoArch} alt="The Fairgrounds - Nantucket Island Restaurant" className="ink-shadow ink-art" fetchpriority="high" decoding="async" style={{
                         width: "clamp(280px, 55vw, 620px)", height: "auto", display: "block", margin: "0 auto",
                       }} />
                     </h1>
@@ -972,7 +972,7 @@ export default function TheFaregroundsHomepage() {
                   </h2>
                   <Divider />
                   <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: colors.body }}>
-                    {content?.story?.paragraph1 || "The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket."}
+                    {content?.story?.paragraph1 || "The Fairgrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket."}
                   </p>
                   <p className="ff-accent" style={{ fontSize: "clamp(17px, 1.7vw, 21px)", lineHeight: 1.75, color: colors.body, marginTop: 16 }}>
                     {content?.story?.paragraph2 || "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."}
@@ -1337,7 +1337,7 @@ export default function TheFaregroundsHomepage() {
                 icon: <svg width="28" height="28" viewBox="0 0 5 4.753" fill={o}><path d="m4.734 3.226c.004-.295-.009-.59-.039-.883-.022-.198-.089-.452-.304-.504a.15.15 0 0 0 .084-.003c.249-.13.23-.451.142-.683-.116-.304-.391-.52-.664-.663a3.39 3.39 0 0 0 -3.237.115c-.247.152-.531.449-.406.78a.67.67 0 0 0 .147.22l.094.098c-.127.172-.22.328-.28.537-.18.63-.15 1.035-.101 1.541.031.313.134.779.495.831.294.041.613-.056.907-.091.324-.038.651-.098.979-.089.462.012.92.121 1.383.126.244.002.65.026.723-.296.069-.306.072-.624.072-.936.004-.033.004-.067.004-.099zm-.528.529c-.115.259-.44.23-.667.211l-1.015-.121c-.302-.009-.601.048-.895.113-.22.048-.527.175-.726.006-.221-.187-.26-.506-.263-.775a4.44 4.44 0 0 1 .072-.724c.027-.148.071-.292.129-.43.079-.2.196-.321.202-.315-.059-.061-.13-.094-.17-.177-.151-.315.226-.582.432-.673.721-.322 1.729-.29 2.41.123.212.129.624.572.239.793.237.112.298.45.324.69a4.19 4.19 0 0 1 -.036 1.157.5.5 0 0 1 -.037.122z"/></svg>
               },
               {
-                name: "Uber Eats", cat: "DELIVERY", desc: "Get Faregrounds delivered to your door.", href: siteSettings.ubereats_url || "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                name: "Uber Eats", cat: "DELIVERY", desc: "Get Fairgrounds delivered to your door.", href: siteSettings.ubereats_url || "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
                 icon: <svg width="28" height="28" viewBox="0 0 679 579" fill={o}><path d="M327.2,391a30.69,30.69,0,1,0-30.69,30.36A30.27,30.27,0,0,0,327.2,391m25.07-49.67v99.35H326.73v-9a50.37,50.37,0,0,1-32.33,11.5c-30.23,0-53.89-23.22-53.89-52.21s23.66-52.2,53.89-52.2a50.37,50.37,0,0,1,32.33,11.5v-9Zm84.9,76.81H418c-5.85,0-9.6-2.52-9.6-7.81V363.87h28.81V341.33H408.36V313H382.59v28.29H363.14v22.54h19.45v52.89c0,13.34,9.61,23.92,26.94,23.92h27.64Zm58.22,25.07c29.52,0,46.15-13.8,46.15-32.88,0-13.58-9.84-23.7-30.46-28.07l-21.78-4.37c-12.65-2.29-16.64-4.59-16.64-9.19,0-6,6.1-9.66,17.34-9.66,12.18,0,21.08,3.22,23.66,14.26H539.2c-1.41-20.7-16.64-34.5-47.56-34.5-26.71,0-45.45,10.81-45.45,31.74,0,14.48,10.31,23.92,32.57,28.51l24.36,5.52c9.61,1.84,12.18,4.37,12.18,8.29,0,6.2-7.26,10.11-19,10.11-14.75,0-23.19-3.22-26.47-14.26H444.08c3.75,20.7,19.45,34.5,51.31,34.5M137.46,306.14h96.29v23H163.46V362h68.41v22.31H163.46v33.34h70.29v23H137.46Z"/><path d="M539.2,189.6V171.54h-6.85c-11,0-19,5-23.89,12.88V172.31H488.88v98h19.78V214.59c0-15.18,9.39-25,22.32-25ZM397.06,212.28c3.53-15,15.86-25,30.55-25s27,10,30.34,25ZM428,170.38a50.88,50.88,0,0,0-51.3,50.94c0,29.21,23.1,51.12,53.06,51.12,18.21,0,33.08-7.88,43.07-20.95l-14.29-10.38c-7.44,9.8-17.23,14.42-28.78,14.42a33.3,33.3,0,0,1-33.09-27.87h81.25v-6.34c0-29.22-21.14-50.94-49.92-50.94M315,255.53a34,34,0,1,1,34.26-34,34.11,34.11,0,0,1-34.26,34m-53.84,14.79h19.58V258a50.31,50.31,0,0,0,35.63,14.61c29.37,0,52.47-22.87,52.47-51.12,0-28.44-23.1-51.32-52.47-51.32A49.82,49.82,0,0,0,281,184.8v-49H261.19Zm-69.5-15.76c19,0,33.67-14.41,33.67-35.75v-83h20.56V270.32H225.56V257.83c-9.2,9.42-21.93,14.8-36.22,14.8-29.37,0-51.88-20.95-51.88-52.66V135.79H158v83c0,21.73,14.48,35.75,33.67,35.75"/></svg>
               },
               {
@@ -1410,7 +1410,7 @@ export default function TheFaregroundsHomepage() {
                   <Bracket side="right" />
                 </div>
                 <div style={{ position: "relative", zIndex: 2 }}>
-                  <img src={A.logoOrange} alt="The Faregrounds" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
+                  <img src={A.logoOrange} alt="The Fairgrounds" draggable={false} loading="lazy" decoding="async" className="ink-art" style={{ width: 140, height: "auto", margin: "0 auto", display: "block", objectFit: "contain" }} />
                   <h2 className="ff-display ink-shadow" style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 900, lineHeight: 0.96, marginTop: 16 }}>
                     {content?.newsletter?.heading || "Stay in the Loop"}
                   </h2>
@@ -1444,7 +1444,7 @@ export default function TheFaregroundsHomepage() {
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <WhaleTail size={30} />
-                      <span className="ff-display" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 900, color: colors.ink, lineHeight: 1 }}>{siteSettings.site_name || "The Faregrounds"}</span>
+                      <span className="ff-display" style={{ fontSize: "clamp(22px, 2.5vw, 28px)", fontWeight: 900, color: colors.ink, lineHeight: 1 }}>{siteSettings.site_name || "The Fairgrounds"}</span>
                     </div>
                     <p className="ff-body" style={{ fontSize: 16, lineHeight: 1.7, color: colors.body, marginTop: 14, maxWidth: 300 }}>
                       {content?.footer?.tagline || "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."}
@@ -1509,7 +1509,7 @@ export default function TheFaregroundsHomepage() {
                   marginTop: 32, paddingTop: 18, borderTop: "1px solid rgba(122,126,46,0.15)",
                   display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
                 }}>
-                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{`\u00A9 ${new Date().getFullYear()} ${siteSettings.site_name || "The Faregrounds"} \u2022 ${content?.footer?.copyright_suffix || "Nantucket Island"}`}</span>
+                  <span className="ff-ui" style={{ fontSize: 10, letterSpacing: "0.14em", color: colors.muted }}>{`\u00A9 ${new Date().getFullYear()} ${siteSettings.site_name || "The Fairgrounds"} \u2022 ${content?.footer?.copyright_suffix || "Nantucket Island"}`}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div className="divider-line" style={{ width: 40 }} />
                     <WhaleTail size={18} style={{ opacity: 0.4 }} />

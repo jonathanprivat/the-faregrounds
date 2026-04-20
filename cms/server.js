@@ -581,7 +581,7 @@ app.post('/api/deploy', async (req, res) => {
 // ═══════════════════════════════════════════
 
 app.listen(PORT, () => {
-  console.log(`\n  Faregrounds CMS Server`);
+  console.log(`\n  Fairgrounds CMS Server`);
   console.log(`  ──────────────────────`);
   console.log(`  Port:     ${PORT}`);
   console.log(`  Database: ${DB_PATH}`);

@@ -130,7 +130,7 @@ function seed() {
       ['hero', 'tagline', 'Seasonal food, local gatherings, and fairground energy \u2014 all wrapped in a nostalgic island experience at 27 Fairgrounds Road.'],
       ['hero', 'menu_title', 'Lunch'],
       ['story', 'heading', 'A Farmstand Poster Turned Into a Restaurant.'],
-      ['story', 'paragraph1', 'The Faregrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience \u2014 from the menu to the events to the brand itself \u2014 is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.'],
+      ['story', 'paragraph1', 'The Fairgrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience \u2014 from the menu to the events to the brand itself \u2014 is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.'],
       ['story', 'paragraph2', 'We\u2019re bringing the sugar shack experience 30 miles out to sea \u2014 with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee.'],
       ['events', 'heading', 'More Than a Restaurant'],
       ['atmosphere', 'heading', 'Old-School Energy, Island Soul'],
@@ -172,7 +172,7 @@ function seed() {
 
     // ── Settings ──
     const settings = [
-      ['site_name', 'The Faregrounds'],
+      ['site_name', 'The Fairgrounds'],
       ['site_subtitle', 'Nantucket Island'],
       ['phone', '(508) 555-FARE'],
       ['address_line1', '27 Fairgrounds Road'],
