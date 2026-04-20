@@ -227,7 +227,7 @@
           }
         ]
       },
-      "pdfUrl": "/the-faregrounds/menu.pdf",
+      "pdfUrl": "/menu.pdf",
       "autoTime": {
         "start": 0,
         "end": 15
@@ -478,7 +478,7 @@
           }
         ]
       },
-      "pdfUrl": "/the-faregrounds/data/dinner-menu.pdf",
+      "pdfUrl": "/data/dinner-menu.pdf",
       "autoTime": {
         "start": 15,
         "end": 24
@@ -515,7 +515,7 @@
           }
         ]
       },
-      "pdfUrl": "/the-faregrounds/data/specials-menu.pdf"
+      "pdfUrl": "/data/specials-menu.pdf"
     },
     {
       "id": "desserts",
@@ -560,7 +560,7 @@
           }
         ]
       },
-      "pdfUrl": "/the-faregrounds/data/desserts-menu.pdf"
+      "pdfUrl": "/data/desserts-menu.pdf"
     }
   ],
   "events": [
@@ -1125,13 +1125,13 @@
     "auto_theme": "false",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
-    "event_pdf_url": "/the-faregrounds/data/event.pdf?v=1774292682272",
+    "event_pdf_url": "/data/event.pdf?v=1774292682272",
     "event_link_url": "",
     "seo_title": "The Fairgrounds | Nantucket Island Restaurant, Events & Community",
     "seo_description": "Seasonal food, local gatherings, and fairground energy on Nantucket Island. Comfort food, live music, community events, and old-school island charm at 27 Fairgrounds Road.",
     "seo_keywords": "Nantucket restaurant, Nantucket Island dining, Faregrounds, seasonal menu, live music Nantucket, community events, Nantucket food, island dining, Fairgrounds Road",
-    "seo_canonical_url": "https://jonathanprivat.github.io/the-faregrounds/",
-    "seo_og_image": "https://jonathanprivat.github.io/the-faregrounds/images/logo.png",
+    "seo_canonical_url": "https://nantucketfairgrounds.com/",
+    "seo_og_image": "https://nantucketfairgrounds.com/images/logo.png",
     "seo_og_title": "",
     "seo_og_description": "",
     "seo_twitter_card": "summary_large_image",

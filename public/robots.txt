@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://jonathanprivat.github.io/the-faregrounds/sitemap.xml
+Sitemap: https://nantucketfairgrounds.com/sitemap.xml

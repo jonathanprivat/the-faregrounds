@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/the-faregrounds/',
+  base: '/',
   build: {
     // Split vendor chunks so React core stays cached across app deploys.
     // When App.jsx changes, only the small app chunk re-downloads.
