@@ -65,6 +65,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Restaurant",
+      "@id": "https://nantucketfairgrounds.com/#restaurant",
       "name": "The Fairgrounds",
       "description": "Seasonal food, local gatherings, and fairground energy on Nantucket Island. Comfort food, live music, community events, and old-school island charm.",
       "url": "https://nantucketfairgrounds.com/",
@@ -116,102 +117,50 @@
       {
         "@context": "https://schema.org",
         "@type": "Event",
+        "@id": "https://nantucketfairgrounds.com/#event-maple-fest",
         "name": "Maple Fest Weekend",
         "description": "Sugar on snow, live bluegrass, family-friendly fun, and maple treats all afternoon.",
         "startDate": "2025-03-28",
         "eventStatus": "https://schema.org/EventScheduled",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "location": {
-          "@type": "Place",
-          "name": "The Fairgrounds",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "27 Fairgrounds Road",
-            "addressLocality": "Nantucket",
-            "addressRegion": "MA",
-            "postalCode": "02554"
-          }
-        },
-        "organizer": {
-          "@type": "Restaurant",
-          "name": "The Fairgrounds",
-          "url": "https://nantucketfairgrounds.com/"
-        }
+        "location": { "@id": "https://nantucketfairgrounds.com/#restaurant" },
+        "organizer": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
       },
       {
         "@context": "https://schema.org",
         "@type": "Event",
+        "@id": "https://nantucketfairgrounds.com/#event-bluegrass",
         "name": "Bluegrass on the Lawn",
         "description": "An easygoing early-evening set with local players and picnic-style seating.",
         "startDate": "2025-04-12",
         "eventStatus": "https://schema.org/EventScheduled",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "location": {
-          "@type": "Place",
-          "name": "The Fairgrounds",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "27 Fairgrounds Road",
-            "addressLocality": "Nantucket",
-            "addressRegion": "MA",
-            "postalCode": "02554"
-          }
-        },
-        "organizer": {
-          "@type": "Restaurant",
-          "name": "The Fairgrounds",
-          "url": "https://nantucketfairgrounds.com/"
-        }
+        "location": { "@id": "https://nantucketfairgrounds.com/#restaurant" },
+        "organizer": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
       },
       {
         "@context": "https://schema.org",
         "@type": "Event",
+        "@id": "https://nantucketfairgrounds.com/#event-kids-brunch",
         "name": "Kids Craft Brunch",
         "description": "Weekend brunch with hands-on activities, balloons, and seasonal treats for the little ones.",
         "startDate": "2025-04-19",
         "eventStatus": "https://schema.org/EventScheduled",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "location": {
-          "@type": "Place",
-          "name": "The Fairgrounds",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "27 Fairgrounds Road",
-            "addressLocality": "Nantucket",
-            "addressRegion": "MA",
-            "postalCode": "02554"
-          }
-        },
-        "organizer": {
-          "@type": "Restaurant",
-          "name": "The Fairgrounds",
-          "url": "https://nantucketfairgrounds.com/"
-        }
+        "location": { "@id": "https://nantucketfairgrounds.com/#restaurant" },
+        "organizer": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
       },
       {
         "@context": "https://schema.org",
         "@type": "Event",
+        "@id": "https://nantucketfairgrounds.com/#event-supper-club",
         "name": "Island Supper Club",
         "description": "A five-course prix fixe dinner celebrating Nantucket's spring harvest.",
         "startDate": "2025-05-03",
         "eventStatus": "https://schema.org/EventScheduled",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "location": {
-          "@type": "Place",
-          "name": "The Fairgrounds",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "27 Fairgrounds Road",
-            "addressLocality": "Nantucket",
-            "addressRegion": "MA",
-            "postalCode": "02554"
-          }
-        },
-        "organizer": {
-          "@type": "Restaurant",
-          "name": "The Fairgrounds",
-          "url": "https://nantucketfairgrounds.com/"
-        }
+        "location": { "@id": "https://nantucketfairgrounds.com/#restaurant" },
+        "organizer": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
       }
     ]
     </script>
@@ -221,9 +170,11 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
+      "@id": "https://nantucketfairgrounds.com/#website",
       "name": "The Fairgrounds",
       "url": "https://nantucketfairgrounds.com/",
-      "description": "Nantucket Island restaurant featuring seasonal comfort food, live music, and community events."
+      "description": "Nantucket Island restaurant featuring seasonal comfort food, live music, and community events.",
+      "publisher": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
     }
     </script>
   </head>

@@ -364,9 +364,14 @@ export default function TheFairgroundsHomepage() {
       }
     }
 
+    const canonicalUrl = s.seo_canonical_url || 'https://nantucketfairgrounds.com/';
+    const restaurantId = canonicalUrl.replace(/\/?$/, '/') + '#restaurant';
+    const websiteId = canonicalUrl.replace(/\/?$/, '/') + '#website';
+
     const restaurantSchema = {
       '@context': 'https://schema.org',
       '@type': 'Restaurant',
+      '@id': restaurantId,
       name: s.site_name || 'The Fairgrounds',
       description: s.seo_description || '',
       url: s.seo_canonical_url || '',
@@ -402,9 +407,11 @@ export default function TheFairgroundsHomepage() {
     const websiteSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': websiteId,
       name: s.site_name || 'The Fairgrounds',
       url: s.seo_canonical_url || '',
       description: s.seo_description || '',
+      publisher: { '@id': restaurantId },
     };
     let websiteLd = document.head.querySelector('script[type="application/ld+json"][data-seo="website"]');
     if (!websiteLd) {
