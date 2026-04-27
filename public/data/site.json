@@ -1133,13 +1133,13 @@
     "hours_weekday": "Mon–Thu: 8am – 3pm",
     "hours_weekend": "Fri–Sun: 8am – 8pm",
     "hours_events": "Events: Seasonal evenings",
-    "opentable_url": "https://www.opentable.com",
+    "opentable_url": "https://www.opentable.com/r/faregrounds-restaurant-nantucket",
     "resy_url": "https://resy.com",
-    "toast_url": "https://www.toasttab.com",
+    "toast_url": "https://www.toasttab.com/local/order/the-fairgrounds-restaurant-27-fairgrounds-road/item-pinot-grigio_a7f27a73-0f0f-4a49-878a-a62f064bb6f3",
     "ubereats_url": "https://www.ubereats.com",
     "doordash_url": "https://www.doordash.com",
     "grubhub_url": "https://www.grubhub.com",
-    "yelp_url": "https://www.yelp.com",
+    "yelp_url": "https://www.yelp.com/biz/faregrounds-and-pudleys-pub-nantucket",
     "google_maps_url": "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554",
     "instagram_url": "https://www.instagram.com/nantucketfairgrounds",
     "facebook_url": "https://www.facebook.com/profile.php?id=100063617316611",
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-27T18:48:41.442Z",
-  "_sha": "cd582a67d3553b772881b7e9953bb38e182b00e8",
+  "exportedAt": "2026-04-27T22:41:59.690Z",
+  "_sha": "ad536d8b74f886b934610b4d16cc9dc88ba2da48",
   "users": [
     {
       "username": "admin",
