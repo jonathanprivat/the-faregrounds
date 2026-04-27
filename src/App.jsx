@@ -275,7 +275,8 @@ function ComingSoonPage({ data, settings }) {
     <div style={{
       minHeight: "100vh", background: bg, color: ink,
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      padding: "40px 24px", textAlign: "center", fontFamily: "'BogueSlab', Georgia, serif",
+      padding: "clamp(24px, 6vw, 40px) clamp(16px, 5vw, 24px)", textAlign: "center",
+      fontFamily: "'BogueSlab', Georgia, serif", boxSizing: "border-box", overflowX: "hidden",
     }}>
       <style>{`
         @keyframes cs-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -286,6 +287,8 @@ function ComingSoonPage({ data, settings }) {
         .cs-wrap > *:nth-child(5) { animation-delay: 0.4s; }
         .cs-wrap > *:nth-child(6) { animation-delay: 0.5s; }
         .cs-wrap > *:nth-child(7) { animation-delay: 0.6s; }
+        .cs-wrap, .cs-wrap * { box-sizing: border-box; }
+        .cs-headline, .cs-subtitle, .cs-eta, .cs-contact { overflow-wrap: break-word; word-wrap: break-word; hyphens: auto; }
         .cs-link { color: inherit; text-decoration: none; transition: opacity 0.2s; }
         .cs-link:hover { opacity: 0.65; }
         .cs-cta {
@@ -293,40 +296,45 @@ function ComingSoonPage({ data, settings }) {
           font-family: 'Source Sans 3', sans-serif; font-size: 13px; letter-spacing: 0.18em;
           text-transform: uppercase; font-weight: 600; transition: all 0.25s;
           background: transparent; color: inherit; text-decoration: none;
+          max-width: 100%;
         }
         .cs-cta:hover { background: currentColor; color: ${m.background_color || "#f7f1de"}; }
-        .cs-divider {
-          width: 60px; height: 1px; background: currentColor; opacity: 0.4;
+        .cs-divider { width: 60px; height: 1px; background: currentColor; opacity: 0.4; }
+        .cs-countdown { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
+        .cs-social { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; max-width: 100%; }
+        @media (max-width: 380px) {
+          .cs-countdown { gap: 10px; }
+          .cs-social { gap: 12px; }
         }
       `}</style>
-      <div className="cs-wrap" style={{ maxWidth: 480, display: "flex", flexDirection: "column", alignItems: "center", gap: "1.75rem" }}>
+      <div className="cs-wrap" style={{ width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", alignItems: "center", gap: "1.75rem" }}>
         {logo && (
-          <img src={logo} alt={s.site_name || "The Fairgrounds"} style={{ width: 200, height: "auto", maxWidth: "70vw" }} />
+          <img src={logo} alt={s.site_name || "The Fairgrounds"} style={{ width: 200, height: "auto", maxWidth: "70vw", display: "block" }} />
         )}
         <div className="cs-divider" />
-        <h1 style={{
+        <h1 className="cs-headline" style={{
           fontFamily: "'ZebrawoodFill', 'Playfair Display', Georgia, serif",
-          fontSize: "clamp(1.5rem, 4vw, 2rem)", letterSpacing: "0.15em",
-          textTransform: "uppercase", fontWeight: 400, margin: 0,
+          fontSize: "clamp(1.4rem, 5vw, 2rem)", letterSpacing: "0.15em",
+          textTransform: "uppercase", fontWeight: 400, margin: 0, maxWidth: "100%",
         }}>{headline}</h1>
         {m.subtitle && (
-          <p style={{
+          <p className="cs-subtitle" style={{
             fontFamily: "'Source Sans 3', sans-serif", fontSize: 15, lineHeight: 1.6,
             opacity: 0.85, margin: 0, maxWidth: 420,
           }}>{m.subtitle}</p>
         )}
         {cd && (
-          <div style={{ display: "flex", gap: 16, fontFamily: "'Source Sans 3', sans-serif" }}>
+          <div className="cs-countdown" style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
             {[["Days", cd.days], ["Hrs", cd.hrs], ["Min", cd.mins], ["Sec", cd.secs]].map(([lbl, v]) => (
               <div key={lbl} style={{ minWidth: 56 }}>
-                <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'BogueSlab', serif", color: accent }}>{String(v).padStart(2, "0")}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, fontFamily: "'BogueSlab', serif", color: accent, lineHeight: 1.1 }}>{String(v).padStart(2, "0")}</div>
                 <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.6 }}>{lbl}</div>
               </div>
             ))}
           </div>
         )}
         {m.eta_text && !cd && (
-          <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.7 }}>
+          <div className="cs-eta" style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.7, maxWidth: "100%" }}>
             {m.eta_text}
           </div>
         )}
@@ -335,7 +343,7 @@ function ComingSoonPage({ data, settings }) {
             {m.cta_label}
           </a>
         )}
-        <div style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, lineHeight: 1.7, opacity: 0.8 }}>
+        <div className="cs-contact" style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 13, lineHeight: 1.7, opacity: 0.8, maxWidth: "100%" }}>
           {m.show_address !== false && (
             <div>
               {s.address_line1 || "27 Fairgrounds Road"}<br />
@@ -346,11 +354,11 @@ function ComingSoonPage({ data, settings }) {
             <div style={{ marginTop: 8 }}><a href={`tel:${s.phone}`} className="cs-link">{s.phone}</a></div>
           )}
           {m.contact_email && (
-            <div style={{ marginTop: 4 }}><a href={`mailto:${m.contact_email}`} className="cs-link">{m.contact_email}</a></div>
+            <div style={{ marginTop: 4, wordBreak: "break-word" }}><a href={`mailto:${m.contact_email}`} className="cs-link">{m.contact_email}</a></div>
           )}
         </div>
         {m.show_social !== false && (s.instagram_url || s.facebook_url || s.tiktok_url) && (
-          <div style={{ display: "flex", gap: 18, fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+          <div className="cs-social" style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase" }}>
             {s.instagram_url && <a href={s.instagram_url} className="cs-link" target="_blank" rel="noopener noreferrer">Instagram</a>}
             {s.facebook_url && <a href={s.facebook_url} className="cs-link" target="_blank" rel="noopener noreferrer">Facebook</a>}
             {s.tiktok_url && <a href={s.tiktok_url} className="cs-link" target="_blank" rel="noopener noreferrer">TikTok</a>}
