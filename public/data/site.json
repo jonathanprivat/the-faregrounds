@@ -1102,7 +1102,7 @@
     }
   ],
   "maintenance": {
-    "enabled": false,
+    "enabled": true,
     "mode": "coming_soon",
     "title": "Coming Soon",
     "subtitle": "Seasonal food, local gatherings, and fairground energy. Reopening soon at 27 Fairgrounds Road.",
@@ -1120,8 +1120,8 @@
     "contact_email": "",
     "cta_label": "",
     "cta_url": "",
-    "preview_token": "",
-    "last_enabled_at": "",
+    "preview_token": "e2fbeb0ae7a91318",
+    "last_enabled_at": "2026-04-27T18:48:02.029Z",
     "last_disabled_at": ""
   },
   "settings": {
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-18T19:05:29.693Z",
-  "_sha": "3a990e355cf3868d500f2f7befde4de8e2de01f2",
+  "exportedAt": "2026-04-27T18:48:03.589Z",
+  "_sha": "68d626246457ca06e064b3afd43b12c1dbdfaa26",
   "users": [
     {
       "username": "admin",
