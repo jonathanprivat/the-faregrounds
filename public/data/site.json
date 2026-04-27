@@ -1101,6 +1101,29 @@
       }
     }
   ],
+  "maintenance": {
+    "enabled": false,
+    "mode": "coming_soon",
+    "title": "Coming Soon",
+    "subtitle": "Seasonal food, local gatherings, and fairground energy. Reopening soon at 27 Fairgrounds Road.",
+    "eta_text": "",
+    "eta_iso": "",
+    "show_countdown": false,
+    "logo_image": "/images/logo.png",
+    "background_image": "",
+    "background_color": "#f7f1de",
+    "text_color": "#2a2b1f",
+    "primary_color": "#4e5420",
+    "show_social": true,
+    "show_address": true,
+    "show_phone": true,
+    "contact_email": "",
+    "cta_label": "",
+    "cta_url": "",
+    "preview_token": "",
+    "last_enabled_at": "",
+    "last_disabled_at": ""
+  },
   "settings": {
     "site_name": "The Fairgrounds",
     "site_subtitle": "Nantucket Island",

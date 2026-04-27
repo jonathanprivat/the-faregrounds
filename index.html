@@ -177,9 +177,53 @@
       "publisher": { "@id": "https://nantucketfairgrounds.com/#restaurant" }
     }
     </script>
+    <!-- First-paint maintenance guard: synchronously checks site.json BEFORE React mounts.
+         Prevents the homepage from flashing for ~200-400ms before the React gate fires. -->
+    <script>
+      (function () {
+        try {
+          var url = new URL(window.location.href);
+          var bypass = url.searchParams.get('preview');
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', '/data/site.json', false); // sync, runs in <head> before body paints
+          xhr.send(null);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            var data = JSON.parse(xhr.responseText);
+            var m = data && data.maintenance;
+            if (m && m.enabled && (!m.preview_token || bypass !== m.preview_token)) {
+              // Mark robots noindex BEFORE crawler sees content
+              var robots = document.querySelector('meta[name="robots"]');
+              if (robots) robots.setAttribute('content', 'noindex, nofollow');
+              // Hide everything until React renders the ComingSoonPage
+              document.documentElement.style.background = m.background_color || '#f7f1de';
+              var style = document.createElement('style');
+              style.textContent = 'body{visibility:hidden;background:' + (m.background_color || '#f7f1de') + ';}';
+              document.head.appendChild(style);
+              // Reveal once React paints something
+              window.__fgMaintenanceFirstPaint = true;
+            }
+          }
+        } catch (e) { /* fall through to normal site if check fails */ }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Reveal body once React has rendered (covers both maintenance and normal modes).
+      // Uses requestAnimationFrame after main.jsx finishes parsing.
+      if (window.__fgMaintenanceFirstPaint) {
+        var reveal = function () {
+          var root = document.getElementById('root');
+          if (root && root.children.length > 0) {
+            document.body.style.visibility = 'visible';
+          } else {
+            requestAnimationFrame(reveal);
+          }
+        };
+        requestAnimationFrame(reveal);
+      }
+    </script>
   </body>
 </html>
