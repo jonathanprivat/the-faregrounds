@@ -443,8 +443,16 @@ export default function TheFairgroundsHomepage() {
 
   // ── SEO: sync <head> tags from CMS settings at runtime ──
   // Static fallback values stay in index.html for non-JS crawlers; this overrides them.
+  // Skipped while maintenance is active (the maintenance SEO override owns the head tags).
   useEffect(() => {
     if (!siteData) return;
+    if (siteData?.maintenance?.enabled) {
+      // Bypass-aware: only skip when bypass is NOT in effect (otherwise admin previewing
+      // the live site wants the real SEO).
+      let bypass = false;
+      try { bypass = (siteData.maintenance.preview_token && new URLSearchParams(window.location.search).get('preview') === siteData.maintenance.preview_token); } catch {}
+      if (!bypass) return;
+    }
     const s = siteData.settings || {};
 
     const title = s.seo_title || (s.site_name ? `${s.site_name} | ${s.site_subtitle || ''}`.replace(/\|\s*$/, '').trim() : document.title);
