@@ -1105,7 +1105,7 @@
     "enabled": true,
     "mode": "coming_soon",
     "title": "Coming Soon",
-    "subtitle": "Seasonal food, local gatherings, and fairground energy",
+    "subtitle": "Seasonal food, local gatherings, and fairground energy.",
     "eta_text": "Now open for lunch 12pm-3pm and dinner 5pm-9pm six days a week (closed Wednesdays).",
     "eta_iso": "",
     "show_countdown": false,
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-28T00:22:54.986Z",
-  "_sha": "4b6c619612a837f95768897ede9b6dba81510121",
+  "exportedAt": "2026-04-28T00:23:02.176Z",
+  "_sha": "65787e9c2cee8cbba4a13f620715e73b1aa3c284",
   "users": [
     {
       "username": "admin",
