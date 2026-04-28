@@ -1105,7 +1105,7 @@
     "enabled": true,
     "mode": "coming_soon",
     "title": "Coming Soon",
-    "subtitle": "Seasonal food, local gatherings, and fairground energy. Reopening soon at 27 Fairgrounds Road.",
+    "subtitle": "Seasonal food, local gatherings, and fairground energy. \n\nNow open for lunch 12pm-3pm and dinner 5pm-9pm six days a week (closed Wednesdays).",
     "eta_text": "",
     "eta_iso": "",
     "show_countdown": false,
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-27T22:58:39.898Z",
-  "_sha": "9c514d4fcf43db9e5505edb4086632d0b9f7c1b7",
+  "exportedAt": "2026-04-28T00:08:05.365Z",
+  "_sha": "e1bf9e166f4d09bfbc58e84c14cd13427590bdf8",
   "users": [
     {
       "username": "admin",
