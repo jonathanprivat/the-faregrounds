@@ -385,7 +385,7 @@ export default function TheFairgroundsHomepage() {
 
   useEffect(() => {
     // Stable URL matches the <link rel="preload"> in index.html — no cache-buster.
-    // GitHub Pages serves site.json with ETag/Last-Modified; returning visitors
+    // The CDN serves site.json with ETag/Last-Modified; returning visitors
     // revalidate with If-None-Match and typically get 304 Not Modified (<10ms
     // from disk cache within the 10-min default max-age window).
     fetch(B + 'data/site.json', { cache: 'default' })
