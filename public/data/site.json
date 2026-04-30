@@ -645,7 +645,7 @@
         },
         {
           "title": "Community Space",
-          "body": "Built for neighbors, families, and hoe-downs — a gathering place that brings the island together."
+          "body": "Built for neighbors, families, and celebrations — a gathering place that brings the island together."
         },
         {
           "title": "Events",
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T02:21:03.469Z",
-  "_sha": "14f715567921d59ecc0d587e4a493ccc300c3f85",
+  "exportedAt": "2026-04-30T02:21:41.892Z",
+  "_sha": "24b7f2904f048e0d9f1b79a4047676d0cc4b9a40",
   "users": [
     {
       "username": "admin",
