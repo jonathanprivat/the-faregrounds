@@ -1670,44 +1670,14 @@ export default function TheFairgroundsHomepage() {
             // Universal rule: a card is visible iff its URL setting is present and non-empty.
             // Empty/whitespace URL in CMS = card hidden from the live site.
             const svc = svcAll.filter(s => typeof s.href === "string" && s.href.trim().length > 0);
-            // Split remaining cards evenly across two rows. Ceil on top, floor on bottom.
-            // 8→4+4, 7→4+3, 6→3+3, 5→3+2, 4→2+2, 3→2+1, 2→1+1, 1→1+0.
-            const topCount = Math.ceil(svc.length / 2);
-            const big = svc.slice(0, topCount);
-            const small = svc.slice(topCount);
             if (svc.length === 0) return null;
-            return (<>
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${big.length}, 1fr)`, gap: 16, marginBottom: small.length ? 16 : 0 }}>
-                {big.map((s, i) => (
+            // Single-row layout: all visible cards in one row, capped at 4 columns.
+            // 1→1col, 2→2col, 3→3col, 4→4col, 5+ wraps to a second row of 4.
+            const cols = Math.min(svc.length, 4);
+            return (
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 16 }}>
+                {svc.map((s, i) => (
                   <Reveal key={s.name} delay={i * 0.08}>
-                    <a
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: "none", color: "inherit", display: "block" }}
-                      data-cta-id={s.ctaId}
-                      data-cta-label={s.name}
-                      data-cta-destination={s.href}
-                      data-cta-section="order"
-                      data-cta-type={s.ctaType}
-                    >
-                      <div className="poster-card poster-card-hover" style={{ padding: "clamp(20px, 2.5vw, 32px)", textAlign: "center", height: "100%", cursor: "pointer" }}>
-                        <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${colors.olive}25`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-                          {s.icon}
-                        </div>
-                        <div className="ff-ui" style={{ fontSize: 9, letterSpacing: "0.18em", color: colors.oliveMid, marginBottom: 6 }}>{s.cat}</div>
-                        <h3 className="ff-body" style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
-                        <p className="ff-accent" style={{ fontSize: 13, color: colors.body, marginTop: 6, lineHeight: 1.5 }}>{s.desc}</p>
-                        {s.btn && <div style={{ marginTop: 14 }}><span className={s.btnClass} style={{ display: "inline-block", padding: "8px 20px", fontSize: 10, letterSpacing: "0.14em", borderRadius: 999 }}>{s.btn}</span></div>}
-                      </div>
-                    </a>
-                  </Reveal>
-                ))}
-              </div>
-              {small.length > 0 && (
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${small.length}, 1fr)`, gap: 16 }}>
-                {small.map((s, i) => (
-                  <Reveal key={s.name} delay={(i + big.length) * 0.06}>
                     <a
                       href={s.href}
                       target="_blank"
@@ -1723,15 +1693,16 @@ export default function TheFairgroundsHomepage() {
                         <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${colors.olive}20`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
                           {s.icon}
                         </div>
+                        <div className="ff-ui" style={{ fontSize: 9, letterSpacing: "0.18em", color: colors.oliveMid, marginBottom: 4 }}>{s.cat}</div>
                         <h3 className="ff-body" style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.1 }}>{s.name}</h3>
-                        <p className="ff-accent" style={{ fontSize: 12, color: colors.body, marginTop: 4 }}>{s.desc}</p>
+                        <p className="ff-accent" style={{ fontSize: 12, color: colors.body, marginTop: 4, lineHeight: 1.5 }}>{s.desc}</p>
+                        {s.btn && <div style={{ marginTop: 10 }}><span className={s.btnClass} style={{ display: "inline-block", padding: "6px 16px", fontSize: 10, letterSpacing: "0.14em", borderRadius: 999 }}>{s.btn}</span></div>}
                       </div>
                     </a>
                   </Reveal>
                 ))}
               </div>
-              )}
-            </>);
+            );
           })()}
         </div>
       </section>
