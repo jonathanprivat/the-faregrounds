@@ -1102,7 +1102,7 @@
     }
   ],
   "maintenance": {
-    "enabled": true,
+    "enabled": false,
     "mode": "coming_soon",
     "title": "Coming Soon",
     "subtitle": "Seasonal food, local gatherings, and fairground energy.",
@@ -1122,7 +1122,7 @@
     "cta_url": "",
     "preview_token": "e2fbeb0ae7a91318",
     "last_enabled_at": "2026-04-27T18:48:02.029Z",
-    "last_disabled_at": ""
+    "last_disabled_at": "2026-04-30T01:46:48.598Z"
   },
   "settings": {
     "site_name": "The Fairgrounds",
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T01:29:07.882Z",
-  "_sha": "fefa0e04014dd5f34073218e688aa1a3f73d8baa",
+  "exportedAt": "2026-04-30T01:47:56.833Z",
+  "_sha": "efb7f5d37fc72931e9d6a72bde2daff940bd2dba",
   "users": [
     {
       "username": "admin",
