@@ -634,7 +634,7 @@
     "story": {
       "heading": "The Fairgrounds Is A Celebration of Island Life",
       "paragraph1": "The Fairgrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about The Fairgrounds is welcoming, a little nostalgic, and unmistakably Nantucket.",
-      "paragraph2": "",
+      "paragraph2": "test",
       "section_label": "Our Story",
       "button_label": "Come Visit Us",
       "ticket_caption": "33rd Annual Exhibition, 1888 — Where it all began.",
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T01:47:56.833Z",
-  "_sha": "efb7f5d37fc72931e9d6a72bde2daff940bd2dba",
+  "exportedAt": "2026-04-30T02:20:30.256Z",
+  "_sha": "14f715567921d59ecc0d587e4a493ccc300c3f85",
   "users": [
     {
       "username": "admin",
