@@ -596,7 +596,7 @@
   "content": {
     "atmosphere": {
       "heading": "Old-School Energy, Island Soul",
-      "section_label": "The Atmosphere"
+      "section_label": "Strictly positive -- only good vibes!"
     },
     "events": {
       "heading": "More Than a Restaurant",
@@ -623,7 +623,7 @@
       "download_cta_prefix": "Download"
     },
     "newsletter": {
-      "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just island-good stuff.",
+      "description": "Get the inside scoop on seasonal menus, events, and community happenings. No spam — just the good stuff.",
       "heading": "Stay in the Loop"
     },
     "order": {
@@ -632,9 +632,9 @@
       "section_label": "Dine With Us"
     },
     "story": {
-      "heading": "A Farmstand Poster Turned Into a Restaurant.",
-      "paragraph1": "The Fairgrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about the experience — from the menu to the events to the brand itself — is designed to feel welcoming, a little nostalgic, and unmistakably Nantucket.",
-      "paragraph2": "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee.",
+      "heading": "The Fairgrounds Is A Celebration of Island Life",
+      "paragraph1": "The Fairgrounds blends comfort food, seasonal traditions, and island community into one warm, old-school gathering place. Everything about The Fairgrounds is welcoming, a little nostalgic, and unmistakably Nantucket.",
+      "paragraph2": "",
       "section_label": "Our Story",
       "button_label": "Come Visit Us",
       "ticket_caption": "33rd Annual Exhibition, 1888 — Where it all began.",
@@ -645,11 +645,11 @@
         },
         {
           "title": "Community Space",
-          "body": "Built for neighbors, families, and pop-ups — a gathering place that brings the island together."
+          "body": "Built for neighbors, families, and hoe-downs — a gathering place that brings the island together."
         },
         {
-          "title": "Event-Driven",
-          "body": "Events are central, not an afterthought — from maple fests to live music nights on the field."
+          "title": "Events",
+          "body": "Togetherness, fellowship, and good times. "
         }
       ]
     },
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T01:01:51.725Z",
-  "_sha": "f6c637482bea40ee309a671f692ec5c07b200796",
+  "exportedAt": "2026-04-30T01:24:08.179Z",
+  "_sha": "88ab01c73a20aa48a7b14880080cfe8f620e98ec",
   "users": [
     {
       "username": "admin",
