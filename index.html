@@ -17,6 +17,44 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/BogueSlab-2.woff2" crossorigin />
     <link rel="preload" as="fetch" href="/data/site.json" crossorigin />
 
+    <!--
+      Analytics IDs (single source of truth for both gtag.js + Microsoft Clarity).
+      Update the two values below to enable. Keep empty strings to disable.
+      Public IDs (visible in network tab anyway) — safe to commit.
+    -->
+    <script>
+      window.__FG_ANALYTICS__ = {
+        gaId: "",          // e.g. "G-XXXXXXXXXX"
+        clarityId: ""      // e.g. "abcdefghij"
+      };
+    </script>
+
+    <!-- Google Analytics 4 (gtag.js) — loads only if a measurement ID is set -->
+    <script>
+      (function() {
+        var id = (window.__FG_ANALYTICS__ || {}).gaId;
+        if (!id) return;
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){ window.dataLayer.push(arguments); };
+        window.gtag("js", new Date());
+        window.gtag("config", id, { send_page_view: true });
+      })();
+    </script>
+
+    <!-- Microsoft Clarity (heatmaps + session recordings) — loads only if project ID is set -->
+    <script>
+      (function(c,l,a,r,i,t,y){
+        if (!i) return;
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", (window.__FG_ANALYTICS__ || {}).clarityId);
+    </script>
+
     <!-- Google Fonts: preconnect for Source Sans 3 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

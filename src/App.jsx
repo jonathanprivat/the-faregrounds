@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { installGlobalClickTracker, trackCTA, pageview } from "./lib/analytics";
 
 const B = import.meta.env.BASE_URL;
 const A = {
@@ -339,7 +340,8 @@ function ComingSoonPage({ data, settings }) {
           </div>
         )}
         {m.cta_label && m.cta_url && (
-          <a href={m.cta_url} className="cs-cta" target={m.cta_url.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer">
+          <a href={m.cta_url} className="cs-cta" target={m.cta_url.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer"
+             data-cta-id="coming_soon_primary" data-cta-section="coming_soon" data-cta-type="external_link" data-cta-label={m.cta_label}>
             {m.cta_label}
           </a>
         )}
@@ -351,17 +353,17 @@ function ComingSoonPage({ data, settings }) {
             </div>
           )}
           {m.show_phone !== false && s.phone && (
-            <div style={{ marginTop: 8 }}><a href={`tel:${s.phone}`} className="cs-link">{s.phone}</a></div>
+            <div style={{ marginTop: 8 }}><a href={`tel:${s.phone}`} className="cs-link" data-cta-id="contact_phone" data-cta-section="coming_soon" data-cta-type="phone" data-cta-destination={s.phone}>{s.phone}</a></div>
           )}
           {m.contact_email && (
-            <div style={{ marginTop: 4, wordBreak: "break-word" }}><a href={`mailto:${m.contact_email}`} className="cs-link">{m.contact_email}</a></div>
+            <div style={{ marginTop: 4, wordBreak: "break-word" }}><a href={`mailto:${m.contact_email}`} className="cs-link" data-cta-id="contact_email" data-cta-section="coming_soon" data-cta-type="email" data-cta-destination={m.contact_email}>{m.contact_email}</a></div>
           )}
         </div>
         {m.show_social !== false && (s.instagram_url || s.facebook_url || s.tiktok_url) && (
           <div className="cs-social" style={{ fontFamily: "'Source Sans 3', sans-serif", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-            {s.instagram_url && <a href={s.instagram_url} className="cs-link" target="_blank" rel="noopener noreferrer">Instagram</a>}
-            {s.facebook_url && <a href={s.facebook_url} className="cs-link" target="_blank" rel="noopener noreferrer">Facebook</a>}
-            {s.tiktok_url && <a href={s.tiktok_url} className="cs-link" target="_blank" rel="noopener noreferrer">TikTok</a>}
+            {s.instagram_url && <a href={s.instagram_url} className="cs-link" target="_blank" rel="noopener noreferrer" data-cta-id="social_instagram" data-cta-section="coming_soon" data-cta-type="social" data-cta-destination={s.instagram_url}>Instagram</a>}
+            {s.facebook_url && <a href={s.facebook_url} className="cs-link" target="_blank" rel="noopener noreferrer" data-cta-id="social_facebook" data-cta-section="coming_soon" data-cta-type="social" data-cta-destination={s.facebook_url}>Facebook</a>}
+            {s.tiktok_url && <a href={s.tiktok_url} className="cs-link" target="_blank" rel="noopener noreferrer" data-cta-id="social_tiktok" data-cta-section="coming_soon" data-cta-type="social" data-cta-destination={s.tiktok_url}>TikTok</a>}
           </div>
         )}
       </div>
@@ -392,6 +394,13 @@ export default function TheFairgroundsHomepage() {
       .then(r => r.json())
       .then(data => setSiteData(data))
       .catch(() => setSiteData(null));
+  }, []);
+
+  // ── Analytics: install global click delegate once on mount ──────
+  // Catches every element decorated with data-cta-id={...} and forwards
+  // a structured cta_click event to gtag (no-op if no GA ID is configured).
+  useEffect(() => {
+    installGlobalClickTracker();
   }, []);
 
   // ── Maintenance / Coming Soon gate ──
@@ -1048,9 +1057,11 @@ export default function TheFairgroundsHomepage() {
           </button>
           <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: 28 }}>
             {NAV_LINKS.map(({ label, id }) => (
-              <button key={id} className={`nav-link ${activeSection === id ? "nav-link-active" : ""}`} onClick={() => smoothScrollTo(id)}>{label}</button>
+              <button key={id} className={`nav-link ${activeSection === id ? "nav-link-active" : ""}`} onClick={() => smoothScrollTo(id)}
+                      data-cta-id={`nav_header_${id}`} data-cta-section="nav_header" data-cta-type="internal_nav" data-cta-label={label} data-cta-destination={`#${id}`}>{label}</button>
             ))}
-            <button className="btn-primary" style={{ padding: "10px 24px", fontSize: 11 }} onClick={() => smoothScrollTo("visit")}>Reserve</button>
+            <button className="btn-primary" style={{ padding: "10px 24px", fontSize: 11 }} onClick={() => smoothScrollTo("visit")}
+                    data-cta-id="nav_header_reserve" data-cta-section="nav_header" data-cta-type="reservation" data-cta-label="Reserve" data-cta-destination="#visit">Reserve</button>
             <button onClick={cycleColorMode} title={colorMode === "system" ? "Theme: System" : colorMode === "light" ? "Theme: Light" : "Theme: Dark"} style={{
               background: "none", border: `1.5px solid ${colors.olive}30`, borderRadius: "50%",
               width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
@@ -1081,10 +1092,12 @@ export default function TheFairgroundsHomepage() {
           <HamburgerIcon open={true} />
         </button>
         {NAV_LINKS.map(({ label, id }) => (
-          <button key={id} className="mobile-drawer-link" onClick={() => smoothScrollTo(id)}>{label}</button>
+          <button key={id} className="mobile-drawer-link" onClick={() => smoothScrollTo(id)}
+                  data-cta-id={`nav_mobile_${id}`} data-cta-section="nav_mobile" data-cta-type="internal_nav" data-cta-label={label} data-cta-destination={`#${id}`}>{label}</button>
         ))}
         <div style={{ marginTop: 16 }}>
-          <button className="btn-accent" style={{ width: "100%", justifyContent: "center" }} onClick={() => smoothScrollTo("visit")}>Reserve a Table</button>
+          <button className="btn-accent" style={{ width: "100%", justifyContent: "center" }} onClick={() => smoothScrollTo("visit")}
+                  data-cta-id="nav_mobile_reserve" data-cta-section="nav_mobile" data-cta-type="reservation" data-cta-label="Reserve a Table" data-cta-destination="#visit">Reserve a Table</button>
         </div>
         <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8, opacity: 0.5 }}>
           <WhaleTail size={20} />
@@ -1137,9 +1150,12 @@ export default function TheFairgroundsHomepage() {
                   </div>
 
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 28 }}>
-                    <button className="btn-primary" onClick={() => smoothScrollTo("menu")}>{content?.hero?.primary_cta || "View Menu"}</button>
-                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}>{content?.hero?.download_cta_prefix || "Download"} {currentMenu?.label || "Lunch"} Menu (PDF)</a>}
-                    <button className="btn-secondary" onClick={() => smoothScrollTo("events")}>{content?.hero?.secondary_cta || "Upcoming Events"}</button>
+                    <button className="btn-primary" onClick={() => smoothScrollTo("menu")}
+                            data-cta-id="hero_view_menu" data-cta-section="hero" data-cta-type="internal_nav" data-cta-label={content?.hero?.primary_cta || "View Menu"} data-cta-destination="#menu">{content?.hero?.primary_cta || "View Menu"}</button>
+                    {menuPdfUrl && <a href={menuPdfUrl} download className="btn-secondary" style={{ textDecoration: "none", display: "inline-flex" }}
+                            data-cta-id={`hero_download_${currentMenu?.id || "menu"}_pdf`} data-cta-section="hero" data-cta-type="menu_pdf" data-cta-label={`${content?.hero?.download_cta_prefix || "Download"} ${currentMenu?.label || "Lunch"} Menu (PDF)`} data-cta-destination={menuPdfUrl}>{content?.hero?.download_cta_prefix || "Download"} {currentMenu?.label || "Lunch"} Menu (PDF)</a>}
+                    <button className="btn-secondary" onClick={() => smoothScrollTo("events")}
+                            data-cta-id="hero_upcoming_events" data-cta-section="hero" data-cta-type="internal_nav" data-cta-label={content?.hero?.secondary_cta || "Upcoming Events"} data-cta-destination="#events">{content?.hero?.secondary_cta || "Upcoming Events"}</button>
                   </div>
                 </div>
 
@@ -1175,7 +1191,15 @@ export default function TheFairgroundsHomepage() {
                     {content?.story?.paragraph2 || "We’re bringing the sugar shack experience 30 miles out to sea — with seasonal menus, live music, community pop-ups, and the kind of energy that makes you want to stick around for one more cup of coffee."}
                   </p>
                   <div style={{ marginTop: 28 }}>
-                    <button className="btn-secondary" onClick={() => smoothScrollTo("visit")}>{content?.story?.button_label || "Come Visit Us"}</button>
+                    <button
+                      className="btn-secondary"
+                      onClick={() => smoothScrollTo("visit")}
+                      data-cta-id="story_come_visit"
+                      data-cta-label={content?.story?.button_label || "Come Visit Us"}
+                      data-cta-destination="#visit"
+                      data-cta-section="story"
+                      data-cta-type="internal_nav"
+                    >{content?.story?.button_label || "Come Visit Us"}</button>
                   </div>
                 </div>
               </PosterCard>
@@ -1254,7 +1278,14 @@ export default function TheFairgroundsHomepage() {
                     {/* Menu type toggle */}
                     <div style={{ display: "flex", background: colors.cream, borderRadius: 999, padding: 3, gap: 2, border: `1.5px solid ${colors.olive}20` }}>
                       {allMenus.map(m => (
-                        <button key={m.id} onClick={() => switchMenuType(m.id)} style={{
+                        <button
+                          key={m.id}
+                          onClick={() => switchMenuType(m.id)}
+                          data-cta-id={`menu_switch_${m.id}`}
+                          data-cta-label={m.label}
+                          data-cta-section="menu"
+                          data-cta-type="menu_switch"
+                          style={{
                           padding: "6px 14px", borderRadius: 999, fontSize: 11, fontWeight: 700,
                           fontFamily: "'BogueSlab', serif", letterSpacing: "0.03em", textTransform: "uppercase",
                           background: currentMenuType === m.id ? colors.olive : "transparent",
@@ -1264,7 +1295,16 @@ export default function TheFairgroundsHomepage() {
                       ))}
                     </div>
                     {menuPdfUrl && (
-                      <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
+                      <a
+                        href={menuPdfUrl}
+                        download
+                        style={{ textDecoration: "none" }}
+                        data-cta-id={`menu_download_${currentMenuType}_pdf`}
+                        data-cta-label={`Download ${currentMenu?.label || "Menu"} PDF`}
+                        data-cta-destination={menuPdfUrl}
+                        data-cta-section="menu"
+                        data-cta-type="menu_pdf"
+                      >
                         <button className="btn-secondary" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, padding: "8px 16px" }}>
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                           Download PDF
@@ -1281,6 +1321,10 @@ export default function TheFairgroundsHomepage() {
                   {Object.keys(menuData).map((key) => (
                     <button key={key} className={`menu-tab ${activeMenu === key ? "menu-tab-active" : ""}`}
                       onClick={() => switchMenu(key)}
+                      data-cta-id={`menu_category_${String(key).toLowerCase().replace(/[^a-z0-9]+/g, "_")}`}
+                      data-cta-label={key}
+                      data-cta-section="menu"
+                      data-cta-type="menu_category"
                       style={{ whiteSpace: "nowrap", padding: "8px 18px", fontSize: 11 }}
                     >{key}</button>
                   ))}
@@ -1349,7 +1393,16 @@ export default function TheFairgroundsHomepage() {
                       View our {currentMenu?.label} menu by downloading the PDF.
                     </p>
                     {menuPdfUrl && (
-                      <a href={menuPdfUrl} download style={{ textDecoration: "none" }}>
+                      <a
+                        href={menuPdfUrl}
+                        download
+                        style={{ textDecoration: "none" }}
+                        data-cta-id={`menu_section_download_${currentMenuType}_pdf`}
+                        data-cta-label={`${content?.hero?.download_cta_prefix || "Download"} ${currentMenu?.label || "Menu"} (PDF)`}
+                        data-cta-destination={menuPdfUrl}
+                        data-cta-section="menu"
+                        data-cta-type="menu_pdf"
+                      >
                         <button className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                           {content?.hero?.download_cta_prefix || "Download"} {currentMenu?.label} Menu (PDF)
@@ -1371,18 +1424,40 @@ export default function TheFairgroundsHomepage() {
             <Reveal>
               {(() => {
                 const eventLink = siteSettings.event_link_url || siteSettings.event_pdf_url;
+                const eventName = siteSettings.event_button_text || "RSVP for Maple Fest";
                 const posterImg = <img src={siteSettings.event_poster_url || A.maplefest} alt="Featured Event" loading="lazy" decoding="async" style={{ width: "100%", height: "auto", display: "block", cursor: eventLink ? "pointer" : "default" }} />;
                 return <>
                   <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)", border: `3px solid ${colors.olive}30` }}>
-                    {eventLink ? <a href={eventLink} target="_blank" rel="noopener noreferrer">{posterImg}</a> : posterImg}
+                    {eventLink ? (
+                      <a
+                        href={eventLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cta-id="event_poster_click"
+                        data-cta-label={eventName}
+                        data-cta-destination={eventLink}
+                        data-cta-section="events"
+                        data-cta-type="event_rsvp"
+                      >{posterImg}</a>
+                    ) : posterImg}
                   </div>
                   <div style={{ marginTop: 20, textAlign: "center" }}>
                     {eventLink ? (
-                      <a href={eventLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                        <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                      <a
+                        href={eventLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: "none" }}
+                        data-cta-id="event_rsvp_button"
+                        data-cta-label={eventName}
+                        data-cta-destination={eventLink}
+                        data-cta-section="events"
+                        data-cta-type="event_rsvp"
+                      >
+                        <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{eventName}</button>
                       </a>
                     ) : (
-                      <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{siteSettings.event_button_text || "RSVP for Maple Fest"}</button>
+                      <button className="btn-accent" style={{ fontSize: 16, padding: "14px 36px" }}>{eventName}</button>
                     )}
                   </div>
                 </>;
@@ -1465,13 +1540,27 @@ export default function TheFairgroundsHomepage() {
                     }} />
                   ))}
                   {/* Prev / Next arrows */}
-                  <button onClick={() => goTo(si - 1)} aria-label="Previous" style={{
+                  <button
+                    onClick={() => goTo(si - 1)}
+                    aria-label="Previous"
+                    data-cta-id="gallery_prev"
+                    data-cta-label="Gallery Previous"
+                    data-cta-section="gallery"
+                    data-cta-type="gallery_nav"
+                    style={{
                     position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
                     width: 40, height: 40, borderRadius: "50%", border: "none",
                     background: "rgba(22,22,22,0.55)", color: "#fff", fontSize: 20, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)",
                   }}>&#8249;</button>
-                  <button onClick={() => goTo(si + 1)} aria-label="Next" style={{
+                  <button
+                    onClick={() => goTo(si + 1)}
+                    aria-label="Next"
+                    data-cta-id="gallery_next"
+                    data-cta-label="Gallery Next"
+                    data-cta-section="gallery"
+                    data-cta-type="gallery_nav"
+                    style={{
                     position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                     width: 40, height: 40, borderRadius: "50%", border: "none",
                     background: "rgba(22,22,22,0.55)", color: "#fff", fontSize: 20, cursor: "pointer",
@@ -1480,7 +1569,15 @@ export default function TheFairgroundsHomepage() {
                   {/* Dots */}
                   <div style={{ position: "absolute", bottom: 14, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
                     {slides.map((_, i) => (
-                      <button key={i} onClick={() => setGallerySlide(i)} aria-label={`Slide ${i+1}`} style={{
+                      <button
+                        key={i}
+                        onClick={() => setGallerySlide(i)}
+                        aria-label={`Slide ${i+1}`}
+                        data-cta-id={`gallery_dot_${i + 1}`}
+                        data-cta-label={`Gallery Slide ${i + 1}`}
+                        data-cta-section="gallery"
+                        data-cta-type="gallery_nav"
+                        style={{
                         width: i === si ? 24 : 8, height: 8, borderRadius: 4, border: "none",
                         background: i === si ? "#fff" : "rgba(255,255,255,0.5)", cursor: "pointer",
                         transition: "all 0.3s ease",
@@ -1520,47 +1617,80 @@ export default function TheFairgroundsHomepage() {
 
           {(() => {
             const o = colors.olive;
-            const svc = [
+            const svcAll = [
               {
-                name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: siteSettings.opentable_url || "https://www.opentable.com", btn: "RESERVE NOW", btnClass: "btn-primary",
+                key: "opentable",
+                name: "OpenTable", cat: "RESERVATIONS", desc: "Book your table and skip the wait.", href: siteSettings.opentable_url, btn: "RESERVE NOW", btnClass: "btn-primary",
+                ctaId: "reserve_opentable", ctaType: "reservation",
                 icon: <svg width="28" height="28" viewBox="0 0 131 95" fill={o}><path d="M83.36 0a47.5 47.5 0 1047.46 47.5A47.48 47.48 0 0083.36 0zm0 59.37A11.87 11.87 0 1195.22 47.5a11.87 11.87 0 01-11.87 11.87zM0 47.5a11.87 11.87 0 1111.87 11.87A11.87 11.87 0 010 47.5"/></svg>
               },
               {
-                name: "Resy", cat: "RESERVATIONS", desc: "Reserve your spot with a tap.", href: siteSettings.resy_url || "https://resy.com", btn: "RESERVE NOW", btnClass: "btn-primary",
+                key: "resy",
+                name: "Resy", cat: "RESERVATIONS", desc: "Reserve your spot with a tap.", href: siteSettings.resy_url, btn: "RESERVE NOW", btnClass: "btn-primary",
+                ctaId: "reserve_resy", ctaType: "reservation",
                 icon: <svg width="28" height="28" viewBox="0 0 45.294121 19.999999" fill={o}><g transform="translate(30.049108,-188.93317)"><path d="m-30.049108 208.93317h45.294122v-20h-45.294122zm12.563648-6.3342c-1.905501 0-3.455188-1.22505-3.959841-2.94856h-0.431363v2.81776h-1.723254v-7.6711h2.907193c0.453192 0 0.851716 0.0633 1.195637 0.19002 0.343734 0.1263 0.631223 0.29897 0.861596 0.51762 0.230685 0.2184 0.402613 0.47372 0.51566 0.76463 0.113309 0.29129 0.170163 0.60225 0.170163 0.93141 0 0.49847-0.111293 0.93369-0.33423 1.30563-0.222571 0.37196-0.537051 0.63514-0.943628 0.85782-0.130657 0.0772-0.279001 0.1476-0.485782 0.20176 0.397834 0.84206 1.201428 1.39706 2.227843 1.39706zm8.7388045-0.12477h-5.4553595v-7.67475h5.2042936v1.51885h-3.4806026v1.49592h2.6205802v1.47249h-2.6205802v1.65716h3.7316685zm5.5372077-5.09764c0.2787474 0.16187 0.6620484 0.29696 1.149842 0.40458 0.286548 0.0696 0.5673078 0.16359 0.8420284 0.28304 0.2751619 0.11964 0.52082008 0.27556 0.73798078 0.4683 0.21646832 0.19249 0.39066213 0.42978 0.52289528 0.71101 0.13122693 0.28096 0.19709148 0.62184 0.19709148 1.0222 0 0.34668-0.0775683 0.6669-0.2324461 0.95952-0.15506043 0.29319-0.36549905 0.54693-0.63292314 0.76286-0.26710834 0.21593-0.5808965 0.38368-0.940984 0.50294-0.3601522 0.11907-0.7490511 0.1788-1.16733 0.1788-0.3873278 0-0.7393637-0.0367-1.0569903-0.10975-0.3173717-0.0732-0.6039824-0.1691-0.8595811-0.2889-0.2554084-0.11907-0.4857793-0.25595-0.6909871-0.41019-0.2054589-0.15369-0.3814768-0.31183-0.5289345-0.47345l1.1270699-1.21409c0.1004697 0.10824 0.2189829 0.21822 0.3540483 0.32987 0.1353735 0.11146 0.2863596 0.21347 0.4531295 0.30578 0.1666443 0.093 0.3485132 0.16777 0.5460459 0.22533 0.1971543 0.058 0.4084032 0.0871 0.6330487 0.0871 0.1314742 0 0.263209-0.0194 0.39494-0.058 0.1314742-0.0382 0.2517583-0.0942 0.3600875-0.16739 0.1083255-0.0734 0.1957714-0.16168 0.2616988-0.26589 0.065357-0.10386 0.098396-0.22129 0.098396-0.35218 0-0.28499-0.1388925-0.50659-0.4182771-0.66462-0.2790003-0.15806-0.7199886-0.31385-1.324226-0.46803-0.2945368-0.0696-0.5669311-0.16986-0.8189424-0.30063-0.2515699-0.13106-0.4682266-0.28908-0.6502837-0.47414-0.1821276-0.18489-0.3234756-0.39654-0.4240043-0.63565-0.10066-0.23837-0.1512372-0.50427-0.1512372-0.79746 0-0.3233 0.058262-0.62745 0.1743859-0.91296 0.11601-0.28505 0.2922733-0.53721 0.5283049-0.75718 0.2362846-0.21935 0.5306978-0.39269 0.8827336-0.51965 0.3527264-0.12744 0.7685516-0.19098 1.2491743-0.19098 0.3949381 0 0.7433257 0.0405 1.0450354 0.12155 0.3020864 0.081 0.55969744 0.17728 0.77257837 0.28865 0.21307115 0.11165 0.38701388 0.22766 0.52283252 0.347 0.13531648 0.11926 0.23804592 0.21385 0.30793724 0.28273l-1.01062427 1.10979c-0.0856903-0.0692-0.18406766-0.14437-0.29623736-0.22538-0.1121677-0.0808-0.2380459-0.15579-0.3776383-0.2254-0.1389115-0.0692-0.2922733-0.12726-0.4583527-0.17329-0.1670818-0.046-0.3432291-0.0694-0.5289345-0.0694-0.1238658 0-0.2459721 0.0192-0.3659385 0.058-0.1202897 0.0384-0.2286723 0.0907-0.3252997 0.15578-0.096627 0.0658-0.1741957 0.14304-0.232195 0.23151-0.058186 0.0886-0.08744 0.18279-0.08744 0.28304 0 0.2618 0.1398435 0.47345 0.4185301 0.63559zm13.0408059-2.57711-2.7133073 4.45304v3.22171h-1.774333v-3.21043l-2.7133693-4.46432h1.9828125l1.6816696 2.89971 1.6346778-2.89971zm-29.8020841 3.22887c0.18753-0.19154 0.281201-0.43318 0.281201-0.72447 0-0.31456-0.09368-0.56381-0.281201-0.74799-0.187472-0.18394-0.445519-0.27581-0.773712-0.27581h-1.056737v2.0358h1.056737c0.328193 0 0.586244-0.0959 0.773712-0.28753z"/></g></svg>
               },
               {
-                name: "Toast", cat: "ONLINE ORDERING", desc: "Order directly — pickup or delivery.", href: siteSettings.toast_url || "https://www.toasttab.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                key: "toast",
+                name: "Toast", cat: "ONLINE ORDERING", desc: "Order directly — pickup or delivery.", href: siteSettings.toast_url, btn: "ORDER NOW", btnClass: "btn-secondary",
+                ctaId: "order_toast", ctaType: "order",
                 icon: <svg width="28" height="28" viewBox="0 0 5 4.753" fill={o}><path d="m4.734 3.226c.004-.295-.009-.59-.039-.883-.022-.198-.089-.452-.304-.504a.15.15 0 0 0 .084-.003c.249-.13.23-.451.142-.683-.116-.304-.391-.52-.664-.663a3.39 3.39 0 0 0 -3.237.115c-.247.152-.531.449-.406.78a.67.67 0 0 0 .147.22l.094.098c-.127.172-.22.328-.28.537-.18.63-.15 1.035-.101 1.541.031.313.134.779.495.831.294.041.613-.056.907-.091.324-.038.651-.098.979-.089.462.012.92.121 1.383.126.244.002.65.026.723-.296.069-.306.072-.624.072-.936.004-.033.004-.067.004-.099zm-.528.529c-.115.259-.44.23-.667.211l-1.015-.121c-.302-.009-.601.048-.895.113-.22.048-.527.175-.726.006-.221-.187-.26-.506-.263-.775a4.44 4.44 0 0 1 .072-.724c.027-.148.071-.292.129-.43.079-.2.196-.321.202-.315-.059-.061-.13-.094-.17-.177-.151-.315.226-.582.432-.673.721-.322 1.729-.29 2.41.123.212.129.624.572.239.793.237.112.298.45.324.69a4.19 4.19 0 0 1 -.036 1.157.5.5 0 0 1 -.037.122z"/></svg>
               },
               {
-                name: "Uber Eats", cat: "DELIVERY", desc: "Get Fairgrounds delivered to your door.", href: siteSettings.ubereats_url || "https://www.ubereats.com", btn: "ORDER NOW", btnClass: "btn-secondary",
+                key: "ubereats",
+                name: "Uber Eats", cat: "DELIVERY", desc: "Get Fairgrounds delivered to your door.", href: siteSettings.ubereats_url, btn: "ORDER NOW", btnClass: "btn-secondary",
+                ctaId: "order_ubereats", ctaType: "order",
                 icon: <svg width="28" height="28" viewBox="0 0 679 579" fill={o}><path d="M327.2,391a30.69,30.69,0,1,0-30.69,30.36A30.27,30.27,0,0,0,327.2,391m25.07-49.67v99.35H326.73v-9a50.37,50.37,0,0,1-32.33,11.5c-30.23,0-53.89-23.22-53.89-52.21s23.66-52.2,53.89-52.2a50.37,50.37,0,0,1,32.33,11.5v-9Zm84.9,76.81H418c-5.85,0-9.6-2.52-9.6-7.81V363.87h28.81V341.33H408.36V313H382.59v28.29H363.14v22.54h19.45v52.89c0,13.34,9.61,23.92,26.94,23.92h27.64Zm58.22,25.07c29.52,0,46.15-13.8,46.15-32.88,0-13.58-9.84-23.7-30.46-28.07l-21.78-4.37c-12.65-2.29-16.64-4.59-16.64-9.19,0-6,6.1-9.66,17.34-9.66,12.18,0,21.08,3.22,23.66,14.26H539.2c-1.41-20.7-16.64-34.5-47.56-34.5-26.71,0-45.45,10.81-45.45,31.74,0,14.48,10.31,23.92,32.57,28.51l24.36,5.52c9.61,1.84,12.18,4.37,12.18,8.29,0,6.2-7.26,10.11-19,10.11-14.75,0-23.19-3.22-26.47-14.26H444.08c3.75,20.7,19.45,34.5,51.31,34.5M137.46,306.14h96.29v23H163.46V362h68.41v22.31H163.46v33.34h70.29v23H137.46Z"/><path d="M539.2,189.6V171.54h-6.85c-11,0-19,5-23.89,12.88V172.31H488.88v98h19.78V214.59c0-15.18,9.39-25,22.32-25ZM397.06,212.28c3.53-15,15.86-25,30.55-25s27,10,30.34,25ZM428,170.38a50.88,50.88,0,0,0-51.3,50.94c0,29.21,23.1,51.12,53.06,51.12,18.21,0,33.08-7.88,43.07-20.95l-14.29-10.38c-7.44,9.8-17.23,14.42-28.78,14.42a33.3,33.3,0,0,1-33.09-27.87h81.25v-6.34c0-29.22-21.14-50.94-49.92-50.94M315,255.53a34,34,0,1,1,34.26-34,34.11,34.11,0,0,1-34.26,34m-53.84,14.79h19.58V258a50.31,50.31,0,0,0,35.63,14.61c29.37,0,52.47-22.87,52.47-51.12,0-28.44-23.1-51.32-52.47-51.32A49.82,49.82,0,0,0,281,184.8v-49H261.19Zm-69.5-15.76c19,0,33.67-14.41,33.67-35.75v-83h20.56V270.32H225.56V257.83c-9.2,9.42-21.93,14.8-36.22,14.8-29.37,0-51.88-20.95-51.88-52.66V135.79H158v83c0,21.73,14.48,35.75,33.67,35.75"/></svg>
               },
               {
-                name: "DoorDash", cat: "DELIVERY", desc: "Comfort food, right to your doorstep.", href: siteSettings.doordash_url || "https://www.doordash.com", btn: null, btnClass: null,
+                key: "doordash",
+                name: "DoorDash", cat: "DELIVERY", desc: "Comfort food, right to your doorstep.", href: siteSettings.doordash_url, btn: null, btnClass: null,
+                ctaId: "order_doordash", ctaType: "order",
                 icon: <svg width="28" height="28" viewBox="0 0 99.5 56.5" fill={o}><path d="M95.64,13.38A25.24,25.24,0,0,0,73.27,0H2.43A2.44,2.44,0,0,0,.72,4.16L16.15,19.68a7.26,7.26,0,0,0,5.15,2.14H71.24a6.44,6.44,0,1,1,.13,12.88H36.94a2.44,2.44,0,0,0-1.72,4.16L50.66,54.39a7.25,7.25,0,0,0,5.15,2.14H71.38c20.26,0,35.58-21.66,24.26-43.16"/></svg>
               },
               {
-                name: "Grubhub", cat: "PICKUP", desc: "Order for pickup or delivery.", href: siteSettings.grubhub_url || "https://www.grubhub.com", btn: null, btnClass: null,
+                key: "grubhub",
+                name: "Grubhub", cat: "PICKUP", desc: "Order for pickup or delivery.", href: siteSettings.grubhub_url, btn: null, btnClass: null,
+                ctaId: "order_grubhub", ctaType: "order",
                 icon: <svg width="28" height="28" viewBox="0 0 24 20" fill="none"><path d="M23.267 20H.35A.35.35 0 010 19.632V.368A.354.354 0 01.351 0h22.931a.366.366 0 01.351.521l-3.121 9.525a.353.353 0 000 .306l3.075 9.189a.369.369 0 01-.32.459z" fill={o}/><path d="M8.806 3.475a3.748 3.748 0 00-1.05-.139 3.245 3.245 0 00-2.466.99A3.86 3.86 0 004.453 7v4.887a3.892 3.892 0 00.853 2.675 3.245 3.245 0 002.465.99c.355.003.708-.043 1.05-.14a2.898 2.898 0 001.415-.85 3.829 3.829 0 00.868-2.675V9.197a.203.203 0 00-.063-.148.196.196 0 00-.15-.053H7.969a.214.214 0 00-.213.201v1.995a.214.214 0 00.213.2h.76v.45c.02.346-.077.69-.273.974a.832.832 0 01-.7.324.817.817 0 01-.685-.324 1.565 1.565 0 01-.274-.975V7.017c-.016-.342.08-.68.274-.96a.817.817 0 01.685-.324.832.832 0 01.7.325c.193.28.29.617.274.959v.463a.17.17 0 00.076.14h2.085a.18.18 0 00.134-.044.187.187 0 00.064-.126V7c.06-.972-.251-1.93-.868-2.675a3.034 3.034 0 00-1.415-.85zM18.722 3.333h-1.955a.181.181 0 00-.166.112.237.237 0 000 .097v4.564h-2.03V3.542a.203.203 0 00-.197-.209h-1.955a.203.203 0 00-.197.209v11.74c0 .115.088.208.197.208h1.955a.203.203 0 00.196-.208v-4.725h2v4.805a.237.237 0 000 .096.165.165 0 00.167.097h1.954a.176.176 0 00.145-.056.199.199 0 00.052-.153V3.542a.205.205 0 00-.166-.209z" fill="#fff"/></svg>
               },
               {
-                name: "Yelp", cat: "REVIEWS", desc: "Read reviews and see photos.", href: siteSettings.yelp_url || "https://www.yelp.com", btn: null, btnClass: null,
+                key: "yelp",
+                name: "Yelp", cat: "REVIEWS", desc: "Read reviews and see photos.", href: siteSettings.yelp_url, btn: null, btnClass: null,
+                ctaId: "reviews_yelp", ctaType: "social",
                 icon: <svg width="28" height="28" viewBox="0 0 14 19" fill={o}><g clipPath="url(#yc)"><path d="M4.606 11.38l.801-.186a.824.824 0 00.079-.02.883.883 0 00.631-1.052l-.003-.015a.88.88 0 00-.136-.297 1.116 1.116 0 00-.327-.28 3.026 3.026 0 00-.465-.215l-.878-.32a82.459 82.459 0 00-1.484-.536c-.323-.115-.596-.215-.833-.289-.045-.014-.095-.027-.135-.041-.287-.088-.489-.125-.66-.126a.786.786 0 00-.333.06.85.85 0 00-.288.206c-.04.046-.078.093-.114.143a1.685 1.685 0 00-.168.336 4.547 4.547 0 00-.24 1.494c.004.46.016 1.05.27 1.449a.853.853 0 00.24.26c.18.124.361.14.55.154.283.02.557-.05.83-.112l2.661-.614h.002zm8.935-4.25a4.55 4.55 0 00-.87-1.24 1.725 1.725 0 00-.299-.228 1.699 1.699 0 00-.164-.078.787.787 0 00-.675.034c-.153.076-.319.198-.538.402-.03.03-.069.064-.103.096-.181.17-.383.38-.623.625-.37.374-.736.751-1.098 1.132l-.65.673a3.026 3.026 0 00-.323.397c-.082.119-.14.253-.171.395a.881.881 0 00.008.327c0 .005.002.01.003.014a.883.883 0 001.029.669.836.836 0 00.08-.016l3.462-.8c.273-.062.55-.12.795-.262.165-.095.321-.19.428-.38a.853.853 0 00.102-.34c.053-.471-.194-1.006-.393-1.42zM7.344 8.586c.25-.315.25-.785.272-1.168.075-1.282.154-2.565.216-3.847.024-.486.076-.966.047-1.455-.025-.404-.028-.868-.283-1.2C7.145.333 6.184.38 5.529.472a6.307 6.307 0 00-.602.113c-.2.048-.397.1-.59.162-.629.206-1.513.584-1.662 1.308-.085.41.116.828.271 1.202.188.452.446.86.68 1.287.62 1.125 1.251 2.243 1.88 3.363.188.334.393.757.757.93a.78.78 0 00.073.028.88.88 0 00.95-.219.786.786 0 00.058-.06zm-.301 3.431a.801.801 0 00-1.16-.156 2.077 2.077 0 00-.376.385c-.028.035-.054.082-.087.113l-.557.765c-.315.429-.627.859-.935 1.295-.201.282-.375.52-.513.731-.026.04-.053.084-.078.12-.165.254-.258.44-.306.606a.791.791 0 00-.033.342.85.85 0 00.119.338c.033.052.07.102.108.15a1.694 1.694 0 00.28.257c.384.267.805.46 1.248.608.368.122.751.195 1.139.217a1.735 1.735 0 00.38-.03c.06-.014.118-.03.177-.051a.863.863 0 00.302-.192.793.793 0 00.184-.29c.064-.16.107-.363.134-.665l.013-.142c.022-.25.032-.545.048-.891.027-.533.048-1.063.064-1.595l.036-.946a2.27 2.27 0 00-.06-.675 1.01 1.01 0 00-.127-.294zm6.289 1.478c-.116-.127-.28-.254-.54-.411-.038-.02-.082-.049-.123-.073-.216-.13-.477-.267-.781-.432a87.6 87.6 0 00-1.409-.754l-.834-.442c-.044-.013-.088-.044-.128-.064a2.078 2.078 0 00-.507-.18 1.067 1.067 0 00-.304-.013.802.802 0 00-.668.662.992.992 0 00.011.317c.041.222.14.442.243.634l.446.834c.249.47.5.939.757 1.405.167.304.305.565.434.78.025.041.053.085.074.122.157.26.284.423.412.54a.81.81 0 00.292.179.864.864 0 00.357.04c.061-.008.122-.018.182-.032a1.776 1.776 0 00.354-.14c.338-.19.65-.423.928-.694.333-.328.627-.685.856-1.093.032-.058.06-.118.083-.18.021-.057.04-.116.055-.175.014-.06.024-.12.031-.182a.86.86 0 00-.04-.355.792.792 0 00-.18-.293z"/></g><defs><clipPath id="yc"><rect width="14" height="19" fill="#fff"/></clipPath></defs></svg>
               },
               {
-                name: "Google Maps", cat: "REVIEWS", desc: "Reviews, directions & hours.", href: siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554", btn: null, btnClass: null,
+                key: "google_maps",
+                name: "Google Maps", cat: "REVIEWS", desc: "Reviews, directions & hours.", href: siteSettings.google_maps_url, btn: null, btnClass: null,
+                ctaId: "reviews_google_maps", ctaType: "directions",
                 icon: <svg width="28" height="28" viewBox="0 0 24 24" fill={o}><path d="M18.7 3.8C15 .1 9 .1 5.3 3.8c-3.7 3.7-3.7 9.8 0 13.5L12 24l6.7-6.8c3.7-3.6 3.7-9.7 0-13.4ZM12 12.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
               },
             ];
-            const big = svc.slice(0, 4);
-            const small = svc.slice(4);
+            // Universal rule: a card is visible iff its URL setting is present and non-empty.
+            // Empty/whitespace URL in CMS = card hidden from the live site.
+            const svc = svcAll.filter(s => typeof s.href === "string" && s.href.trim().length > 0);
+            // Split remaining cards evenly across two rows. Ceil on top, floor on bottom.
+            // 8→4+4, 7→4+3, 6→3+3, 5→3+2, 4→2+2, 3→2+1, 2→1+1, 1→1+0.
+            const topCount = Math.ceil(svc.length / 2);
+            const big = svc.slice(0, topCount);
+            const small = svc.slice(topCount);
+            if (svc.length === 0) return null;
             return (<>
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 16 }}>
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${big.length}, 1fr)`, gap: 16, marginBottom: small.length ? 16 : 0 }}>
                 {big.map((s, i) => (
                   <Reveal key={s.name} delay={i * 0.08}>
-                    <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                      data-cta-id={s.ctaId}
+                      data-cta-label={s.name}
+                      data-cta-destination={s.href}
+                      data-cta-section="order"
+                      data-cta-type={s.ctaType}
+                    >
                       <div className="poster-card poster-card-hover" style={{ padding: "clamp(20px, 2.5vw, 32px)", textAlign: "center", height: "100%", cursor: "pointer" }}>
                         <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${colors.olive}25`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
                           {s.icon}
@@ -1574,10 +1704,21 @@ export default function TheFairgroundsHomepage() {
                   </Reveal>
                 ))}
               </div>
-              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+              {small.length > 0 && (
+              <div className="order-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${small.length}, 1fr)`, gap: 16 }}>
                 {small.map((s, i) => (
-                  <Reveal key={s.name} delay={(i + 4) * 0.06}>
-                    <a href={s.href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                  <Reveal key={s.name} delay={(i + big.length) * 0.06}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                      data-cta-id={s.ctaId}
+                      data-cta-label={s.name}
+                      data-cta-destination={s.href}
+                      data-cta-section="order"
+                      data-cta-type={s.ctaType}
+                    >
                       <div className="poster-card poster-card-hover" style={{ padding: "clamp(16px, 2vw, 24px)", textAlign: "center", height: "100%", cursor: "pointer", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                         <div style={{ width: 48, height: 48, borderRadius: "50%", border: `2px solid ${colors.olive}20`, background: `linear-gradient(135deg, ${colors.cream}, ${colors.parchment})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
                           {s.icon}
@@ -1589,6 +1730,7 @@ export default function TheFairgroundsHomepage() {
                   </Reveal>
                 ))}
               </div>
+              )}
             </>);
           })()}
         </div>
@@ -1622,7 +1764,14 @@ export default function TheFairgroundsHomepage() {
                       placeholder="your@email.com" className="ff-body"
                       style={{ flex: 1, background: "transparent", border: "none", outline: "none", padding: "12px 20px", fontSize: 16, color: colors.ink, minWidth: 0 }}
                     />
-                    <button className="btn-accent" style={{ borderRadius: 999, padding: "10px 24px", fontSize: 11, border: `2px solid ${colors.olive}`, flexShrink: 0 }}>Join</button>
+                    <button
+                      className="btn-accent"
+                      data-cta-id="newsletter_join"
+                      data-cta-label="Newsletter Join"
+                      data-cta-section="newsletter"
+                      data-cta-type="newsletter_signup"
+                      style={{ borderRadius: 999, padding: "10px 24px", fontSize: 11, border: `2px solid ${colors.olive}`, flexShrink: 0 }}
+                    >Join</button>
                   </div>
                 </div>
               </div>
@@ -1646,23 +1795,55 @@ export default function TheFairgroundsHomepage() {
                     <p className="ff-body" style={{ fontSize: 16, lineHeight: 1.7, color: colors.body, marginTop: 14, maxWidth: 300 }}>
                       {content?.footer?.tagline || "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island."}
                     </p>
-                    <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-                      {[
-                        { name: "instagram", href: siteSettings.instagram_url || "#", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
-                        { name: "facebook", href: siteSettings.facebook_url || "#", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-                        { name: "twitter", href: siteSettings.twitter_url || "#", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-                        { name: "tiktok", href: siteSettings.tiktok_url || "#", path: "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" },
-                      ].map((icon) => (
-                        <a key={icon.name} className="social-icon" href={icon.href} target="_blank" rel="noopener noreferrer" aria-label={icon.name}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={icon.path}/></svg>
-                        </a>
-                      ))}
-                    </div>
+                    {(() => {
+                      // Universal rule: a social icon is visible iff its URL setting is present and non-empty.
+                      const allIcons = [
+                        { name: "instagram", href: siteSettings.instagram_url, path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
+                        { name: "facebook", href: siteSettings.facebook_url, path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
+                        { name: "twitter", href: siteSettings.twitter_url, path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
+                        { name: "tiktok", href: siteSettings.tiktok_url, path: "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" },
+                      ];
+                      const icons = allIcons.filter(i => typeof i.href === "string" && i.href.trim().length > 0);
+                      if (icons.length === 0) return null;
+                      return (
+                        <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+                          {icons.map((icon) => (
+                            <a
+                              key={icon.name}
+                              className="social-icon"
+                              href={icon.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={icon.name}
+                              data-cta-id={`social_${icon.name}`}
+                              data-cta-label={icon.name}
+                              data-cta-destination={icon.href}
+                              data-cta-section="footer"
+                              data-cta-type="social"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d={icon.path}/></svg>
+                            </a>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                   <div>
                     <SectionLabel>Explore</SectionLabel>
                     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-                      {["Menu", "Events", "Our Story", "Order", "Visit Us", "Catering"].map((link) => <button key={link} className="footer-link">{link}</button>)}
+                      {["Menu", "Events", "Our Story", "Order", "Visit Us", "Catering"].map((link) => {
+                        const slug = String(link).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+                        return (
+                          <button
+                            key={link}
+                            className="footer-link"
+                            data-cta-id={`footer_link_${slug}`}
+                            data-cta-label={link}
+                            data-cta-section="footer"
+                            data-cta-type="internal_nav"
+                          >{link}</button>
+                        );
+                      })}
                     </div>
                   </div>
                   <div>
@@ -1695,9 +1876,23 @@ export default function TheFairgroundsHomepage() {
                         style={{ fontSize: 17, fontWeight: 900, color: colors.olive, textDecoration: "none" }}
                         onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
                         onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                        data-cta-id="footer_directions"
+                        data-cta-label={siteSettings.address_line1 || "27 Fairgrounds Road"}
+                        data-cta-destination={siteSettings.google_maps_url || "https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554"}
+                        data-cta-section="footer"
+                        data-cta-type="directions"
                       >{siteSettings.address_line1 || "27 Fairgrounds Road"}</a>
                       <div className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 3 }}>{siteSettings.address_line2 || "Nantucket, MA 02554"}</div>
-                      <a href={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[()\s-]/g, "")}`} className="ff-body" style={{ fontSize: 15, color: colors.body, marginTop: 2, textDecoration: "none", display: "block" }}>{siteSettings.phone || "(508) 555-FARE"}</a>
+                      <a
+                        href={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[()\s-]/g, "")}`}
+                        className="ff-body"
+                        data-cta-id="footer_phone"
+                        data-cta-label={siteSettings.phone || "(508) 555-FARE"}
+                        data-cta-destination={`tel:${(siteSettings.phone || "(508) 555-FARE").replace(/[()\s-]/g, "")}`}
+                        data-cta-section="footer"
+                        data-cta-type="phone"
+                        style={{ fontSize: 15, color: colors.body, marginTop: 2, textDecoration: "none", display: "block" }}
+                      >{siteSettings.phone || "(508) 555-FARE"}</a>
                     </div>
                   </div>
                 </div>

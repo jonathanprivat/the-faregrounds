@@ -16,6 +16,43 @@
 <meta property="og:url" content="https://nantucketfairgrounds.com/" />
 <meta property="og:image" content="https://nantucketfairgrounds.com/images/logo.png" />
 
+<!--
+  Analytics IDs (mirror of index.html — single source of truth for both pages).
+  Update gaId + clarityId here AND in index.html. Empty strings = no-op.
+-->
+<script>
+  window.__FG_ANALYTICS__ = {
+    gaId: "",          // e.g. "G-XXXXXXXXXX"
+    clarityId: ""      // e.g. "abcdefghij"
+  };
+</script>
+
+<!-- Google Analytics 4 (gtag.js) — loads only if a measurement ID is set -->
+<script>
+  (function() {
+    var id = (window.__FG_ANALYTICS__ || {}).gaId;
+    if (!id) return;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", id, { send_page_view: true });
+  })();
+</script>
+
+<!-- Microsoft Clarity (heatmaps + session recordings) — loads only if project ID is set -->
+<script>
+  (function(c,l,a,r,i,t,y){
+    if (!i) return;
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window, document, "clarity", "script", (window.__FG_ANALYTICS__ || {}).clarityId);
+</script>
+
 <!-- Web fonts — same stack as live site -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

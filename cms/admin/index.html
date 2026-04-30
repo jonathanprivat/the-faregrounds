@@ -975,18 +975,23 @@
           { key: 'hours_weekend', label: 'Weekend Hours', placeholder: 'Sat-Sun: 10am - 11pm' },
           { key: 'hours_events', label: 'Events Hours', placeholder: 'Check event listings' },
         ]},
-        { title: 'External Links', icon: '&#x1F517;', fields: [
-          { key: 'opentable_url', label: 'OpenTable', placeholder: 'https://opentable.com/...' },
-          { key: 'ubereats_url', label: 'Uber Eats', placeholder: 'https://ubereats.com/...' },
-          { key: 'doordash_url', label: 'DoorDash', placeholder: 'https://doordash.com/...' },
-          { key: 'grubhub_url', label: 'Grubhub', placeholder: 'https://grubhub.com/...' },
-          { key: 'yelp_url', label: 'Yelp', placeholder: 'https://yelp.com/...' },
-          { key: 'google_maps_url', label: 'Google Maps', placeholder: 'https://maps.google.com/...' },
+        // Reserve / Order / Review cards rendered as a custom group below.
+        // Marker: { type: 'serviceCards' } triggers the rich renderer.
+        { title: 'Reserve / Order / Review Cards', icon: '&#x1F517;', type: 'serviceCards', services: [
+          { key: 'opentable',   label: 'OpenTable',   placeholder: 'https://opentable.com/...' },
+          { key: 'resy',        label: 'Resy',        placeholder: 'https://resy.com/...' },
+          { key: 'toast',       label: 'Toast',       placeholder: 'https://toasttab.com/...' },
+          { key: 'ubereats',    label: 'Uber Eats',   placeholder: 'https://ubereats.com/...' },
+          { key: 'doordash',    label: 'DoorDash',    placeholder: 'https://doordash.com/...' },
+          { key: 'grubhub',     label: 'Grubhub',     placeholder: 'https://grubhub.com/...' },
+          { key: 'yelp',        label: 'Yelp',        placeholder: 'https://yelp.com/...' },
+          { key: 'google_maps', label: 'Google Maps', placeholder: 'https://maps.google.com/...' },
         ]},
-        { title: 'Social Media', icon: '&#x1F4F1;', fields: [
+        { title: 'Social Media', icon: '&#x1F4F1;', subtitle: 'Leave a field empty to hide that icon from the live site.', fields: [
           { key: 'instagram_url', label: 'Instagram', placeholder: 'https://instagram.com/...' },
           { key: 'facebook_url', label: 'Facebook', placeholder: 'https://facebook.com/...' },
           { key: 'twitter_url', label: 'Twitter / X', placeholder: 'https://twitter.com/...' },
+          { key: 'tiktok_url', label: 'TikTok', placeholder: 'https://tiktok.com/@...' },
         ]},
         { title: 'Other', icon: '&#x2699;', fields: [
           { key: 'menu_pdf_url', label: 'Menu PDF URL', placeholder: 'https://example.com/menu.pdf' },
@@ -1031,12 +1036,55 @@
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-lg" dangerouslySetInnerHTML={{ __html: group.icon }} />
                   <h3 className="text-sm font-semibold text-slate-800">{group.title}</h3>
+                  {group.type === 'serviceCards' && (
+                    <span className="ml-2 text-xs text-slate-500">Leave a URL empty to hide that card · remaining cards redistribute evenly</span>
+                  )}
+                  {group.subtitle && (
+                    <span className="ml-2 text-xs text-slate-500">{group.subtitle}</span>
+                  )}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {group.fields.map(field => (
-                    <Input key={field.key} label={field.label} value={settings[field.key] || ''} onChange={e => updateSetting(field.key, e.target.value)} placeholder={field.placeholder} />
-                  ))}
-                </div>
+                {group.type === 'serviceCards' ? (
+                  <div className="space-y-2">
+                    {group.services.map(svc => {
+                      const urlKey = svc.key + '_url';
+                      const url = settings[urlKey] || '';
+                      const isVisible = url.trim().length > 0;
+                      return (
+                        <div key={svc.key} className={'flex items-center gap-3 p-3 rounded-lg border ' + (isVisible ? 'border-slate-200 bg-slate-50' : 'border-amber-200 bg-amber-50/40')}>
+                          <div className="w-32 flex-shrink-0">
+                            <div className="text-sm font-medium text-slate-800">{svc.label}</div>
+                            <div className={'text-xs ' + (isVisible ? 'text-emerald-600' : 'text-amber-600')}>
+                              {isVisible ? '\u2713 Visible' : '\u2715 Hidden (empty)'}
+                            </div>
+                          </div>
+                          <input
+                            type="text"
+                            value={url}
+                            onChange={e => updateSetting(urlKey, e.target.value)}
+                            placeholder={svc.placeholder}
+                            className="flex-1 px-3 py-1.5 text-sm rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                          />
+                          {isVisible && (
+                            <button
+                              type="button"
+                              onClick={() => updateSetting(urlKey, '')}
+                              title="Clear URL to hide this card"
+                              className="flex-shrink-0 px-2 py-1 text-xs text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {group.fields.map(field => (
+                      <Input key={field.key} label={field.label} value={settings[field.key] || ''} onChange={e => updateSetting(field.key, e.target.value)} placeholder={field.placeholder} />
+                    ))}
+                  </div>
+                )}
               </Card>
             ))}
           </div>

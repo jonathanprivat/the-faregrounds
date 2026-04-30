@@ -181,14 +181,20 @@ function seed() {
       ['hours_weekend', 'Fri\u2013Sun: 8am \u2013 8pm'],
       ['hours_events', 'Events: Seasonal evenings'],
       ['opentable_url', 'https://www.opentable.com'],
+      ['resy_url', 'https://resy.com'],
+      ['toast_url', 'https://www.toasttab.com'],
       ['ubereats_url', 'https://www.ubereats.com'],
       ['doordash_url', 'https://www.doordash.com'],
       ['grubhub_url', 'https://www.grubhub.com'],
       ['yelp_url', 'https://www.yelp.com'],
       ['google_maps_url', 'https://maps.google.com/?q=27+Fairgrounds+Rd,+Nantucket,+MA+02554'],
-      ['instagram_url', '#'],
-      ['facebook_url', '#'],
-      ['twitter_url', '#'],
+      // Universal rule: empty URL = hidden on the live site.
+      // Front-end redistributes remaining Reserve/Order/Review cards evenly.
+      // Social icons default to empty (hidden) until an admin enters a real URL.
+      ['instagram_url', ''],
+      ['facebook_url', ''],
+      ['twitter_url', ''],
+      ['tiktok_url', ''],
       ['menu_pdf_url', '/the-faregrounds/menu.pdf'],
     ];
     for (const [key, value] of settings) {
