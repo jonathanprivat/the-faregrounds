@@ -1130,8 +1130,8 @@
     "phone": "508-228-4095",
     "address_line1": "27 Fairgrounds Road",
     "address_line2": "Nantucket, MA 02554",
-    "hours_weekday": "Mon–Tues: 8am – 3pm and 5pm – 9:30pm",
-    "hours_weekend": "Thurs–Sun: 8am – 3pm and 5pm – 9:30pm",
+    "hours_weekday": "Mon–Tues: 11:30am – 3pm and 5pm – 9:30pm",
+    "hours_weekend": "Thurs–Sun: 11:30am – 3pm and 5pm – 9:30pm",
     "hours_events": "Events: Seasonal evenings",
     "opentable_url": "",
     "resy_url": "https://resy.com",
@@ -1168,8 +1168,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T02:22:30.260Z",
-  "_sha": "106570a5604bbce9721a98bbddd47e87683750e9",
+  "exportedAt": "2026-04-30T03:06:49.536Z",
+  "_sha": "0b7106b080f9615542854a2701ddeabbb22f41fd",
   "users": [
     {
       "username": "admin",
