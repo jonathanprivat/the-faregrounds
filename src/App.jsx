@@ -1370,15 +1370,13 @@ export default function TheFairgroundsHomepage() {
                               )}
                             </div>
                             {showPrices && item.price && !isSub && (
-                              <div style={{
-                                padding: "4px 10px", borderRadius: 999,
-                                border: `2px solid ${colors.olive}`, background: colors.orange, color: colors.warmWhite,
-                                fontFamily: "'BogueSlab', serif", fontWeight: 700, fontSize: 13,
-                                whiteSpace: "nowrap", flexShrink: 0,
-                              }}>{item.price.startsWith("$") ? item.price : `$${item.price}`}</div>
+                              <span className="ff-ui" style={{
+                                fontSize: 13, color: colors.oliveMid, fontWeight: 600,
+                                whiteSpace: "nowrap", flexShrink: 0, alignSelf: "flex-start", marginTop: 2,
+                              }}>{item.price.startsWith("$") ? item.price : `$${item.price}`}</span>
                             )}
                             {showPrices && item.price && isSub && (
-                              <span className="ff-ui" style={{ fontSize: 11, color: colors.oliveMid, fontWeight: 600, whiteSpace: "nowrap" }}>{item.price}</span>
+                              <span className="ff-ui" style={{ fontSize: 11, color: colors.oliveMid, fontWeight: 500, whiteSpace: "nowrap" }}>{item.price}</span>
                             )}
                           </div>
                         </div>
