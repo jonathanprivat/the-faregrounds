@@ -1146,6 +1146,7 @@
     "twitter_url": "",
     "tiktok_url": "https://www.tiktok.com/@nantucketfairgrounds",
     "auto_theme": "false",
+    "show_prices": "true",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/data/event.pdf?v=1774292682272",

@@ -644,6 +644,7 @@ export default function TheFairgroundsHomepage() {
   }));
   const content = siteData?.content || {};
   const siteSettings = siteData?.settings || {};
+  const showPrices = siteSettings.show_prices !== "false";
 
   // Resolve theme: check for seasonal auto-switch, then fall back to manually active preset
   const resolveActivePreset = () => {
@@ -1368,7 +1369,7 @@ export default function TheFairgroundsHomepage() {
                                 <p className="ff-body" style={{ fontSize: isSub ? 13 : 14, lineHeight: 1.5, color: colors.body, marginTop: 3 }}>{item.desc}</p>
                               )}
                             </div>
-                            {item.price && !isSub && (
+                            {showPrices && item.price && !isSub && (
                               <div style={{
                                 padding: "4px 10px", borderRadius: 999,
                                 border: `2px solid ${colors.olive}`, background: colors.orange, color: colors.warmWhite,
@@ -1376,7 +1377,7 @@ export default function TheFairgroundsHomepage() {
                                 whiteSpace: "nowrap", flexShrink: 0,
                               }}>{item.price.startsWith("$") ? item.price : `$${item.price}`}</div>
                             )}
-                            {item.price && isSub && (
+                            {showPrices && item.price && isSub && (
                               <span className="ff-ui" style={{ fontSize: 11, color: colors.oliveMid, fontWeight: 600, whiteSpace: "nowrap" }}>{item.price}</span>
                             )}
                           </div>

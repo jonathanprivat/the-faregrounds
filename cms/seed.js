@@ -196,6 +196,7 @@ function seed() {
       ['twitter_url', ''],
       ['tiktok_url', ''],
       ['menu_pdf_url', '/the-faregrounds/menu.pdf'],
+      ['show_prices', 'true'],
     ];
     for (const [key, value] of settings) {
       insertSetting.run(key, value);
