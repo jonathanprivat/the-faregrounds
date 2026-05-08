@@ -1146,7 +1146,7 @@
     "twitter_url": "",
     "tiktok_url": "https://www.tiktok.com/@nantucketfairgrounds",
     "auto_theme": "false",
-    "show_prices": "true",
+    "show_prices": "false",
     "event_poster_url": "",
     "event_button_text": "RSVP for Maple Fest",
     "event_pdf_url": "/data/event.pdf?v=1774292682272",
@@ -1169,8 +1169,8 @@
     "seo_schema_price_range": "$$",
     "seo_accepts_reservations": "true"
   },
-  "exportedAt": "2026-04-30T03:06:49.536Z",
-  "_sha": "0b7106b080f9615542854a2701ddeabbb22f41fd",
+  "exportedAt": "2026-05-08T05:08:32.791Z",
+  "_sha": "16e2e752db1b887f7afc6a96278e49e77303cd29",
   "users": [
     {
       "username": "admin",
