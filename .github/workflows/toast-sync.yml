@@ -1,0 +1,68 @@
+name: Toast → site.json sync
+
+# Pulls Toast POS menus and merges into public/data/site.json.
+# Editorial-control rule:
+#   - Toast drives: name, price, sort_order, presence
+#   - Local preserves: desc text on existing items, sub: true dividers
+#   - Menus not in Toast (e.g. Specials) are left alone
+#
+# Strategy: sync writes site.json on this branch, commits + pushes to main.
+# The push triggers .github/workflows/deploy.yml which rebuilds GH Pages.
+
+on:
+  workflow_dispatch:
+  # Cron will be enabled once a manual run validates clean.
+  # schedule:
+  #   - cron: '7,37 * * * *'  # every 30 min (off the :00/:30 marks)
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: toast-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history so the push can fast-forward.
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Toast sync
+        env:
+          TOAST_API_BASE: ${{ secrets.TOAST_API_BASE }}
+          TOAST_AUTH_URL: ${{ secrets.TOAST_AUTH_URL }}
+          TOAST_USER_ACCESS_TYPE: ${{ secrets.TOAST_USER_ACCESS_TYPE }}
+          TOAST_CLIENT_ID: ${{ secrets.TOAST_CLIENT_ID }}
+          TOAST_CLIENT_SECRET: ${{ secrets.TOAST_CLIENT_SECRET }}
+          TOAST_RESTAURANT_EXTERNAL_ID: ${{ secrets.TOAST_RESTAURANT_EXTERNAL_ID }}
+        run: node scripts/sync-toast.js --apply
+
+      - name: Commit + push if changed, then dispatch deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          if git diff --quiet -- public/data/site.json; then
+            echo "[toast-sync] no diff in public/data/site.json — nothing to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/site.json
+          git commit -m "chore(toast): auto-sync menu from Toast POS"
+          git push origin HEAD:main
+          # Default GITHUB_TOKEN pushes do NOT trigger downstream `push`
+          # workflows, so deploy.yml would otherwise sit idle. Explicitly
+          # dispatch it (workflow_dispatch IS allowed with GITHUB_TOKEN).
+          echo "[toast-sync] dispatching deploy.yml on main"
+          gh workflow run deploy.yml --ref main

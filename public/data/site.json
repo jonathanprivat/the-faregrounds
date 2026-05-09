@@ -523,40 +523,53 @@
       "items": {
         "desserts": [
           {
-            "name": "Skillet Cookie for Two",
-            "price": "$16.99",
+            "name": "Cookie Skillet For Two",
+            "price": "$17",
             "desc": "Caramel pretzel-stuffed chocolate chip cookie, dulce de leche ice cream, hot fudge, whipped cream, cherry.",
-            "sub": false
+            "sub": false,
+            "toast_id": "34c5d32b-2bed-4048-bf8e-cb493453946c"
           },
           {
             "name": "Fairgrounds Basket",
-            "price": "$12.99",
+            "price": "$13",
             "desc": "Deep fried Mars bars & Oreos.",
-            "sub": false
+            "sub": false,
+            "toast_id": "415865d6-8d1b-4aa4-8413-e0aa6a4d3f41"
           },
           {
             "name": "Chocolate Lava Cake",
-            "price": "$10.99",
+            "price": "$11",
             "desc": "Whipped cream.",
-            "sub": false
+            "sub": false,
+            "toast_id": "b3d8e364-2271-4414-82e2-5c7343e19557"
           },
           {
-            "name": "Junior's Brooklyn Cheesecake",
-            "price": "$10.99",
+            "name": "Junior's Cheesecake",
+            "price": "$11",
             "desc": "House cherry compote.",
-            "sub": false
+            "sub": false,
+            "toast_id": "1bda256d-028d-4333-81d3-7d0952e00323"
           },
           {
             "name": "Root Beer Float",
-            "price": "$8.99",
+            "price": "$9",
             "desc": "Maine root beer & vanilla ice cream.",
-            "sub": false
+            "sub": false,
+            "toast_id": "3e1cbf68-b115-4843-85d7-f9c43e46e26a"
           },
           {
             "name": "Keto Root Beer Float",
-            "price": "$10.99",
+            "price": "$11",
             "desc": "Olipop and vanilla keto ice cream.",
-            "sub": false
+            "sub": false,
+            "toast_id": "f1ca97ab-5832-4685-9daf-f703a866eb59"
+          },
+          {
+            "name": "Scoop Of Ice Cream",
+            "price": "$5",
+            "desc": "",
+            "sub": false,
+            "toast_id": "f6a4192f-5885-4e54-90e4-122142f0b1ab"
           }
         ]
       },
@@ -1182,5 +1195,6 @@
       "passwordHash": "h_1r2ejc1",
       "role": "editor"
     }
-  ]
+  ],
+  "toast_last_synced": "2026-05-09T06:09:32.129Z"
 }
