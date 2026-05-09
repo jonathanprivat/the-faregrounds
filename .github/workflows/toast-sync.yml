@@ -11,9 +11,11 @@ name: Toast → site.json sync
 
 on:
   workflow_dispatch:
-  # Cron will be enabled once a manual run validates clean.
-  # schedule:
-  #   - cron: '7,37 * * * *'  # every 30 min (off the :00/:30 marks)
+  schedule:
+    # Every 30 min, off the :00/:30 marks to spread load.
+    # Validated 2026-05-09 06:15 UTC: workflow_dispatch run completed in 9s,
+    # Toast auth OK, 8 menus visible, no structural diff (site.json untouched).
+    - cron: '7,37 * * * *'
 
 permissions:
   contents: write
