@@ -1400,8 +1400,8 @@
     "phone": "508-228-4095",
     "address_line1": "27 Fairgrounds Road",
     "address_line2": "Nantucket, MA 02554",
-    "hours_weekday": "Mon–Tues: 4pm – 11pm and 11am – 4pm",
-    "hours_weekend": "Thurs–Sun: 4pm – 11pm and 11am – 4pm",
+    "hours_weekday": "Mon–Tues: 11am – 4pm and 4pm – 11pm",
+    "hours_weekend": "Thurs–Sun: 11am – 4pm and 4pm – 11pm",
     "hours_events": "Events: Seasonal evenings",
     "opentable_url": "",
     "resy_url": "https://resy.com",
@@ -1442,12 +1442,12 @@
       "monday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1455,12 +1455,12 @@
       "tuesday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1468,12 +1468,12 @@
       "thursday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1481,12 +1481,12 @@
       "friday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1494,12 +1494,12 @@
       "saturday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1507,12 +1507,12 @@
       "sunday": {
         "sessions": [
           {
-            "open": "16:00",
-            "close": "23:00"
-          },
-          {
             "open": "11:00",
             "close": "16:00"
+          },
+          {
+            "open": "16:00",
+            "close": "23:00"
           }
         ],
         "closed": false
@@ -1533,5 +1533,5 @@
       "role": "editor"
     }
   ],
-  "toast_last_synced": "2026-05-18T14:08:12.275Z"
+  "toast_last_synced": "2026-05-18T14:10:42.648Z"
 }
