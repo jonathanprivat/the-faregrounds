@@ -1004,6 +1004,38 @@ async function main() {
       console.log('[toast-sync] RAW schedules JSON:\n' + JSON.stringify(cfg?.schedules || null, null, 2));
       console.log('[toast-sync] RAW onlineOrdering JSON:\n' + JSON.stringify(cfg?.onlineOrdering || null, null, 2));
       console.log('[toast-sync] RAW delivery JSON:\n' + JSON.stringify(cfg?.delivery || null, null, 2));
+      // Probe candidate Toast API surfaces that may host the takeout /
+      // online-ordering hours. Each request is bounded with try/catch so
+      // 404s/403s don't abort the verification run.
+      const extId = process.env.TOAST_RESTAURANT_EXTERNAL_ID;
+      const candidates = [
+        `/restaurants/v1/restaurants/${extId}/onlineOrderingSchedule`,
+        `/restaurants/v1/restaurants/${extId}/onlineOrderingHours`,
+        `/restaurants/v1/restaurants/${extId}/services`,
+        `/restaurants/v1/restaurants/${extId}/availability`,
+        `/configuration/v2/restaurants/${extId}/onlineOrderingService`,
+        `/configuration/v2/restaurants/${extId}/onlineOrderingHours`,
+        `/configuration/v2/restaurants/${extId}/services`,
+        `/configuration/v2/restaurants/${extId}/hoursOfOperation`,
+        `/config/v2/restaurants/${extId}/onlineOrderingHours`,
+        `/onlineOrdering/v1/restaurants/${extId}/hours`,
+        `/onlineOrdering/v1/restaurants/${extId}/schedules`,
+      ];
+      console.log('\n[toast-sync] ── PROBING CANDIDATE HOURS ENDPOINTS ──');
+      for (const url of candidates) {
+        try {
+          await new Promise(r => setTimeout(r, 400));
+          const data = await authedGet(url);
+          const shape = typeof data === 'object' && data
+            ? `keys=[${Object.keys(data).slice(0, 12).join(', ')}]`
+            : `value=${JSON.stringify(data).slice(0, 80)}`;
+          console.log(`[toast-sync]   ✓ ${url} → ${shape}`);
+          console.log(`[toast-sync]     BODY:\n${JSON.stringify(data, null, 2).slice(0, 2500)}`);
+        } catch (e) {
+          console.log(`[toast-sync]   ✗ ${url} → ${e.message.slice(0, 120)}`);
+        }
+      }
+      console.log('[toast-sync] ── END PROBE ──\n');
     }
     hoursByDay = mapToastRestaurantToHours(cfg);
     if (hoursByDay) {
