@@ -1357,11 +1357,24 @@ export default function TheFairgroundsHomepage() {
                   </div>
                 </div>
 
-                {Object.keys(menuData).length > 0 ? (<>
+                {(() => {
+                  // Filter out items where item.disabled === true (admin-controlled
+                  // hide flag). Categories that end up with zero visible non-sub
+                  // items are also hidden from the category-tab row. If the
+                  // currently-active category became empty (e.g. admin disabled
+                  // everything in it), fall back to the first visible category
+                  // so the items section never renders empty when other tabs exist.
+                  const isVisible = (it) => !(it && it.disabled === true);
+                  const visibleCats = Object.keys(menuData).filter((key) => {
+                    const arr = Array.isArray(menuData[key]) ? menuData[key] : [];
+                    return arr.some(it => !it.sub && isVisible(it));
+                  });
+                  const selectedMenu = visibleCats.includes(activeMenu) ? activeMenu : (visibleCats[0] || activeMenu);
+                  return visibleCats.length > 0 ? (<>
                 {/* Category tabs */}
                 <div className="scrollbar-hide" style={{ display: "flex", gap: 6, marginTop: 24, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
-                  {Object.keys(menuData).map((key) => (
-                    <button key={key} className={`menu-tab ${activeMenu === key ? "menu-tab-active" : ""}`}
+                  {visibleCats.map((key) => (
+                    <button key={key} className={`menu-tab ${selectedMenu === key ? "menu-tab-active" : ""}`}
                       onClick={() => switchMenu(key)}
                       data-cta-id={`menu_category_${String(key).toLowerCase().replace(/[^a-z0-9]+/g, "_")}`}
                       data-cta-label={key}
@@ -1378,7 +1391,7 @@ export default function TheFairgroundsHomepage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
                   <div style={{ width: "clamp(40px, 8vw, 80px)" }}><Swash2 /></div>
                   <h3 className="ff-display" style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 900, textTransform: "capitalize", flexShrink: 0 }}>
-                    {activeMenu}
+                    {selectedMenu}
                   </h3>
                   <div style={{ width: "clamp(40px, 8vw, 80px)" }}><Swash2 flip /></div>
                   <div style={{ flex: 1 }} />
@@ -1387,7 +1400,7 @@ export default function TheFairgroundsHomepage() {
                 {/* Menu items */}
                 <div style={{ opacity: menuFade ? 0 : 1, transform: menuFade ? "translateY(8px)" : "none", transition: "opacity 0.2s, transform 0.2s" }}>
                   <div className="menu-items-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {(menuData[activeMenu] || []).map((item) => {
+                    {(menuData[selectedMenu] || []).filter(isVisible).map((item) => {
                       const isSub = item.sub;
                       return (
                         <div key={item.name} className={isSub ? "" : "menu-item-card"} style={{
@@ -1426,7 +1439,7 @@ export default function TheFairgroundsHomepage() {
                   </div>
                 </div>
                 </>) : (
-                  /* PDF-only menu (no items added yet) */
+                  /* PDF-only menu (no items added yet, or all items disabled) */
                   <div style={{ textAlign: "center", padding: "40px 20px", opacity: menuFade ? 0 : 1, transition: "opacity 0.2s" }}>
                     <Divider compact />
                     <p className="ff-accent" style={{ fontSize: 17, color: colors.body, marginBottom: 20 }}>
@@ -1450,7 +1463,8 @@ export default function TheFairgroundsHomepage() {
                       </a>
                     )}
                   </div>
-                )}
+                );
+                })()}
               </div>
             </PosterCard>
           </Reveal>

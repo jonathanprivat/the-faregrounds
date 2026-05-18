@@ -307,9 +307,9 @@ function buildToastMenus(payload) {
 }
 
 // ── Menu-wide preservation index ───────────────────────────────────────
-// Built once per menu so editorial `desc` survives Toast moving an item
-// to a different category. Tracks match-found separately from desc value
-// so an intentionally empty local desc is not overwritten by Toast's desc.
+// Built once per menu so editorial `desc` and admin-set `disabled` flag
+// survive Toast moving an item to a different category. Tracks match-found
+// separately from values so intentionally empty/false values aren't lost.
 function buildPreservationIndex(existingMenu) {
   const byToastId = new Map();
   const byName = new Map();
@@ -318,12 +318,13 @@ function buildPreservationIndex(existingMenu) {
     if (!Array.isArray(arr)) continue;
     for (const it of arr) {
       if (!it || it.sub === true) continue;
+      const preserved = { desc: it.desc ?? '', disabled: it.disabled === true };
       if (it.toast_id && !byToastId.has(it.toast_id)) {
-        byToastId.set(it.toast_id, { desc: it.desc ?? '' });
+        byToastId.set(it.toast_id, preserved);
       }
       if (it.name) {
         const key = String(it.name).toLowerCase();
-        if (!byName.has(key)) byName.set(key, { desc: it.desc ?? '' });
+        if (!byName.has(key)) byName.set(key, preserved);
       }
     }
   }
@@ -340,20 +341,29 @@ function mergeCategoryItems(toastItems, existingItems, preservationIndex) {
   const toastBuilt = toastItems.map(t => {
     let matched = false;
     let matchedDesc = '';
+    let matchedDisabled = false;
     if (t.toast_id && preservationIndex.byToastId.has(t.toast_id)) {
+      const p = preservationIndex.byToastId.get(t.toast_id);
       matched = true;
-      matchedDesc = preservationIndex.byToastId.get(t.toast_id).desc;
+      matchedDesc = p.desc;
+      matchedDisabled = p.disabled;
     } else if (t.name && preservationIndex.byName.has(String(t.name).toLowerCase())) {
+      const p = preservationIndex.byName.get(String(t.name).toLowerCase());
       matched = true;
-      matchedDesc = preservationIndex.byName.get(String(t.name).toLowerCase()).desc;
+      matchedDesc = p.desc;
+      matchedDisabled = p.disabled;
     }
-    return {
+    const out = {
       name: t.name,
       price: t.price,
       desc: matched ? matchedDesc : (t.desc || ''),
       sub: false,
       toast_id: t.toast_id,
     };
+    // Only emit `disabled` if it's true — keeps site.json clean for the
+    // common case (item is visible). Admin sets/clears the flag manually.
+    if (matchedDisabled) out.disabled = true;
+    return out;
   });
 
   const queue = [...toastBuilt];
@@ -742,6 +752,15 @@ async function main() {
   let hoursByDay = null;
   try {
     const cfg = await fetchRestaurantConfig();
+    // Diagnostic: log the top-level shape of the restaurant config payload so
+    // we can verify which schedule format Toast returns for this restaurant.
+    // Toast's /restaurants/v1 surface has historically returned several shapes
+    // (schedules.daySchedules+weeklySchedule, schedules.openingHours, top-level
+    // hoursSchedule, etc) — log once so we know which one we got.
+    const topKeys = cfg && typeof cfg === 'object' ? Object.keys(cfg) : [];
+    const schedKeys = cfg?.schedules && typeof cfg.schedules === 'object' ? Object.keys(cfg.schedules) : [];
+    const locKeys = cfg?.location && typeof cfg.location === 'object' ? Object.keys(cfg.location) : [];
+    console.log(`[toast-sync] hours config keys: top=[${topKeys.join(', ')}], schedules=[${schedKeys.join(', ')}], location=[${locKeys.join(', ')}]`);
     hoursByDay = mapToastRestaurantToHours(cfg);
     if (hoursByDay) {
       const summary = DAY_ORDER.map(d => {
