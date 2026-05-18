@@ -675,11 +675,239 @@ async function fetchRestaurantConfig() {
   return authedGet(`/restaurants/v1/restaurants/${encodeURIComponent(extId)}`);
 }
 
+// ── Verification mode ──────────────────────────────────────────────────
+// Read-only cross-check between live Toast data and current site.json.
+// Produces a comprehensive report covering:
+//   1. Toast inventory: every menu, every category, every item with name/price/GUID
+//   2. Site inventory: counts per menu, linked vs local vs disabled
+//   3. Cross-checks:
+//      - Site items with toast_id that no longer exist in Toast (stale GUIDs)
+//      - Toast customer-facing items that map to a site menu via aliases but
+//        aren't present in site.json (missing-from-site)
+//      - Price drift between Toast and the linked site item
+//      - Name drift between Toast and the linked site item
+//      - Toast menus that have no representation on the site at all (orphan menus)
+//   4. Hours cross-check (raw Toast hours vs current site.json settings.hours)
+//   5. Final verdict: IN SYNC / OUT OF SYNC (with itemized issues)
+// Never writes site.json. Safe to dispatch any time.
+function runVerification(siteData, toastMenusByLabelLower, hoursByDay) {
+  console.log('\n[verify] ═══════════════════════════════════════════════════════════');
+  console.log('[verify] TOAST ↔ SITE.JSON FULL SYNC VERIFICATION');
+  console.log('[verify] ═══════════════════════════════════════════════════════════');
+
+  // ─── Toast inventory ───
+  console.log('\n[verify] ── 1. TOAST INVENTORY ──');
+  const toastByGuid = new Map(); // guid → { menuLabel, category, name, price }
+  let toastTotal = 0;
+  for (const tm of Object.values(toastMenusByLabelLower)) {
+    let menuCount = 0;
+    const catLines = [];
+    for (const [cat, items] of Object.entries(tm.items || {})) {
+      let visible = 0;
+      for (const it of items) {
+        if (!it.toast_id) continue;
+        toastByGuid.set(it.toast_id, { menuLabel: tm.label, category: cat, name: it.name, price: it.price });
+        menuCount++;
+        visible++;
+      }
+      catLines.push(`${cat}=${visible}`);
+    }
+    toastTotal += menuCount;
+    console.log(`[verify]   ${tm.label}: ${menuCount} items (${catLines.join(', ') || 'empty'})`);
+  }
+  console.log(`[verify]   → ${toastTotal} total Toast items visible to TOAST_ONLINE_ORDERING / POS`);
+
+  // ─── Site inventory ───
+  console.log('\n[verify] ── 2. SITE.JSON INVENTORY ──');
+  const siteItemsByGuid = new Map(); // guid → { menuLabel, category, name, price, desc, disabled }
+  const siteItemsNoGuid = []; // { menuLabel, category, name, price, disabled }
+  let siteTotal = 0, siteLinked = 0, siteDisabled = 0;
+  for (const m of (siteData.menus || [])) {
+    let menuItems = 0, menuLinked = 0, menuDisabled = 0;
+    const catLines = [];
+    for (const [cat, items] of Object.entries(m.items || {})) {
+      let catTotal = 0;
+      for (const it of (items || [])) {
+        if (!it || it.sub === true) continue;
+        catTotal++;
+        menuItems++;
+        siteTotal++;
+        const entry = { menuLabel: m.label, category: cat, name: it.name, price: it.price || '', desc: it.desc || '', disabled: it.disabled === true };
+        if (it.toast_id) {
+          siteItemsByGuid.set(it.toast_id, entry);
+          menuLinked++;
+          siteLinked++;
+        } else {
+          siteItemsNoGuid.push(entry);
+        }
+        if (it.disabled === true) {
+          menuDisabled++;
+          siteDisabled++;
+        }
+      }
+      catLines.push(`${cat}=${catTotal}`);
+    }
+    console.log(`[verify]   ${m.label}: ${menuItems} items (${menuLinked} linked, ${menuDisabled} disabled) — ${catLines.join(', ')}`);
+  }
+  console.log(`[verify]   → ${siteTotal} total site items, ${siteLinked} linked, ${siteDisabled} disabled, ${siteTotal - siteDisabled} visible on public site`);
+
+  // ─── Cross-check 1: stale GUIDs (site says it's Toast-linked but Toast doesn't have that GUID) ───
+  console.log('\n[verify] ── 3. CROSS-CHECK: STALE GUIDS (site → Toast) ──');
+  const staleGuids = [];
+  for (const [guid, siteEntry] of siteItemsByGuid) {
+    if (!toastByGuid.has(guid)) {
+      staleGuids.push({ guid, ...siteEntry });
+    }
+  }
+  if (staleGuids.length === 0) {
+    console.log('[verify]   ✓ All site GUIDs resolve to live Toast items.');
+  } else {
+    console.log(`[verify]   ✗ ${staleGuids.length} stale GUID(s) — Toast no longer publishes these items:`);
+    for (const s of staleGuids) {
+      console.log(`[verify]     - [${s.menuLabel}/${s.category}] ${s.name} (guid ${s.guid.slice(0,8)}…)`);
+    }
+  }
+
+  // ─── Cross-check 2: price + name drift on linked items ───
+  console.log('\n[verify] ── 4. CROSS-CHECK: PRICE + NAME DRIFT (linked items) ──');
+  const priceDrift = [];
+  const nameDrift = [];
+  for (const [guid, siteEntry] of siteItemsByGuid) {
+    const toastEntry = toastByGuid.get(guid);
+    if (!toastEntry) continue;
+    if ((toastEntry.price || '') !== (siteEntry.price || '')) {
+      priceDrift.push({ guid, siteEntry, toastEntry });
+    }
+    if (String(toastEntry.name) !== String(siteEntry.name)) {
+      nameDrift.push({ guid, siteEntry, toastEntry });
+    }
+  }
+  if (priceDrift.length === 0) console.log('[verify]   ✓ No price drift on linked items.');
+  else {
+    console.log(`[verify]   ✗ ${priceDrift.length} price drift(s):`);
+    for (const p of priceDrift) {
+      console.log(`[verify]     - [${p.siteEntry.menuLabel}/${p.siteEntry.category}] ${p.siteEntry.name}: site=${p.siteEntry.price || '(none)'} vs Toast=${p.toastEntry.price || '(none)'}`);
+    }
+  }
+  if (nameDrift.length === 0) console.log('[verify]   ✓ No name drift on linked items.');
+  else {
+    console.log(`[verify]   ✗ ${nameDrift.length} name drift(s):`);
+    for (const n of nameDrift) {
+      console.log(`[verify]     - [${n.siteEntry.menuLabel}/${n.siteEntry.category}] site=${n.siteEntry.name} vs Toast=${n.toastEntry.name}`);
+    }
+  }
+
+  // ─── Cross-check 3: missing-from-site (Toast items that should be on the site but aren't) ───
+  console.log('\n[verify] ── 5. CROSS-CHECK: MISSING FROM SITE (Toast → site) ──');
+  // Build site-menu-to-allowed-toast-menus map from MENU_ALIASES + direct labels
+  const expectedTargetMenusByToastLabel = {}; // toastLabelLower → [siteMenuIds]
+  for (const [toastLabel, targets] of Object.entries(MENU_ALIASES)) {
+    expectedTargetMenusByToastLabel[toastLabel] = targets.map(t => ({ siteMenuId: t.siteMenuId, includeCategories: t.includeCategories }));
+  }
+  // Add direct-label matches (e.g. DESSERTS ↔ Desserts)
+  const siteMenusById = new Map();
+  for (const m of (siteData.menus || [])) siteMenusById.set(m.id, m);
+  for (const [toastLabelLower, tm] of Object.entries(toastMenusByLabelLower)) {
+    if (expectedTargetMenusByToastLabel[toastLabelLower]) continue;
+    // Direct label match: site menu whose label.toLowerCase() === toastLabelLower
+    for (const m of (siteData.menus || [])) {
+      if (String(m.label || '').toLowerCase() === toastLabelLower) {
+        expectedTargetMenusByToastLabel[toastLabelLower] = [{ siteMenuId: m.id, includeCategories: null }];
+        break;
+      }
+    }
+  }
+
+  const missingFromSite = [];
+  const orphanToastMenus = []; // Toast menus with NO mapping at all
+  for (const [toastLabelLower, tm] of Object.entries(toastMenusByLabelLower)) {
+    const targets = expectedTargetMenusByToastLabel[toastLabelLower];
+    if (!targets) {
+      const itemCount = Object.values(tm.items || {}).reduce((n, arr) => n + arr.length, 0);
+      orphanToastMenus.push({ label: tm.label, itemCount });
+      continue;
+    }
+    for (const target of targets) {
+      const allowCk = target.includeCategories ? new Set(target.includeCategories.map(c => categoryKey(c))) : null;
+      for (const [cat, items] of Object.entries(tm.items || {})) {
+        if (allowCk && !allowCk.has(cat)) continue;
+        for (const it of items) {
+          if (!it.toast_id) continue;
+          if (!siteItemsByGuid.has(it.toast_id)) {
+            missingFromSite.push({ guid: it.toast_id, name: it.name, price: it.price, toastLabel: tm.label, toastCat: cat, siteMenuId: target.siteMenuId });
+          }
+        }
+      }
+    }
+  }
+  if (missingFromSite.length === 0) console.log('[verify]   ✓ Every expected Toast item is present in site.json.');
+  else {
+    console.log(`[verify]   ✗ ${missingFromSite.length} Toast item(s) missing from site (should appear after next sync):`);
+    for (const m of missingFromSite) {
+      console.log(`[verify]     - Toast [${m.toastLabel}/${m.toastCat}] ${m.name} ${m.price} → site menu "${m.siteMenuId}" (guid ${m.guid.slice(0,8)}…)`);
+    }
+  }
+
+  // ─── Cross-check 4: orphan Toast menus (no site representation by design) ───
+  console.log('\n[verify] ── 6. ORPHAN TOAST MENUS (no site mapping by design) ──');
+  if (orphanToastMenus.length === 0) console.log('[verify]   (none — every Toast menu has at least an alias)');
+  else {
+    for (const o of orphanToastMenus) {
+      console.log(`[verify]   - ${o.label} (${o.itemCount} items) — not surfaced on public site`);
+    }
+  }
+
+  // ─── Hours cross-check ───
+  console.log('\n[verify] ── 7. HOURS CROSS-CHECK ──');
+  const sh = (siteData.settings && siteData.settings.hours) || null;
+  if (!hoursByDay) {
+    console.log('[verify]   ✗ Toast did not return parseable hours this run.');
+  } else if (!sh) {
+    console.log('[verify]   ⚠ site.json has no structured settings.hours yet (will be populated on next --apply run).');
+    for (const d of DAY_ORDER) {
+      const h = hoursByDay[d];
+      const desc = h.closed ? 'closed' : (h.unresolved ? 'unresolved' : renderDayHours(h.sessions));
+      console.log(`[verify]   Toast ${d}: ${desc}`);
+    }
+  } else {
+    let drift = 0;
+    for (const d of DAY_ORDER) {
+      const t = hoursByDay[d];
+      const s = sh[d];
+      const tDesc = !t ? '(missing)' : t.closed ? 'closed' : t.unresolved ? 'unresolved' : renderDayHours(t.sessions);
+      const sDesc = !s ? '(missing)' : s.closed ? 'closed' : renderDayHours(s.sessions);
+      const match = tDesc === sDesc || (t?.unresolved && (!s || s.sessions?.length === 0 || s.closed)) || (!t && !s);
+      const mark = match ? '✓' : '✗';
+      if (!match) drift++;
+      console.log(`[verify]   ${mark} ${d}: site=${sDesc} | Toast=${tDesc}`);
+    }
+    console.log(`[verify]   → ${drift === 0 ? '✓ hours fully in sync' : `✗ ${drift} day(s) drift`}`);
+  }
+
+  // ─── Verdict ───
+  console.log('\n[verify] ── VERDICT ──');
+  const issues = [];
+  if (staleGuids.length > 0) issues.push(`${staleGuids.length} stale GUID(s)`);
+  if (priceDrift.length > 0) issues.push(`${priceDrift.length} price drift(s)`);
+  if (nameDrift.length > 0) issues.push(`${nameDrift.length} name drift(s)`);
+  if (missingFromSite.length > 0) issues.push(`${missingFromSite.length} missing-from-site item(s)`);
+  if (issues.length === 0) {
+    console.log('[verify]   ✅ IN SYNC — every linked item matches Toast, no stale GUIDs, no missing items.');
+  } else {
+    console.log(`[verify]   ⚠ OUT OF SYNC: ${issues.join(', ')}`);
+  }
+  console.log('[verify] ═══════════════════════════════════════════════════════════\n');
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 async function main() {
   loadEnv();
   const apply = process.argv.includes('--apply');
-  console.log(`[toast-sync] start ${new Date().toISOString()} apply=${apply}`);
+  const verify = process.argv.includes('--verify');
+  if (verify && apply) {
+    throw new Error('--verify and --apply are mutually exclusive');
+  }
+  console.log(`[toast-sync] start ${new Date().toISOString()} apply=${apply} verify=${verify}`);
 
   const metadata = await authedGet('/menus/v2/metadata').catch(e => {
     console.warn(`[toast-sync] metadata fetch failed (advisory): ${e.message}`);
@@ -848,6 +1076,12 @@ async function main() {
   const afterHoursSlice = JSON.stringify(hoursKeys.map(k => (after.settings || {})[k]));
   const hoursChanged = beforeHoursSlice !== afterHoursSlice;
   const structuralChanged = menuBodyChanged || hoursChanged;
+
+  if (verify) {
+    runVerification(before, toastMenus, hoursByDay);
+    console.log(`[toast-sync] VERIFY DONE — site.json untouched (menuBodyChanged=${menuBodyChanged} hoursChanged=${hoursChanged})`);
+    process.exit(0);
+  }
 
   if (!apply) {
     console.log(`[toast-sync] DRY RUN — pass --apply to write site.json (menuBodyChanged=${menuBodyChanged} hoursChanged=${hoursChanged})`);

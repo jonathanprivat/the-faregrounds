@@ -11,6 +11,11 @@ name: Toast → site.json sync
 
 on:
   workflow_dispatch:
+    inputs:
+      verify_only:
+        description: 'Verify-only run (no writes — produces full Toast↔site comparison report in the log)'
+        type: boolean
+        default: false
   schedule:
     # Every 30 min, off the :00/:30 marks to spread load.
     # Validated 2026-05-09 06:15 UTC: workflow_dispatch run completed in 9s,
@@ -47,9 +52,13 @@ jobs:
           TOAST_CLIENT_ID: ${{ secrets.TOAST_CLIENT_ID }}
           TOAST_CLIENT_SECRET: ${{ secrets.TOAST_CLIENT_SECRET }}
           TOAST_RESTAURANT_EXTERNAL_ID: ${{ secrets.TOAST_RESTAURANT_EXTERNAL_ID }}
-        run: node scripts/sync-toast.js --apply
+        # Verify-only runs print a full Toast↔site comparison and exit 0
+        # without touching site.json. All other runs (cron + non-verify
+        # dispatch) do the normal --apply path.
+        run: node scripts/sync-toast.js ${{ inputs.verify_only == true && '--verify' || '--apply' }}
 
       - name: Commit + push if changed, then dispatch deploy
+        if: ${{ inputs.verify_only != true }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
