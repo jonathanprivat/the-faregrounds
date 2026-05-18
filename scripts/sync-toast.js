@@ -996,6 +996,15 @@ async function main() {
     const schedKeys = cfg?.schedules && typeof cfg.schedules === 'object' ? Object.keys(cfg.schedules) : [];
     const locKeys = cfg?.location && typeof cfg.location === 'object' ? Object.keys(cfg.location) : [];
     console.log(`[toast-sync] hours config keys: top=[${topKeys.join(', ')}], schedules=[${schedKeys.join(', ')}], location=[${locKeys.join(', ')}]`);
+    // Deep diagnostic — dump the three candidate hours surfaces so we can
+    // identify which one carries the takeout/online-ordering hours that
+    // Jony edits via Toast Web → "Online ordering hours". Each is bounded
+    // (a few KB) so safe to dump.
+    if (verify) {
+      console.log('[toast-sync] RAW schedules JSON:\n' + JSON.stringify(cfg?.schedules || null, null, 2));
+      console.log('[toast-sync] RAW onlineOrdering JSON:\n' + JSON.stringify(cfg?.onlineOrdering || null, null, 2));
+      console.log('[toast-sync] RAW delivery JSON:\n' + JSON.stringify(cfg?.delivery || null, null, 2));
+    }
     hoursByDay = mapToastRestaurantToHours(cfg);
     if (hoursByDay) {
       const summary = DAY_ORDER.map(d => {
