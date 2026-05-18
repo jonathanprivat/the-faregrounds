@@ -536,25 +536,66 @@ export default function TheFairgroundsHomepage() {
     const sameAs = [s.facebook_url, s.instagram_url, s.twitter_url, s.tiktok_url, s.yelp_url]
       .filter(u => u && u !== '#');
 
+    // Prefer structured settings.hours (Toast-driven, per-day with split shifts).
+    // Falls back to legacy free-text hours_weekday / hours_weekend regex if
+    // structured hours absent OR malformed (handles back-compat pre-Toast-sync,
+    // and also protects against an empty/all-closed sync write).
     const hoursSpec = [];
-    if (s.hours_weekday) {
-      const m = String(s.hours_weekday).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
-      if (m) {
-        const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
-        let close = parseInt(m[2], 10);
-        if (/pm/i.test(m[3]) && close < 12) close += 12;
-        const closes = String(close).padStart(2, '0') + ':00';
-        hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday'], opens, closes });
+    const dayName = {
+      monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday',
+      thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday',
+    };
+    const hasUsableStructuredHours = (hrs) => {
+      if (!hrs || typeof hrs !== 'object') return false;
+      for (const d of ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']) {
+        const v = hrs[d];
+        if (v && !v.closed && Array.isArray(v.sessions) && v.sessions.some(x => x?.open && x?.close)) {
+          return true;
+        }
       }
-    }
-    if (s.hours_weekend) {
-      const m = String(s.hours_weekend).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
-      if (m) {
-        const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
-        let close = parseInt(m[2], 10);
-        if (/pm/i.test(m[3]) && close < 12) close += 12;
-        const closes = String(close).padStart(2, '0') + ':00';
-        hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Friday','Saturday','Sunday'], opens, closes });
+      return false;
+    };
+    if (hasUsableStructuredHours(s.hours)) {
+      // Group consecutive days with identical sessions for compact JSON-LD.
+      const ordered = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+      const sessionsByDay = new Map();
+      for (const d of ordered) {
+        const h = s.hours[d];
+        if (h && !h.closed && Array.isArray(h.sessions)) {
+          for (const sess of h.sessions) {
+            if (!sess?.open || !sess?.close) continue;
+            const key = `${sess.open}-${sess.close}`;
+            if (!sessionsByDay.has(key)) sessionsByDay.set(key, []);
+            sessionsByDay.get(key).push(dayName[d]);
+          }
+        }
+      }
+      for (const [key, days] of sessionsByDay) {
+        const [opens, closes] = key.split('-');
+        hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: days, opens, closes });
+      }
+    } else {
+      // Legacy fallback — Mon-Thu / Fri-Sun (old hardcoded split; kept for
+      // sites that haven't been Toast-synced yet).
+      if (s.hours_weekday) {
+        const m = String(s.hours_weekday).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
+        if (m) {
+          const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
+          let close = parseInt(m[2], 10);
+          if (/pm/i.test(m[3]) && close < 12) close += 12;
+          const closes = String(close).padStart(2, '0') + ':00';
+          hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday'], opens, closes });
+        }
+      }
+      if (s.hours_weekend) {
+        const m = String(s.hours_weekend).match(/(\d{1,2})\s*am\s*[–-]\s*(\d{1,2})\s*(am|pm)/i);
+        if (m) {
+          const opens = String(Math.max(0, parseInt(m[1], 10))).padStart(2, '0') + ':00';
+          let close = parseInt(m[2], 10);
+          if (/pm/i.test(m[3]) && close < 12) close += 12;
+          const closes = String(close).padStart(2, '0') + ':00';
+          hoursSpec.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Friday','Saturday','Sunday'], opens, closes });
+        }
       }
     }
 
@@ -1819,20 +1860,76 @@ export default function TheFairgroundsHomepage() {
                   <div>
                     <SectionLabel>Hours</SectionLabel>
                     <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
-                      {[
-                        siteSettings.hours_weekday || "Mon\u2013Thu: 8am \u2013 3pm",
-                        siteSettings.hours_weekend || "Fri\u2013Sun: 8am \u2013 8pm",
-                        siteSettings.hours_events || "Events: Seasonal evenings",
-                      ].map((h) => {
-                        const idx = h.indexOf(": ");
-                        const day = idx >= 0 ? h.slice(0, idx) : h;
-                        const time = idx >= 0 ? h.slice(idx + 2) : "";
-                        return [day, time];
-                      }).map(([day, time]) => (
-                        <div key={day} className="ff-body" style={{ fontSize: 16, color: colors.body }}>
-                          <span style={{ fontWeight: 700, color: colors.ink }}>{day}</span><br/>{time}
-                        </div>
-                      ))}
+                      {(() => {
+                        // Render Toast-driven structured hours if present; collapses
+                        // consecutive days with identical sessions into ranges.
+                        const orderedDays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+                        const dayShort = {
+                          monday: 'Mon', tuesday: 'Tues', wednesday: 'Wed',
+                          thursday: 'Thurs', friday: 'Fri', saturday: 'Sat', sunday: 'Sun',
+                        };
+                        const fmtClock = (hhmm) => {
+                          if (!hhmm) return '';
+                          const [hStr, mStr] = String(hhmm).split(':');
+                          let h = parseInt(hStr, 10);
+                          const mm = parseInt(mStr || '0', 10);
+                          const suffix = h >= 12 ? 'pm' : 'am';
+                          if (h === 0) h = 12;
+                          else if (h > 12) h -= 12;
+                          return mm === 0 ? `${h}${suffix}` : `${h}:${String(mm).padStart(2,'0')}${suffix}`;
+                        };
+                        const renderSessions = (sessions) => {
+                          if (!sessions || sessions.length === 0) return 'Closed';
+                          return sessions.map(s => `${fmtClock(s.open)} – ${fmtClock(s.close)}`).join(' and ');
+                        };
+                        const hasUsableStructuredHours = (hrs) => {
+                          if (!hrs || typeof hrs !== 'object') return false;
+                          for (const d of orderedDays) {
+                            const v = hrs[d];
+                            if (v && !v.closed && Array.isArray(v.sessions) && v.sessions.some(x => x?.open && x?.close)) return true;
+                          }
+                          return false;
+                        };
+                        let rows = [];
+                        if (hasUsableStructuredHours(siteSettings.hours)) {
+                          // Walk DAY_ORDER and group consecutive days with identical session signatures.
+                          const runs = [];
+                          let cur = null;
+                          for (const d of orderedDays) {
+                            const h = siteSettings.hours[d];
+                            const sig = h && !h.closed ? JSON.stringify(h.sessions || []) : '__closed__';
+                            if (cur && cur.sig === sig) cur.days.push(d);
+                            else { if (cur) runs.push(cur); cur = { days: [d], sig, h }; }
+                          }
+                          if (cur) runs.push(cur);
+                          rows = runs.filter(r => r.sig !== '__closed__').map(r => {
+                            const first = dayShort[r.days[0]];
+                            const last = dayShort[r.days[r.days.length - 1]];
+                            const label = r.days.length === 1 ? first : `${first}\u2013${last}`;
+                            return [label, renderSessions(r.h.sessions)];
+                          });
+                          if (siteSettings.hours_events) {
+                            const evt = String(siteSettings.hours_events);
+                            const idx = evt.indexOf(": ");
+                            rows.push(idx >= 0 ? [evt.slice(0, idx), evt.slice(idx + 2)] : [evt, '']);
+                          }
+                        } else {
+                          // Legacy fallback — string-parse hours_weekday / hours_weekend.
+                          rows = [
+                            siteSettings.hours_weekday || "Mon\u2013Thu: 8am \u2013 3pm",
+                            siteSettings.hours_weekend || "Fri\u2013Sun: 8am \u2013 8pm",
+                            siteSettings.hours_events || "Events: Seasonal evenings",
+                          ].map((h) => {
+                            const idx = h.indexOf(": ");
+                            return idx >= 0 ? [h.slice(0, idx), h.slice(idx + 2)] : [h, ''];
+                          });
+                        }
+                        return rows.map(([day, time]) => (
+                          <div key={day} className="ff-body" style={{ fontSize: 16, color: colors.body }}>
+                            <span style={{ fontWeight: 700, color: colors.ink }}>{day}</span><br/>{time}
+                          </div>
+                        ));
+                      })()}
                     </div>
                   </div>
                   <div>

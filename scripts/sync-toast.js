@@ -9,6 +9,22 @@
 //   - Menus not present in Toast (e.g. Specials, Desserts) are left alone
 //   - Categories within a synced menu that are sub-only are preserved
 //
+// Menu mapping (Toast → site.json):
+//   - Direct label match (case-insensitive): "DESSERTS" ↔ "Desserts"
+//   - Alias map (see MENU_ALIASES below): "All Day Menu" → both "Lunch" and
+//     "Dinner" with per-target category filters (Lunch gets handhelds, Dinner
+//     gets mains; appetizers/salads/fries/bowls/pizza appear on both).
+//     "Mothers Day Specials" → "Specials".
+//
+// Hours sync (Toast → settings.hours):
+//   - Fetches /restaurants/v1/restaurants/{TOAST_RESTAURANT_EXTERNAL_ID}
+//   - Maps daySchedules / weeklySchedule to structured per-day hours
+//   - Writes settings.hours = { monday: { sessions: [{open,close}, ...], closed }, ... }
+//   - Also regenerates legacy settings.hours_weekday/hours_weekend free-text
+//     strings so App.jsx footer continues to render without changes (back-compat).
+//   - Hours fetch is best-effort: on failure, existing settings.hours is left
+//     untouched and sync continues with menus.
+//
 // CLI:
 //   node scripts/sync-toast.js          # dry-run, log diff only
 //   node scripts/sync-toast.js --apply  # write public/data/site.json
@@ -138,6 +154,101 @@ function categoryKey(name) {
   return String(name || '').toLowerCase().trim();
 }
 
+// ── Menu aliases ───────────────────────────────────────────────────────
+// Maps a Toast menu label (lowercased) to one or more site.json target
+// menus, with optional per-target category whitelists.
+//
+// `includeCategories: null` = take every Toast category as-is.
+// `includeCategories: [...]` = only merge those category keys (lowercased,
+// trimmed). All other Toast categories for that source are dropped for
+// that target. Site-side categories not mentioned (e.g. sub-only editorial
+// dividers in existing site.json) are still preserved by mergeMenu.
+//
+// Direct label match (e.g. "DESSERTS" ↔ "Desserts") still works without
+// an alias entry — aliases are only needed when names diverge or a single
+// Toast menu must fan out to multiple site menus.
+// Category allowlists include common spelling variants so a Toast rename
+// from "Salads" to "Salads & Soups" (or vice versa) doesn't blank the
+// target menu. ALL listed keys are simultaneously accepted; missing keys
+// are tolerated as long as at least one matches (see fail-safe below).
+const MENU_ALIASES = {
+  'all day menu': [
+    {
+      siteMenuId: 'lunch',
+      includeCategories: [
+        'appetizers', 'appetizer', 'starters',
+        'salads & soups', 'salads and soups', 'salads', 'soups', 'salad', 'soup',
+        'handhelds', 'handheld', 'sandwiches', 'burgers',
+        'fries',
+        'bowls', 'bowl',
+        'pizza', 'pizzas',
+      ],
+    },
+    {
+      siteMenuId: 'dinner',
+      includeCategories: [
+        'appetizers', 'appetizer', 'starters',
+        'salads & soups', 'salads and soups', 'salads', 'soups', 'salad', 'soup',
+        'mains', 'main', 'entrees', 'entrée', 'entrées',
+        'fries',
+        'bowls', 'bowl',
+        'pizza', 'pizzas',
+      ],
+    },
+  ],
+  'mothers day specials': [
+    { siteMenuId: 'specials', includeCategories: null },
+  ],
+};
+
+// Filter a Toast-built menu to a subset of category keys.
+// Returns { menu, matchedKeys, missingKeys } so callers can decide whether
+// to apply the merge or fail-safe to "leave site menu untouched".
+//   - matchedKeys: category keys from Toast that survived the allowlist
+//   - missingKeys: allowlist keys that didn't appear in Toast (informational)
+// Never mutates inputs. If allowedCategoryKeys is null, all categories pass.
+function filterToastMenuByCategories(toastMenu, allowedCategoryKeys) {
+  if (!allowedCategoryKeys) {
+    return {
+      menu: toastMenu,
+      matchedKeys: Object.keys(toastMenu.items || {}),
+      missingKeys: [],
+    };
+  }
+  const allow = new Set(allowedCategoryKeys.map(c => categoryKey(c)));
+  const items = {};
+  const matchedKeys = [];
+  for (const [ck, arr] of Object.entries(toastMenu.items || {})) {
+    if (allow.has(ck)) {
+      items[ck] = arr;
+      matchedKeys.push(ck);
+    }
+  }
+  const matchedSet = new Set(matchedKeys);
+  const missingKeys = [...allow].filter(k => !matchedSet.has(k));
+  return {
+    menu: { label: toastMenu.label, items },
+    matchedKeys,
+    missingKeys,
+  };
+}
+
+// Find the Toast menu (and optional category filter) that should drive a
+// given site menu. Tries direct label match first, then walks MENU_ALIASES.
+// Returns { toastMenu, includeCategories } or null.
+function resolveToastForSiteMenu(siteMenu, toastMenusByLabelLower) {
+  const directLabel = String(siteMenu.label || '').toLowerCase();
+  const direct = toastMenusByLabelLower[directLabel];
+  if (direct) return { toastMenu: direct, includeCategories: null };
+  for (const [toastLabelLower, targets] of Object.entries(MENU_ALIASES)) {
+    const tm = toastMenusByLabelLower[toastLabelLower];
+    if (!tm) continue;
+    const t = targets.find(x => x.siteMenuId === siteMenu.id);
+    if (t) return { toastMenu: tm, includeCategories: t.includeCategories };
+  }
+  return null;
+}
+
 // ── Toast → indexed-by-menu-label structure ────────────────────────────
 //   { [menuLabelLower]: { label, items: { [categoryKey]: [item, ...] } } }
 // MAJOR #4 fix: visibility filter applied at item level only — group/sub-group
@@ -260,7 +371,40 @@ function mergeCategoryItems(toastItems, existingItems, preservationIndex) {
   return out;
 }
 
-// ── Per-menu merge ─────────────────────────────────────────────────────
+// ── Per-menu merge (alias mode: preserves existing items for allowlisted
+// categories that Toast didn't return — protects against partial fetches).
+// Differs from mergeMenu (direct match): for allowed-but-missing categories,
+// existing items are kept rather than dropped. For categories outside the
+// allowlist, existing items are preserved as-is (editorial-only).
+function mergeMenuAliasPartial(toastFilteredMenu, existingMenu, allowedCategoryKeys) {
+  const merged = { ...existingMenu };
+  const preservationIndex = buildPreservationIndex(existingMenu);
+  const allowSet = new Set((allowedCategoryKeys || []).map(c => categoryKey(c)));
+  const newItems = {};
+  // 1. Toast-returned matched categories: normal Toast-authoritative merge.
+  for (const [ck, toastItems] of Object.entries(toastFilteredMenu.items || {})) {
+    newItems[ck] = mergeCategoryItems(toastItems, existingMenu.items?.[ck], preservationIndex);
+  }
+  // 2. Allowlist categories Toast didn't return: preserve existing items.
+  for (const allowedCk of allowSet) {
+    if (newItems[allowedCk]) continue;
+    const existingArr = existingMenu.items?.[allowedCk];
+    if (Array.isArray(existingArr) && existingArr.length > 0) {
+      newItems[allowedCk] = existingArr.map(it => ({ ...it }));
+    }
+  }
+  // 3. Existing categories outside the allowlist (editorial-only): preserve.
+  for (const [ck, existingArr] of Object.entries(existingMenu.items || {})) {
+    if (newItems[ck]) continue;
+    if (allowSet.has(ck)) continue; // covered above
+    const arr = Array.isArray(existingArr) ? existingArr : [];
+    if (arr.length > 0) newItems[ck] = arr.map(it => ({ ...it }));
+  }
+  merged.items = newItems;
+  return merged;
+}
+
+// ── Per-menu merge (direct mode: Toast fully authoritative on category presence)
 function mergeMenu(toastMenu, existingMenu) {
   const merged = { ...existingMenu };
   const preservationIndex = buildPreservationIndex(existingMenu);
@@ -335,6 +479,185 @@ function diffSummary(beforeSite, afterSite) {
   return summary;
 }
 
+// ── Hours sync ─────────────────────────────────────────────────────────
+// Toast's "configuration" surface for restaurant hours is queried via:
+//   GET /restaurants/v1/restaurants/{restaurantExternalId}
+// which returns (relevant subset):
+//   {
+//     schedules: {
+//       daySchedules: {
+//         "<guid>": {
+//           scheduleName, services: [{ name, hours: { startTime, endTime } }, ...]
+//         }, ...
+//       },
+//       weeklySchedule: {
+//         monday: "<dayScheduleGuid>", tuesday: "...", ...
+//       }
+//     }
+//   }
+// `startTime`/`endTime` come as "HH:MM:SS.SSS" strings in restaurant-local time.
+// Empty `services` for a day = closed. A day with N services = N open windows
+// (e.g. lunch + dinner split shifts).
+const DAY_ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+function toClockHHMM(timeStr) {
+  if (!timeStr || typeof timeStr !== 'string') return null;
+  const m = timeStr.match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  const h = Math.max(0, Math.min(23, parseInt(m[1], 10)));
+  const mm = Math.max(0, Math.min(59, parseInt(m[2], 10)));
+  return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+}
+
+function fmtClockHuman(hhmm) {
+  if (!hhmm) return '';
+  const [hStr, mStr] = hhmm.split(':');
+  let h = parseInt(hStr, 10);
+  const mm = parseInt(mStr, 10);
+  const suffix = h >= 12 ? 'pm' : 'am';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return mm === 0 ? `${h}${suffix}` : `${h}:${String(mm).padStart(2, '0')}${suffix}`;
+}
+
+// Map Toast restaurant config → structured per-day sessions.
+// Returns { monday: { sessions: [{open,close}], closed: bool }, ... } only
+// when the payload looks valid AND at least one day has real sessions.
+// Returns null otherwise (best-effort, never throws on shape) — null tells
+// the caller to PRESERVE existing settings.hours rather than overwrite with
+// "all closed" derived from a malformed payload.
+function mapToastRestaurantToHours(payload) {
+  try {
+    const schedules = payload?.schedules;
+    if (!schedules || typeof schedules !== 'object') return null;
+    const daySchedules = schedules.daySchedules || {};
+    const weekly = schedules.weeklySchedule || {};
+    // Build a case-insensitive lookup over the weekly schedule so 'MONDAY',
+    // 'Monday', 'monday' all resolve. Toast has used both casings historically.
+    const weeklyLowered = {};
+    for (const [k, v] of Object.entries(weekly)) {
+      weeklyLowered[String(k).toLowerCase()] = v;
+    }
+    // Must have at least one recognized day key — otherwise the shape is wrong.
+    const recognizedDays = DAY_ORDER.filter(d => weeklyLowered[d]);
+    if (recognizedDays.length === 0) return null;
+    const out = {};
+    let resolvedAny = false;
+    // actionableAny = true if ANY day produced a definitive answer (open
+    // sessions OR explicit-closed via empty services array). All-closed
+    // schedules are valid (seasonal off-period — accept it). Only reject
+    // when every day is unresolved (= payload shape is garbage).
+    let actionableAny = false;
+    for (const day of DAY_ORDER) {
+      const guid = weeklyLowered[day];
+      const sched = guid ? daySchedules[guid] : null;
+      const hasGuid = !!guid;
+      const guidResolves = !!sched;
+      const servicesIsArray = Array.isArray(sched?.services);
+      if (guidResolves) resolvedAny = true;
+      let day_out;
+      if (hasGuid && guidResolves && servicesIsArray) {
+        const sessions = [];
+        let hadAnyServiceEntry = false;
+        for (const svc of sched.services) {
+          hadAnyServiceEntry = true;
+          const h = svc?.hours || {};
+          const open = toClockHHMM(h.startTime);
+          const close = toClockHHMM(h.endTime);
+          if (open && close) sessions.push({ open, close });
+        }
+        if (sessions.length > 0) {
+          // At least one valid window → trust this day as authoritative.
+          day_out = { sessions, closed: false };
+          actionableAny = true;
+        } else if (hadAnyServiceEntry) {
+          // Services array had entries but NONE produced valid open/close.
+          // Treat as unresolved so existing hours are preserved (this is the
+          // "garbage data on this specific day" case, not a deliberate close).
+          day_out = { sessions: [], closed: false, unresolved: true };
+          console.warn(`[toast-sync] hours: ${day} had ${sched.services.length} service entries but none parsed — preserving existing`);
+        } else {
+          // Explicit empty services array = genuine closed day. Actionable.
+          day_out = { sessions: [], closed: true };
+          actionableAny = true;
+        }
+      } else {
+        day_out = { sessions: [], closed: false, unresolved: true };
+      }
+      out[day] = day_out;
+    }
+    // Reject only when nothing is actionable AND nothing was resolved —
+    // both being false implies the payload shape was malformed enough that
+    // we can't trust any of it. An all-closed-but-resolved schedule (valid
+    // seasonal off-period) IS accepted because actionableAny will be true.
+    if (!resolvedAny || !actionableAny) {
+      console.warn(`[toast-sync] hours payload had no actionable data — preserving existing hours (resolvedAny=${resolvedAny}, actionableAny=${actionableAny})`);
+      return null;
+    }
+    return out;
+  } catch (e) {
+    console.warn(`[toast-sync] hours mapping failed: ${e.message}`);
+    return null;
+  }
+}
+
+// Render a single day's sessions to "11:30am – 3pm and 5pm – 9:30pm" style.
+function renderDayHours(sessions) {
+  if (!sessions || sessions.length === 0) return '';
+  return sessions
+    .map(s => `${fmtClockHuman(s.open)} – ${fmtClockHuman(s.close)}`)
+    .join(' and ');
+}
+
+// Collapse per-day hours into Mon-grouped human strings for back-compat with
+// existing settings.hours_weekday / hours_weekend display. Groups runs of
+// consecutive days with identical sessions.
+function renderHoursLegacy(hoursByDay) {
+  if (!hoursByDay) return null;
+  const dayLabel = {
+    monday: 'Mon', tuesday: 'Tues', wednesday: 'Wed',
+    thursday: 'Thurs', friday: 'Fri', saturday: 'Sat', sunday: 'Sun',
+  };
+  // Find runs of consecutive days with identical session signatures.
+  const runs = [];
+  let cur = null;
+  for (const day of DAY_ORDER) {
+    const d = hoursByDay[day];
+    if (!d || d.closed || !d.sessions || d.sessions.length === 0) {
+      if (cur) { runs.push(cur); cur = null; }
+      runs.push({ days: [day], sessions: [], closed: true });
+      continue;
+    }
+    const sig = JSON.stringify(d.sessions);
+    if (cur && cur.sig === sig) {
+      cur.days.push(day);
+    } else {
+      if (cur) runs.push(cur);
+      cur = { days: [day], sessions: d.sessions, sig, closed: false };
+    }
+  }
+  if (cur) runs.push(cur);
+  const openRuns = runs.filter(r => !r.closed);
+  if (openRuns.length === 0) return null;
+  const labelRun = r => {
+    const first = dayLabel[r.days[0]];
+    const last = dayLabel[r.days[r.days.length - 1]];
+    return r.days.length === 1 ? first : `${first}–${last}`;
+  };
+  // First open run → hours_weekday slot, rest concatenated → hours_weekend slot.
+  return {
+    hours_weekday: `${labelRun(openRuns[0])}: ${renderDayHours(openRuns[0].sessions)}`,
+    hours_weekend: openRuns.length > 1
+      ? openRuns.slice(1).map(r => `${labelRun(r)}: ${renderDayHours(r.sessions)}`).join(' • ')
+      : '',
+  };
+}
+
+async function fetchRestaurantConfig() {
+  const extId = process.env.TOAST_RESTAURANT_EXTERNAL_ID;
+  return authedGet(`/restaurants/v1/restaurants/${encodeURIComponent(extId)}`);
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 async function main() {
   loadEnv();
@@ -354,21 +677,116 @@ async function main() {
   const toastMenus = buildToastMenus(payload);
   const toastLabels = Object.values(toastMenus).map(m => m.label);
   console.log(`[toast-sync] Toast menus visible: ${toastLabels.length} (${toastLabels.join(', ') || '(none)'})`);
+  // Verbose group-level dump — helps verify alias category filters match
+  // Toast's actual group structure. Cheap, never errors.
+  for (const tm of Object.values(toastMenus)) {
+    const cats = Object.keys(tm.items || {});
+    const counts = cats.map(c => `${c}=${(tm.items[c] || []).length}`).join(', ');
+    console.log(`[toast-sync]   ${tm.label}: ${cats.length} categories (${counts || '(none)'})`);
+  }
 
   if (!fs.existsSync(SITE_JSON_PATH)) {
     throw new Error(`site.json not found at ${SITE_JSON_PATH}`);
   }
   const before = JSON.parse(fs.readFileSync(SITE_JSON_PATH, 'utf8'));
   const after = { ...before };
+  // Helpers for fail-safe item counting.
+  const countMenuItems = (menuObj) => {
+    let n = 0;
+    for (const arr of Object.values(menuObj?.items || {})) {
+      if (Array.isArray(arr)) for (const it of arr) if (it && it.sub !== true) n++;
+    }
+    return n;
+  };
   after.menus = (before.menus || []).map(menu => {
-    const tm = toastMenus[String(menu.label || '').toLowerCase()];
-    if (!tm) return menu; // no Toast counterpart — leave untouched
+    const resolved = resolveToastForSiteMenu(menu, toastMenus);
+    if (!resolved) return menu; // no Toast counterpart — leave untouched
+    const { menu: tm, matchedKeys, missingKeys } =
+      filterToastMenuByCategories(resolved.toastMenu, resolved.includeCategories);
+    const availableToastKeys = Object.keys(resolved.toastMenu.items || {});
+    const matchKind = resolved.includeCategories ? 'alias' : 'direct';
+    // FAIL-SAFE 1 (alias only): if no allowlist categories matched, skip merge.
+    if (resolved.includeCategories && matchedKeys.length === 0) {
+      console.warn(`[toast-sync]   SKIP merge (fail-safe: 0 matching categories): Toast "${resolved.toastMenu.label}" → site "${menu.label}". Allowlist=[${resolved.includeCategories.join(', ')}], Toast offers=[${availableToastKeys.join(', ') || '(none)'}]. Leaving site menu untouched.`);
+      return menu;
+    }
+    // FAIL-SAFE 2 (alias AND direct): if the incoming Toast menu has zero
+    // non-sub items but the existing site menu has items, treat that as
+    // "Toast returned empty / partial fetch" and preserve. Without this,
+    // mergeMenu would clear every existing non-sub slot for matched
+    // categories because Toast is authoritative on presence.
+    const incomingCount = countMenuItems(tm);
+    const existingCount = countMenuItems(menu);
+    if (incomingCount === 0 && existingCount > 0) {
+      console.warn(`[toast-sync]   SKIP merge (fail-safe: ${matchKind} 0-item payload): Toast "${resolved.toastMenu.label}" → site "${menu.label}" had ${existingCount} existing items but Toast returned 0 items across matched categories (matched=[${matchedKeys.join(', ') || '(none)'}], Toast offers=[${availableToastKeys.join(', ') || '(none)'}]). Leaving site menu untouched.`);
+      return menu;
+    }
+    console.log(`[toast-sync]   merging ${matchKind}: Toast "${resolved.toastMenu.label}" → site "${menu.label}" (matched: ${matchedKeys.join(', ') || '(none)'}; incoming=${incomingCount} items${missingKeys.length ? `; allowlist-not-in-Toast (preserved): ${missingKeys.join(', ')}` : ''})`);
+    // Alias-mode merges use the partial merger so missing-from-Toast allowlist
+    // categories preserve existing items (treat as transient absence, not deletion).
+    if (resolved.includeCategories) {
+      return mergeMenuAliasPartial(tm, menu, resolved.includeCategories);
+    }
     return mergeMenu(tm, menu);
   });
   // Strip internal _sort field before persist (and before structural diff).
   for (const m of after.menus) {
     for (const arr of Object.values(m.items || {})) {
       if (Array.isArray(arr)) for (const it of arr) delete it._sort;
+    }
+  }
+
+  // ── Hours sync (best-effort) ───────────────────────────────────────
+  // Pace another ~1.1s — separate Toast API surface, same rate-limit class.
+  await new Promise(r => setTimeout(r, 1100));
+  let hoursByDay = null;
+  try {
+    const cfg = await fetchRestaurantConfig();
+    hoursByDay = mapToastRestaurantToHours(cfg);
+    if (hoursByDay) {
+      const summary = DAY_ORDER.map(d => {
+        const h = hoursByDay[d];
+        if (h.closed) return `${d}=closed`;
+        return `${d}=${renderDayHours(h.sessions) || '?'}`;
+      }).join(' | ');
+      console.log(`[toast-sync] Toast hours: ${summary}`);
+    } else {
+      console.log('[toast-sync] hours: payload shape not recognized, skipping hours update');
+    }
+  } catch (e) {
+    console.warn(`[toast-sync] hours fetch failed (skipping hours update): ${e.message}`);
+  }
+  if (hoursByDay) {
+    after.settings = { ...(before.settings || {}) };
+    // Merge per-day: any day Toast couldn't resolve (unresolved:true) keeps
+    // its existing entry rather than being blanked. New fully-resolved days
+    // (open or explicitly closed) come from Toast.
+    const existingHours = (before.settings && before.settings.hours) || {};
+    const mergedHours = {};
+    for (const day of DAY_ORDER) {
+      const fresh = hoursByDay[day];
+      if (fresh && !fresh.unresolved) {
+        mergedHours[day] = { sessions: fresh.sessions, closed: !!fresh.closed };
+      } else if (existingHours[day]) {
+        mergedHours[day] = existingHours[day];
+      } else {
+        // No Toast data, no existing data — fall through with "unknown" =
+        // omit entry rather than fabricate a closed day.
+      }
+    }
+    after.settings.hours = mergedHours;
+    // Legacy strings — when Toast hours are accepted, ALWAYS regenerate both
+    // legacy fields from the merged data. This prevents stale strings from
+    // saying "Mon-Tues: 11:30am-3pm" while structured hours say "Mon: closed".
+    // renderHoursLegacy returns null only when ALL days are closed/empty —
+    // in that case clear both legacy fields too.
+    const legacy = renderHoursLegacy(mergedHours);
+    if (legacy) {
+      after.settings.hours_weekday = legacy.hours_weekday || '';
+      after.settings.hours_weekend = legacy.hours_weekend || '';
+    } else {
+      after.settings.hours_weekday = '';
+      after.settings.hours_weekend = '';
     }
   }
 
@@ -396,12 +814,20 @@ async function main() {
   // total === 0 yet still needs to be persisted. Compare actual menu bodies.
   const menuBodyChanged =
     JSON.stringify(before.menus || []) !== JSON.stringify(after.menus || []);
+  // Hours sync writes settings.{hours, hours_weekday, hours_weekend}. Compare
+  // only those keys, not the whole settings blob — other settings keys may be
+  // user-edited via the CMS and we don't want to false-positive on them.
+  const hoursKeys = ['hours', 'hours_weekday', 'hours_weekend'];
+  const beforeHoursSlice = JSON.stringify(hoursKeys.map(k => (before.settings || {})[k]));
+  const afterHoursSlice = JSON.stringify(hoursKeys.map(k => (after.settings || {})[k]));
+  const hoursChanged = beforeHoursSlice !== afterHoursSlice;
+  const structuralChanged = menuBodyChanged || hoursChanged;
 
   if (!apply) {
-    console.log(`[toast-sync] DRY RUN — pass --apply to write site.json (menuBodyChanged=${menuBodyChanged})`);
+    console.log(`[toast-sync] DRY RUN — pass --apply to write site.json (menuBodyChanged=${menuBodyChanged} hoursChanged=${hoursChanged})`);
     process.exit(0);
   }
-  if (!menuBodyChanged) {
+  if (!structuralChanged) {
     console.log('[toast-sync] no structural changes — site.json untouched');
     process.exit(0);
   }
