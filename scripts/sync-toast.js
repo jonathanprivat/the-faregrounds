@@ -982,6 +982,16 @@ async function main() {
   }
 
   // ── Hours sync (best-effort) ───────────────────────────────────────
+  // Manual override: if site.json has settings.hours_manual_override === true,
+  // skip the entire hours fetch + write block. This is the escape hatch for
+  // when Toast's General Schedule (`/restaurants/v1/.../schedules`) disagrees
+  // with what the admin wants on the public site — e.g. when the operational
+  // hours live in Toast's "Online Ordering Hours" page (which isn't exposed
+  // by the public API) and the admin would rather manage the public site
+  // hours by hand than mirror them into the General Schedule.
+  if (before?.settings?.hours_manual_override === true) {
+    console.log('[toast-sync] hours_manual_override is true — skipping hours fetch + write entirely');
+  } else {
   // Pace another ~1.1s — separate Toast API surface, same rate-limit class.
   await new Promise(r => setTimeout(r, 1100));
   let hoursByDay = null;
@@ -1097,6 +1107,7 @@ async function main() {
       after.settings.hours_weekend = '';
     }
   }
+  } // close `else` of hours_manual_override gate
 
   const summary = diffSummary(before, after);
   const total =
