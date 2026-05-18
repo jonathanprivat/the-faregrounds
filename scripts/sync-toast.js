@@ -177,7 +177,11 @@ const MENU_ALIASES = {
       siteMenuId: 'lunch',
       includeCategories: [
         'appetizers', 'appetizer', 'starters',
-        'salads & soups', 'salads and soups', 'salads', 'soups', 'salad', 'soup',
+        // Toast splits salads + soups into separate categories. The legacy
+        // 'salads & soups' combined category was removed 2026-05-18 to match
+        // Toast's structure; don't include its variants here or the partial
+        // merger will recreate it from any stale site.json entries.
+        'salads', 'soups', 'salad', 'soup',
         'handhelds', 'handheld', 'sandwiches', 'burgers',
         'fries',
         'bowls', 'bowl',
@@ -188,7 +192,7 @@ const MENU_ALIASES = {
       siteMenuId: 'dinner',
       includeCategories: [
         'appetizers', 'appetizer', 'starters',
-        'salads & soups', 'salads and soups', 'salads', 'soups', 'salad', 'soup',
+        'salads', 'soups', 'salad', 'soup',
         'mains', 'main', 'entrees', 'entrée', 'entrées',
         'fries',
         'bowls', 'bowl',
