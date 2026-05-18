@@ -1916,11 +1916,12 @@ export default function TheFairgroundsHomepage() {
                             else { if (cur) runs.push(cur); cur = { days: [d], sig, h }; }
                           }
                           if (cur) runs.push(cur);
-                          rows = runs.filter(r => r.sig !== '__closed__').map(r => {
+                          rows = runs.map(r => {
                             const first = dayShort[r.days[0]];
                             const last = dayShort[r.days[r.days.length - 1]];
                             const label = r.days.length === 1 ? first : `${first}\u2013${last}`;
-                            return [label, renderSessions(r.h.sessions)];
+                            const value = r.sig === '__closed__' ? 'Closed' : renderSessions(r.h?.sessions);
+                            return [label, value];
                           });
                           if (siteSettings.hours_events) {
                             const evt = String(siteSettings.hours_events);
