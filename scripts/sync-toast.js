@@ -578,6 +578,9 @@ function mapToastRestaurantToHours(payload) {
         }
         if (sessions.length > 0) {
           // At least one valid window → trust this day as authoritative.
+          // Sort by open time so split shifts display naturally
+          // (11am – 4pm and 4pm – 11pm, not the reverse).
+          sessions.sort((a, b) => a.open.localeCompare(b.open));
           day_out = { sessions, closed: false };
           actionableAny = true;
         } else if (hadAnyServiceEntry) {
