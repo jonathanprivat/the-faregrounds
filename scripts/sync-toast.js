@@ -18,7 +18,7 @@
 //
 // Hours sync (Toast → settings.hours):
 //   - Fetches /restaurants/v1/restaurants/{TOAST_RESTAURANT_EXTERNAL_ID}
-//   - Maps daySchedules / weeklySchedule to structured per-day hours
+//   - Maps daySchedules / weekSchedule to structured per-day hours
 //   - Writes settings.hours = { monday: { sessions: [{open,close}, ...], closed }, ... }
 //   - Also regenerates legacy settings.hours_weekday/hours_weekend free-text
 //     strings so App.jsx footer continues to render without changes (back-compat).
@@ -500,7 +500,7 @@ function diffSummary(beforeSite, afterSite) {
 //           scheduleName, services: [{ name, hours: { startTime, endTime } }, ...]
 //         }, ...
 //       },
-//       weeklySchedule: {
+//       weekSchedule: {
 //         monday: "<dayScheduleGuid>", tuesday: "...", ...
 //       }
 //     }
@@ -541,7 +541,7 @@ function mapToastRestaurantToHours(payload) {
     const schedules = payload?.schedules;
     if (!schedules || typeof schedules !== 'object') return null;
     const daySchedules = schedules.daySchedules || {};
-    const weekly = schedules.weeklySchedule || {};
+    const weekly = schedules.weekSchedule || {};
     // Build a case-insensitive lookup over the weekly schedule so 'MONDAY',
     // 'Monday', 'monday' all resolve. Toast has used both casings historically.
     const weeklyLowered = {};
@@ -755,7 +755,7 @@ async function main() {
     // Diagnostic: log the top-level shape of the restaurant config payload so
     // we can verify which schedule format Toast returns for this restaurant.
     // Toast's /restaurants/v1 surface has historically returned several shapes
-    // (schedules.daySchedules+weeklySchedule, schedules.openingHours, top-level
+    // (schedules.daySchedules+weekSchedule, schedules.openingHours, top-level
     // hoursSchedule, etc) — log once so we know which one we got.
     const topKeys = cfg && typeof cfg === 'object' ? Object.keys(cfg) : [];
     const schedKeys = cfg?.schedules && typeof cfg.schedules === 'object' ? Object.keys(cfg.schedules) : [];
