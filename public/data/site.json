@@ -676,7 +676,7 @@
     },
     "footer": {
       "tagline": "Seasonal food, local gatherings, and old-school community energy — built for Nantucket Island.",
-      "copyright_suffix": "Nantucket Island | OVERLOOK RESTAURANT NANTUCKET, LLC"
+      "copyright_suffix": "Nantucket Island  • OVERLOOK RESTAURANT NANTUCKET, LLC"
     },
     "hero": {
       "menu_title": "Lunch",
@@ -1297,8 +1297,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-09T04:23:16.030Z",
-  "_sha": "446f3a6c20e75a6d95f689af4d7296c1d7962199",
+  "exportedAt": "2026-06-09T04:23:33.480Z",
+  "_sha": "55105a699d2266eef0c2bc8772e673e3b9e14ddc",
   "users": [
     {
       "username": "admin",
