@@ -532,7 +532,7 @@
           }
         ]
       },
-      "pdfUrl": "/data/dinner-menu.pdf",
+      "pdfUrl": "/data/dinner-menu.pdf?v=1781373769141",
       "autoTime": {
         "start": 15,
         "end": 24
@@ -1266,8 +1266,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T18:02:38.864Z",
-  "_sha": "281a57d37e026b2a34dec2011f1f1746424c4bc1",
+  "exportedAt": "2026-06-13T18:02:50.616Z",
+  "_sha": "10778735eb365341404cac3c8a9f48758858b89f",
   "users": [
     {
       "username": "admin",
