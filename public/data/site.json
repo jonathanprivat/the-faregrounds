@@ -548,21 +548,24 @@
             "price": "$18",
             "desc": "",
             "sub": false,
-            "toast_id": "91d2a096-e664-4e4d-8cf8-3c3bae67436c"
+            "toast_id": "91d2a096-e664-4e4d-8cf8-3c3bae67436c",
+            "disabled": true
           },
           {
             "name": "Pancakes",
             "price": "$18",
             "desc": "",
             "sub": false,
-            "toast_id": "a30d5d9a-0103-4df8-9ee1-1cd3d90ab834"
+            "toast_id": "a30d5d9a-0103-4df8-9ee1-1cd3d90ab834",
+            "disabled": true
           },
           {
             "name": "Avocado Toast",
             "price": "$18",
             "desc": "",
             "sub": false,
-            "toast_id": "5c98205c-e5c4-4b80-9baf-dbabf3de535c"
+            "toast_id": "5c98205c-e5c4-4b80-9baf-dbabf3de535c",
+            "disabled": true
           }
         ],
         "drinks": [
@@ -571,7 +574,8 @@
             "price": "$0",
             "desc": "",
             "sub": false,
-            "toast_id": "bf178620-a67c-4d67-8da6-41ca26ca777f"
+            "toast_id": "bf178620-a67c-4d67-8da6-41ca26ca777f",
+            "disabled": true
           }
         ]
       },
@@ -1298,8 +1302,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T17:55:51.826Z",
-  "_sha": "1f08e549d803edae83e5ce2e99972e20828cdf90",
+  "exportedAt": "2026-06-13T17:56:53.343Z",
+  "_sha": "a878974d6f3ccb36f4e8588aee104cf4ff4804cb",
   "users": [
     {
       "username": "admin",
