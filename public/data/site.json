@@ -555,7 +555,8 @@
             "price": "$13",
             "desc": "Deep fried Mars bars & Oreos.",
             "sub": false,
-            "toast_id": "415865d6-8d1b-4aa4-8413-e0aa6a4d3f41"
+            "toast_id": "415865d6-8d1b-4aa4-8413-e0aa6a4d3f41",
+            "disabled": true
           },
           {
             "name": "Chocolate Lava Cake",
@@ -1259,7 +1260,7 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T18:01:03.849Z",
+  "exportedAt": "2026-06-13T18:01:19.839Z",
   "_sha": "84b96517a0389032c63166c56b0f93d11c02c91e",
   "users": [
     {
