@@ -596,6 +596,12 @@
         ]
       },
       "pdfUrl": "/data/desserts-menu.pdf"
+    },
+    {
+      "id": "drinks",
+      "label": "Drinks",
+      "items": {},
+      "pdfUrl": "/data/drinks-menu.pdf?v=1781373753911"
     }
   ],
   "events": [
@@ -1260,8 +1266,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T18:01:19.839Z",
-  "_sha": "84b96517a0389032c63166c56b0f93d11c02c91e",
+  "exportedAt": "2026-06-13T18:02:38.864Z",
+  "_sha": "281a57d37e026b2a34dec2011f1f1746424c4bc1",
   "users": [
     {
       "username": "admin",
