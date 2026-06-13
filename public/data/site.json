@@ -1211,7 +1211,7 @@
     "hours_weekend": "Fri & Sun: 11:30am – 10pm • Sat: 11:30am – 10:30pm",
     "hours_events": "Events: Seasonal evenings",
     "opentable_url": "",
-    "resy_url": "https://resy.com",
+    "resy_url": "https://resy.com/cities/nantucket-ma/venues/fairgrounds/",
     "toast_url": "https://www.toasttab.com/local/order/the-fairgrounds-restaurant-27-fairgrounds-road/item-pinot-grigio_a7f27a73-0f0f-4a49-878a-a62f064bb6f3",
     "ubereats_url": "",
     "doordash_url": "",
@@ -1302,8 +1302,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T17:56:53.343Z",
-  "_sha": "a878974d6f3ccb36f4e8588aee104cf4ff4804cb",
+  "exportedAt": "2026-06-13T17:58:51.872Z",
+  "_sha": "c247268c232ac85fa0ea96d03d95130fc7fda5f5",
   "users": [
     {
       "username": "admin",
