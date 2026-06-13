@@ -474,7 +474,8 @@
             "price": "$22",
             "desc": "",
             "sub": false,
-            "toast_id": "7fb12cf9-8217-49c5-b679-7380c9785413"
+            "toast_id": "7fb12cf9-8217-49c5-b679-7380c9785413",
+            "disabled": true
           },
           {
             "name": "Proteins",
@@ -1266,8 +1267,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T18:02:50.616Z",
-  "_sha": "10778735eb365341404cac3c8a9f48758858b89f",
+  "exportedAt": "2026-06-13T18:05:13.459Z",
+  "_sha": "700e4aedc291af70e16db988fa42a9f8bf025655",
   "users": [
     {
       "username": "admin",
