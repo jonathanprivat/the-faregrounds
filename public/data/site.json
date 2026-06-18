@@ -615,7 +615,7 @@
     },
     {
       "title": "Earth Got the Blues",
-      "date": "FRI 7PM",
+      "date": "6/19 FRI 7PM",
       "badge": "Music",
       "desc": "Rhythm-driven blues band specializing in the late 40s to early 50s blues eras",
       "featured": false
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T17:05:00.010Z",
-  "_sha": "43786034c72ac42d9625f32af174a3fb26882aab",
+  "exportedAt": "2026-06-18T17:05:19.473Z",
+  "_sha": "dae89b86620f9262147caa064088d1dfa4058d39",
   "users": [
     {
       "username": "admin",
