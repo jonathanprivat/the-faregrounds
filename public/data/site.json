@@ -625,7 +625,7 @@
       "date": "Saturday, June 20th 7pm",
       "badge": "Music",
       "desc": "Hottest jazz around, join us drinks and music in our banquet hall",
-      "featured": false
+      "featured": true
     }
   ],
   "content": {
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T16:54:57.003Z",
-  "_sha": "250ee0bbd10bfd19ab1573fca03b26462e970746",
+  "exportedAt": "2026-06-18T16:55:07.440Z",
+  "_sha": "0711b7394d9bdf1e99a4d98fc199d7b25fcafbd0",
   "users": [
     {
       "username": "admin",
