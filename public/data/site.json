@@ -608,14 +608,14 @@
   "events": [
     {
       "title": "USA World Cup Game",
-      "date": "FRI 6/19 3PM",
+      "date": "FRI 6/19 3pm",
       "badge": "Sports",
       "desc": "Come watch our National Team take on Australia on one of our many TVs!",
       "featured": false
     },
     {
       "title": "Earth Got the Blues",
-      "date": "Friday, June 19th 7pm",
+      "date": "FRI 7PM",
       "badge": "Music",
       "desc": "Rhythm-driven blues band specializing in the late 40s to early 50s blues eras",
       "featured": false
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T16:52:47.648Z",
-  "_sha": "be811af0aefe25197cccc4e30772f312539b36b5",
+  "exportedAt": "2026-06-18T16:53:08.608Z",
+  "_sha": "b6bf74007160d4f24294cbc068a67a53b28e8840",
   "users": [
     {
       "username": "admin",
