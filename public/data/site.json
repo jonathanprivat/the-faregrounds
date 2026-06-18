@@ -239,7 +239,7 @@
           }
         ]
       },
-      "pdfUrl": "/menu.pdf",
+      "pdfUrl": "/data/lunch-menu.pdf?v=1781796605294",
       "autoTime": {
         "start": 0,
         "end": 15
@@ -533,7 +533,7 @@
           }
         ]
       },
-      "pdfUrl": "/data/dinner-menu.pdf?v=1781373769141",
+      "pdfUrl": "/data/dinner-menu.pdf?v=1781796625546",
       "autoTime": {
         "start": 15,
         "end": 24
@@ -607,31 +607,24 @@
   ],
   "events": [
     {
-      "title": "Maple Fest Weekend",
-      "date": "Mar 28",
-      "badge": "Seasonal",
-      "desc": "Sugar on snow, live bluegrass, family-friendly fun, and maple treats all afternoon.",
-      "featured": true
-    },
-    {
-      "title": "Bluegrass on the Lawn",
-      "date": "Apr 12",
-      "badge": "Live Music",
-      "desc": "An easygoing early-evening set with local players and picnic-style seating.",
+      "title": "USA World Cup Game",
+      "date": "Friday, June 19th 3pm",
+      "badge": "Sports",
+      "desc": "Come watch our National Team take on Australia on one of our many TVs!",
       "featured": false
     },
     {
-      "title": "Kids Craft Brunch",
-      "date": "Apr 19",
-      "badge": "Family",
-      "desc": "Weekend brunch with hands-on activities, balloons, and seasonal treats for the little ones.",
+      "title": "Earth Got the Blues",
+      "date": "Friday, June 19th 7pm",
+      "badge": "Music",
+      "desc": "Rhythm-driven blues band specializing in the late 40s to early 50s blues eras",
       "featured": false
     },
     {
-      "title": "Island Supper Club",
-      "date": "May 3",
-      "badge": "Prix Fixe",
-      "desc": "A five-course prix fixe dinner celebrating Nantucket's spring harvest.",
+      "title": "Jazz Night",
+      "date": "Saturday, June 20th 7pm",
+      "badge": "Music",
+      "desc": "Hottest jazz around, join us drinks and music in our banquet hall",
       "featured": false
     }
   ],
@@ -1190,7 +1183,7 @@
     "auto_theme": "false",
     "show_prices": "true",
     "event_poster_url": "",
-    "event_button_text": "RSVP for Maple Fest",
+    "event_button_text": "",
     "event_pdf_url": "/data/event.pdf?v=1774292682272",
     "event_link_url": "",
     "seo_title": "The Fairgrounds | Nantucket Island Restaurant, Events & Community",
@@ -1267,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-13T18:05:13.459Z",
-  "_sha": "700e4aedc291af70e16db988fa42a9f8bf025655",
+  "exportedAt": "2026-06-18T15:57:48.333Z",
+  "_sha": "e218e9968311f09e86bc01b01c023058448f541b",
   "users": [
     {
       "username": "admin",
