@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T16:58:25.478Z",
-  "_sha": "7e75a92b76d0d27211919c369f8c2e832cd3083b",
+  "exportedAt": "2026-06-18T17:03:01.214Z",
+  "_sha": "5d8be4d5bde005d0133670c5ee18c36507855bad",
   "users": [
     {
       "username": "admin",
@@ -1271,6 +1271,11 @@
     {
       "username": "ethan",
       "passwordHash": "h_1r2ejc1",
+      "role": "editor"
+    },
+    {
+      "username": "Jack",
+      "passwordHash": "h_10myktq",
       "role": "editor"
     }
   ],
