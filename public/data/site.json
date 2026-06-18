@@ -608,7 +608,7 @@
   "events": [
     {
       "title": "USA World Cup Game",
-      "date": "FRI 6/19 3pm",
+      "date": "FRI",
       "badge": "Sports",
       "desc": "Come watch our National Team take on Australia on one of our many TVs!",
       "featured": false
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T16:56:44.789Z",
-  "_sha": "401cf1bac26c38466b74d5930383b14bb2bd5740",
+  "exportedAt": "2026-06-18T16:58:25.478Z",
+  "_sha": "7e75a92b76d0d27211919c369f8c2e832cd3083b",
   "users": [
     {
       "username": "admin",
