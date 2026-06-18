@@ -1182,9 +1182,9 @@
     "tiktok_url": "https://www.tiktok.com/@nantucketfairgrounds",
     "auto_theme": "false",
     "show_prices": "true",
-    "event_poster_url": "/images/event-poster.jpg?v=1781801538159",
+    "event_poster_url": "/images/event-poster.jpg?v=1781801800095",
     "event_button_text": "",
-    "event_pdf_url": "/data/event.pdf?v=1781801538159",
+    "event_pdf_url": "/data/event.pdf?v=1781801800095",
     "event_link_url": "",
     "seo_title": "The Fairgrounds | Nantucket Island Restaurant, Events & Community",
     "seo_description": "Seasonal food, seafood, lobster, clams, chowder, local gatherings, and fairground energy on Nantucket Island. Comfort food, live music, community events, and old-school island charm at 27 Fairgrounds Road.",
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T16:55:07.440Z",
-  "_sha": "0711b7394d9bdf1e99a4d98fc199d7b25fcafbd0",
+  "exportedAt": "2026-06-18T16:56:44.789Z",
+  "_sha": "401cf1bac26c38466b74d5930383b14bb2bd5740",
   "users": [
     {
       "username": "admin",
