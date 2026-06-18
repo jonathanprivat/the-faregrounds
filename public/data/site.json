@@ -608,7 +608,7 @@
   "events": [
     {
       "title": "USA World Cup Game",
-      "date": "FRI",
+      "date": "6/19 FRI 3PM",
       "badge": "Sports",
       "desc": "Come watch our National Team take on Australia on one of our many TVs!",
       "featured": false
@@ -622,7 +622,7 @@
     },
     {
       "title": "Jazz Night",
-      "date": "Saturday, June 20th 7pm",
+      "date": "6/19 SAT 7PM",
       "badge": "Music",
       "desc": "Hottest jazz around, join us drinks and music in our banquet hall",
       "featured": true
@@ -1260,8 +1260,8 @@
     },
     "hours_manual_override": true
   },
-  "exportedAt": "2026-06-18T17:05:19.473Z",
-  "_sha": "dae89b86620f9262147caa064088d1dfa4058d39",
+  "exportedAt": "2026-06-18T17:07:34.876Z",
+  "_sha": "591a7a60930dc71e33a21b3269d58dde122fbeb1",
   "users": [
     {
       "username": "admin",
